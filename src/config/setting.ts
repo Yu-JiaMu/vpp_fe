@@ -28,7 +28,7 @@ import { SystemThemeEnum, MenuThemeEnum, MenuTypeEnum, ContainerWidthEnum } from
  */
 export const SETTING_DEFAULT_CONFIG = {
   /** 菜单类型 */
-  menuType: MenuTypeEnum.LEFT,
+  menuType: MenuTypeEnum.TOP_LEFT,
   /** 菜单展开宽度 */
   menuOpenWidth: 230,
   /** 菜单是否展开 */

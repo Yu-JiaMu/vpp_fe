@@ -1,0 +1,115 @@
+/**
+  table列表 搜索头部分的样式
+*/
+.input-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 250px; /* 根据图片比例调整 */
+  height: 45px;
+  border: 1px solid #dcdfe6; /* 灰色细边框 */
+  border-radius: 4px; /* 较小的圆角，与图片一致 */
+  background-color: #fff;
+  overflow: hidden;
+  transition: border-color 0.2s ease-in-out;
+}
+
+/* 聚焦时的蓝色高亮边框 */
+.input-container.is-focus {
+  border-color: #409eff; /* Element Plus 蓝色 */
+  box-shadow: 0 0 0 1px rgba(64, 158, 255, 0.1);
+}
+
+.fixed-label {
+  padding: 0 16px; /* 精确的左右间距 */
+  color: #303537; /* 纯黑色文字 */
+  font-size: 14px; /* 标准字体大小 */
+  font-weight: 400; /* 正常字重，非粗体 */
+  line-height: 1;
+  border-right: 1px solid #e5e6ec; /* 精确的灰色分隔线 */
+  height: 100%;
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  flex-shrink: 0;
+  user-select: none; /* 防止文字被选中 */
+  font-family: inherit; /* 继承容器字体 */
+}
+
+.inner-input {
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  padding: 0 12px;
+  font-size: 14px;
+  color: #333;
+  background: transparent;
+  font-family: inherit; /* 与标签字体一致 */
+}
+
+.inner-input::placeholder {
+  color: #a8abb2; /* 图片中的灰色占位符颜色 */
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 1; /* 确保颜色不透明 */
+  font-family: inherit;
+}
+
+/* 右侧蓝色竖线指示器 */
+.blue-indicator {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 16px;
+  background-color: #409eff; /* 与边框蓝色一致 */
+  animation: blink 1.2s infinite;
+}
+
+/* 光标闪烁动画 */
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+.btn-rest {
+  //   width: 62px;
+  //   height: 28px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.btn-rest:hover {
+  padding: 4px 6px;
+  background: #eeeff1;
+  border-radius: 6px;
+}
+.add-container {
+  height: 32px;
+  background: #ffffff;
+  border-radius: 6px;
+  // width: 120px;
+  padding: 6px 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.add-container:hover {
+  background: #f5f6f8;
+}
+/**
+  结束
+*/
+/**通用按钮高度样式
+*/
+.btn-height-45 {
+  height: 45px !important;
+}
