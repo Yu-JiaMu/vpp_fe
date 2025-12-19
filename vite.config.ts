@@ -10,6 +10,7 @@ import ElementPlus from 'unplugin-element-plus/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import tailwindcss from '@tailwindcss/vite'
 // import { visualizer } from 'rollup-plugin-visualizer'
+import vueSetupExtend from 'unplugin-vue-setup-extend-plus/vite'
 
 export default ({ mode }: { mode: string }) => {
   const root = process.cwd()
@@ -59,6 +60,14 @@ export default ({ mode }: { mode: string }) => {
           drop_debugger: true
         }
       },
+      rollupOptions: {
+        output: {
+          // Static resource classification and packaging
+          chunkFileNames: 'assets/js/[name]-[hash].js',
+          entryFileNames: 'assets/js/[name]-[hash].js',
+          assetFileNames: 'assets/[ext]/[name]-[hash].[ext]'
+        }
+      },
       dynamicImportVarsOptions: {
         warnOnError: true,
         exclude: [],
@@ -97,7 +106,9 @@ export default ({ mode }: { mode: string }) => {
         threshold: 10240, // 只有大小大于该值的资源会被处理 10240B = 10KB
         deleteOriginFile: false // 压缩后是否删除原文件
       }),
-      vueDevTools()
+      vueDevTools(),
+      // name 可以写在 script 标签上
+      vueSetupExtend({})
       // 打包分析
       // visualizer({
       //   open: true,

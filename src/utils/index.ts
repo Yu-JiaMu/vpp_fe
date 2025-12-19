@@ -32,3 +32,9 @@ export * from './form'
 
 // socket 相关
 export * from './socket'
+
+// 通用工具函数
+export * from './util'
+
+// 类型判断相关
+export * from './is'

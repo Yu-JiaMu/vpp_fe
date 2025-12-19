@@ -11,204 +11,210 @@
  * - 支持 GET/POST/PUT/DELETE 等常用方法
  *
  * @module utils/http
- * @author Art Design Pro Team
+ * @author zhu
  */
 
-import axios, { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import axios, {
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig
+} from 'axios'
 import { useUserStore } from '@/store/modules/user'
 import { ApiStatus } from './status'
 import { HttpError, handleError, showError, showSuccess } from './error'
 import { $t } from '@/locales'
 import { BaseResponse } from '@/types'
+import { AxiosCanceler } from './helper/axiosCancel'
 
-/** 请求配置常量 */
-const REQUEST_TIMEOUT = 15000
-const LOGOUT_DELAY = 500
-const MAX_RETRIES = 0
-const RETRY_DELAY = 1000
-const UNAUTHORIZED_DEBOUNCE_TIME = 3000
-
-/** 401防抖状态 */
-let isUnauthorizedErrorShown = false
-let unauthorizedTimer: NodeJS.Timeout | null = null
-
-/** 扩展 AxiosRequestConfig */
-interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
+/** 自定义请求扩展字段 */
+interface RequestExtraOptions {
   showErrorMessage?: boolean
   showSuccessMessage?: boolean
+  retry?: number
+  cancel?: boolean
+  loading?: boolean
+  fullLoading?: boolean
+  isSign?: boolean
 }
 
+/** 外部使用（request / api.get 等） */
+export type ExtendedAxiosRequestConfig = AxiosRequestConfig & RequestExtraOptions
+
+/** 拦截器内部使用 */
+export type CustomAxiosRequestConfig = InternalAxiosRequestConfig & RequestExtraOptions
+
+const REQUEST_TIMEOUT = 15000
+const LOGOUT_DELAY = 500
+const RETRY_DELAY = 1000
+const UNAUTHORIZED_DEBOUNCE_TIME = 3000
+const DEFAULT_RETRY_POLICY = {
+  baseDelay: 500, // 初始延迟
+  maxDelay: 8000, // 最大延迟
+  jitter: true // 防止惊群
+}
+
+class HttpRequest {
+  private instance: AxiosInstance
+  private axiosCanceler = new AxiosCanceler()
+  private isUnauthorizedErrorShown = false
+  private unauthorizedTimer: NodeJS.Timeout | null = null
+
+  constructor(config: AxiosRequestConfig) {
+    this.instance = axios.create(config)
+    this.setupInterceptors()
+  }
+
+  /** 配置拦截器 */
+  private setupInterceptors() {
+    // 请求拦截
+    this.instance.interceptors.request.use(
+      (config: CustomAxiosRequestConfig) => {
+        const { accessToken } = useUserStore()
+
+        // 重复请求处理
+        config.cancel ?? (config.cancel = true)
+        config.cancel && this.axiosCanceler.addPending(config)
+
+        // Token 注入
+        if (accessToken) config.headers.set('Authorization', accessToken)
+
+        // 数据序列化处理 (针对非 FormData 且未设置 Content-Type 的情况)
+        if (config.data && !(config.data instanceof FormData) && !config.headers['Content-Type']) {
+          config.headers.set('Content-Type', 'application/json')
+        }
+
+        return config
+      },
+      (error) => Promise.reject(error)
+    )
+
+    // 响应拦截
+    this.instance.interceptors.response.use(
+      (response: AxiosResponse<BaseResponse>) => {
+        const { data, config } = response
+        this.axiosCanceler.removePending(config)
+
+        if (data.code === ApiStatus.success) return response
+
+        if (data.code === ApiStatus.unauthorized) {
+          this.handleUnauthorizedError(data.msg)
+        }
+
+        throw new HttpError(data.msg || $t('httpMsg.requestFailed'), data.code)
+      },
+      (error) => {
+        if (error.response?.status === ApiStatus.unauthorized) {
+          this.handleUnauthorizedError()
+        }
+        return Promise.reject(handleError(error))
+      }
+    )
+  }
+
+  /** 处理 401 错误 */
+  private handleUnauthorizedError(message?: string): never {
+    const msg = message || $t('httpMsg.unauthorized')
+    const error = new HttpError(msg, ApiStatus.unauthorized)
+
+    if (!this.isUnauthorizedErrorShown) {
+      this.isUnauthorizedErrorShown = true
+
+      // 延迟退出登录
+      setTimeout(() => useUserStore().logOut(), LOGOUT_DELAY)
+
+      // 防抖重置
+      this.unauthorizedTimer = setTimeout(() => {
+        this.isUnauthorizedErrorShown = false
+        if (this.unauthorizedTimer) clearTimeout(this.unauthorizedTimer)
+      }, UNAUTHORIZED_DEBOUNCE_TIME)
+
+      showError(error, true)
+    }
+
+    throw error
+  }
+
+  private getRetryDelay(attempt: number) {
+    const { baseDelay, maxDelay, jitter } = DEFAULT_RETRY_POLICY
+
+    const delay = Math.min(baseDelay * Math.pow(2, attempt), maxDelay)
+
+    return jitter ? Math.random() * delay : delay
+  }
+
+  /** 核心请求方法（带重试逻辑） */
+  async request<T = any>(config: ExtendedAxiosRequestConfig): Promise<T> {
+    const maxRetries = config.retry ?? 0
+    let attempt = 0
+
+    while (true) {
+      try {
+        const res = await this.instance.request<BaseResponse<T>>(config)
+
+        if (config.showSuccessMessage && res.data.msg) {
+          showSuccess(res.data.msg)
+        }
+
+        return res.data.data as T
+      } catch (error) {
+        const canRetry =
+          error instanceof HttpError &&
+          error.code !== ApiStatus.unauthorized &&
+          attempt < maxRetries
+
+        if (!canRetry) {
+          if (error instanceof HttpError && error.code !== ApiStatus.unauthorized) {
+            const showMsg = config.showErrorMessage !== false
+            showError(error, showMsg)
+          }
+          throw error
+        }
+
+        const delay = this.getRetryDelay(attempt)
+        attempt++
+
+        await new Promise((resolve) => setTimeout(resolve, delay))
+      }
+    }
+  }
+
+  // 封装快捷方法
+  get<T>(url: string, params?: any, config?: ExtendedAxiosRequestConfig) {
+    return this.request<T>({ ...config, url, params, method: 'GET' })
+  }
+
+  post<T>(url: string, data?: any, config?: ExtendedAxiosRequestConfig) {
+    return this.request<T>({ ...config, url, data, method: 'POST' })
+  }
+
+  put<T>(url: string, data?: any, config?: ExtendedAxiosRequestConfig) {
+    return this.request<T>({ ...config, url, data, method: 'PUT' })
+  }
+
+  delete<T>(url: string, params?: any, config?: ExtendedAxiosRequestConfig) {
+    return this.request<T>({ ...config, url, params, method: 'DELETE' })
+  }
+
+  async download(url: string, params?: object, config?: ExtendedAxiosRequestConfig): Promise<Blob> {
+    const response = await this.instance.request<Blob>({
+      ...config,
+      url,
+      params,
+      method: 'GET',
+      responseType: 'blob'
+    })
+    return response.data
+  }
+}
+
+/** 实例化 */
 const { VITE_API_URL, VITE_WITH_CREDENTIALS } = import.meta.env
 
-/** Axios实例 */
-const axiosInstance = axios.create({
+const api = new HttpRequest({
   timeout: REQUEST_TIMEOUT,
   baseURL: VITE_API_URL,
-  withCredentials: VITE_WITH_CREDENTIALS === 'true',
-  validateStatus: (status) => status >= 200 && status < 300,
-  transformResponse: [
-    (data, headers) => {
-      const contentType = headers['content-type']
-      if (contentType?.includes('application/json')) {
-        try {
-          return JSON.parse(data)
-        } catch {
-          return data
-        }
-      }
-      return data
-    }
-  ]
+  withCredentials: VITE_WITH_CREDENTIALS === 'true'
 })
-
-/** 请求拦截器 */
-axiosInstance.interceptors.request.use(
-  (request: InternalAxiosRequestConfig) => {
-    const { accessToken } = useUserStore()
-    if (accessToken) request.headers.set('Authorization', accessToken)
-
-    if (request.data && !(request.data instanceof FormData) && !request.headers['Content-Type']) {
-      request.headers.set('Content-Type', 'application/json')
-      request.data = JSON.stringify(request.data)
-    }
-
-    return request
-  },
-  (error) => {
-    showError(createHttpError($t('httpMsg.requestConfigError'), ApiStatus.error))
-    return Promise.reject(error)
-  }
-)
-
-/** 响应拦截器 */
-axiosInstance.interceptors.response.use(
-  (response: AxiosResponse<BaseResponse>) => {
-    const { code, msg } = response.data
-    if (code === ApiStatus.success) return response
-    if (code === ApiStatus.unauthorized) handleUnauthorizedError(msg)
-    throw createHttpError(msg || $t('httpMsg.requestFailed'), code)
-  },
-  (error) => {
-    if (error.response?.status === ApiStatus.unauthorized) handleUnauthorizedError()
-    return Promise.reject(handleError(error))
-  }
-)
-
-/** 统一创建HttpError */
-function createHttpError(message: string, code: number) {
-  return new HttpError(message, code)
-}
-
-/** 处理401错误（带防抖） */
-function handleUnauthorizedError(message?: string): never {
-  const error = createHttpError(message || $t('httpMsg.unauthorized'), ApiStatus.unauthorized)
-
-  if (!isUnauthorizedErrorShown) {
-    isUnauthorizedErrorShown = true
-    logOut()
-
-    unauthorizedTimer = setTimeout(resetUnauthorizedError, UNAUTHORIZED_DEBOUNCE_TIME)
-
-    showError(error, true)
-    throw error
-  }
-
-  throw error
-}
-
-/** 重置401防抖状态 */
-function resetUnauthorizedError() {
-  isUnauthorizedErrorShown = false
-  if (unauthorizedTimer) clearTimeout(unauthorizedTimer)
-  unauthorizedTimer = null
-}
-
-/** 退出登录函数 */
-function logOut() {
-  setTimeout(() => {
-    useUserStore().logOut()
-  }, LOGOUT_DELAY)
-}
-
-/** 是否需要重试 */
-function shouldRetry(statusCode: number) {
-  return [
-    ApiStatus.requestTimeout,
-    ApiStatus.internalServerError,
-    ApiStatus.badGateway,
-    ApiStatus.serviceUnavailable,
-    ApiStatus.gatewayTimeout
-  ].includes(statusCode)
-}
-
-/** 请求重试逻辑 */
-async function retryRequest<T>(
-  config: ExtendedAxiosRequestConfig,
-  retries: number = MAX_RETRIES
-): Promise<T> {
-  try {
-    return await request<T>(config)
-  } catch (error) {
-    if (retries > 0 && error instanceof HttpError && shouldRetry(error.code)) {
-      await delay(RETRY_DELAY)
-      return retryRequest<T>(config, retries - 1)
-    }
-    throw error
-  }
-}
-
-/** 延迟函数 */
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-/** 请求函数 */
-async function request<T = any>(config: ExtendedAxiosRequestConfig): Promise<T> {
-  // POST | PUT 参数自动填充
-  if (
-    ['POST', 'PUT'].includes(config.method?.toUpperCase() || '') &&
-    config.params &&
-    !config.data
-  ) {
-    config.data = config.params
-    config.params = undefined
-  }
-
-  try {
-    const res = await axiosInstance.request<BaseResponse<T>>(config)
-
-    // 显示成功消息
-    if (config.showSuccessMessage && res.data.msg) {
-      showSuccess(res.data.msg)
-    }
-
-    return res.data.data as T
-  } catch (error) {
-    if (error instanceof HttpError && error.code !== ApiStatus.unauthorized) {
-      const showMsg = config.showErrorMessage !== false
-      showError(error, showMsg)
-    }
-    return Promise.reject(error)
-  }
-}
-
-/** API方法集合 */
-const api = {
-  get<T>(config: ExtendedAxiosRequestConfig) {
-    return retryRequest<T>({ ...config, method: 'GET' })
-  },
-  post<T>(config: ExtendedAxiosRequestConfig) {
-    return retryRequest<T>({ ...config, method: 'POST' })
-  },
-  put<T>(config: ExtendedAxiosRequestConfig) {
-    return retryRequest<T>({ ...config, method: 'PUT' })
-  },
-  del<T>(config: ExtendedAxiosRequestConfig) {
-    return retryRequest<T>({ ...config, method: 'DELETE' })
-  },
-  request<T>(config: ExtendedAxiosRequestConfig) {
-    return retryRequest<T>(config)
-  }
-}
 
 export default api
