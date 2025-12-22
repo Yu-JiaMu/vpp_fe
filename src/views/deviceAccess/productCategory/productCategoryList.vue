@@ -47,7 +47,7 @@
         </div>
       </div>
 
-      <el-table ref="tableRef" :data="tableData" style="width: 100%">
+      <el-table ref="tableRef" :data="tableData" border style="width: 100%">
         <el-table-column prop="date" label="产品类别" />
         <el-table-column prop="name" label="产品品类" />
         <el-table-column prop="address" label="所属行业" />
@@ -55,8 +55,9 @@
         <el-table-column prop="updateTime" label="更新时间" />
         <el-table-column fixed="right" label="Operations" min-width="120">
           <template #default>
-            <el-button link type="primary" size="small" @click="handleClick"> Detail </el-button>
-            <el-button link type="primary" size="small">Edit</el-button>
+            <el-button link type="primary" size="small" @click="handleClick"> 详情 </el-button>
+            <el-button link type="primary" size="small">编辑</el-button>
+            <el-button link type="danger" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -64,11 +65,16 @@
     <!--  -->
     <!-- 弹窗组件 - 使用 v-model -->
     <ProductCategoryDialog v-model="dialogVisible" @success="handleSuccess" />
+    <!-- 成功弹窗组件 -->
+    <ProductCategorySuccessDialog v-model="showSuccessDialog" @confirm="handleConfirm" />
   </div>
 </template>
 
 <script setup lang="ts">
   import ProductCategoryDialog from './dialog/ProductCategoryDialog.vue'
+  import ProductCategorySuccessDialog from './dialog/ProductCategorySuccessDialog.vue'
+  //搜索条件
+  const inputValue = ref('')
   interface User {
     date: string
     name: string
@@ -112,12 +118,18 @@
   const openDialog = () => {
     dialogVisible.value = true
   }
+  //成功弹窗
+  const showSuccessDialog = ref(true)
 
   // 处理提交成功
   const handleSuccess = (formData) => {
     console.log('表单提交成功:', formData)
     // 这里可以调用 API 提交数据
-    ElMessage.success('新增成功')
+    // ElMessage.success('新增成功')
+    showSuccessDialog.value = true
+  }
+  const handleConfirm = () => {
+    console.log('确认操作')
   }
 </script>
 
