@@ -71,8 +71,10 @@
 </template>
 
 <script setup lang="ts">
+  import { router } from '@/router'
   import ProductCategoryDialog from './dialog/ProductCategoryDialog.vue'
   import ProductCategorySuccessDialog from './dialog/ProductCategorySuccessDialog.vue'
+
   //搜索条件
   const inputValue = ref('')
   interface User {
@@ -109,7 +111,8 @@
     }
   ]
   const handleClick = () => {
-    console.log('click detail')
+    console.log('click detail', router)
+    router.push({ name: 'ProductCategoryDetail' })
   }
 
   //新增
@@ -119,7 +122,7 @@
     dialogVisible.value = true
   }
   //成功弹窗
-  const showSuccessDialog = ref(true)
+  const showSuccessDialog = ref(false)
 
   // 处理提交成功
   const handleSuccess = (formData) => {
