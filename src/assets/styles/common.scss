@@ -6,7 +6,7 @@
   display: inline-flex;
   align-items: center;
   width: 250px; /* 根据图片比例调整 */
-  height: 45px;
+  height: 36px;
   border: 1px solid #dcdfe6; /* 灰色细边框 */
   border-radius: 4px; /* 较小的圆角，与图片一致 */
   background-color: #fff;
@@ -110,6 +110,10 @@
 */
 /**通用按钮高度样式
 */
-.btn-height-45 {
-  height: 45px !important;
+
+.btn-width-177 {
+  width: 177px !important;
+}
+.btn-width-118 {
+  width: 118px !important;
 }

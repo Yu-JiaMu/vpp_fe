@@ -68,7 +68,7 @@
     </div>
     <!-- 底部按钮 -->
     <template #footer>
-      <div class="dialog-footer">
+      <div class="dialog-footer flex flex-sp-center">
         <el-button class="btn-width-177" @click="handleCancel">取消</el-button>
         <el-button class="btn-width-177" type="primary" @click="handleSubmit">确认</el-button>
       </div>
@@ -79,7 +79,7 @@
 <script setup>
   import { ref, reactive, watch, computed } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
-
+  import { apiGetIndustryList, apiGetSceneList } from '@/api/productCategory'
   // 定义 props
   const props = defineProps({
     modelValue: {
@@ -116,27 +116,23 @@
     description: [{ max: 99, message: '不能超过 99 个字符', trigger: 'blur' }]
   }
 
-  // 选项数据
-  const industryOptions = [
+  // 通过接口 选项数据
+  const industryOptions = ref([
     { label: '制造业', value: 'manufacturing' },
     { label: '零售业', value: 'retail' },
     { label: '金融业', value: 'finance' },
     { label: '医疗健康', value: 'healthcare' },
     { label: '教育行业', value: 'education' }
-  ]
-
-  const sceneOptions = [
-    { label: '生产场景', value: 'production' },
-    { label: '仓储场景', value: 'warehouse' },
-    { label: '销售场景', value: 'sales' },
-    { label: '服务场景', value: 'service' },
-    { label: '管理场景', value: 'management' }
-  ]
-
-  // 计算描述字数
-  const descriptionCount = computed(() => {
-    return formData.description?.length || 0
-  })
+  ])
+  async function getIndustryList() {
+    const res = await apiGetIndustryList()
+    industryOptions.value = res.data
+  }
+  const sceneOptions = ref([])
+  async function getSceneList() {
+    const res = await apiGetSceneList()
+    sceneOptions.value = res.data
+  }
 
   // 监听弹窗打开状态
   watch(
@@ -145,6 +141,10 @@
       if (!newVal) {
         // 弹窗关闭时重置表单
         resetForm()
+      } else {
+        // 弹窗打开关闭时，做逻辑处理
+        getIndustryList()
+        getSceneList()
       }
     }
   )
@@ -236,12 +236,4 @@
   })
 </script>
 
-<style scoped lang="scss">
-  .dialog-footer {
-    display: flex;
-    justify-content: center;
-  }
-  .btn-width-177 {
-    width: 177px;
-  }
-</style>
+<style scoped lang="scss"></style>
