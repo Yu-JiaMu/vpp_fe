@@ -138,6 +138,13 @@ export const useSettingStore = defineStore(
     })
 
     /**
+     * 判断是否为菜单暗色模式
+     */
+    const isMenuDark = computed((): boolean => {
+      return menuThemeType.value === MenuThemeEnum.DARK
+    })
+
+    /**
      * 获取菜单展开宽度
      */
     const getMenuOpenWidth = computed((): string => {
@@ -184,6 +191,15 @@ export const useSettingStore = defineStore(
       systemThemeType.value = theme
       systemThemeMode.value = themeMode
       localStorage.setItem(StorageConfig.THEME_KEY, theme)
+    }
+
+    /**
+     * 切换菜单主题颜色（只切换黑白）
+     */
+    const toggleMenuThemeColor = () => {
+      const theme =
+        menuThemeType.value === MenuThemeEnum.LIGHT ? MenuThemeEnum.DARK : MenuThemeEnum.LIGHT
+      menuThemeType.value = theme
     }
 
     /**
@@ -376,6 +392,7 @@ export const useSettingStore = defineStore(
     }
 
     return {
+      isMenuDark,
       menuType,
       menuOpenWidth,
       systemThemeType,
@@ -410,6 +427,7 @@ export const useSettingStore = defineStore(
       getMenuOpenWidth,
       getCustomRadius,
       isShowFireworks,
+      toggleMenuThemeColor,
       switchMenuLayouts,
       setMenuOpenWidth,
       setGlopTheme,

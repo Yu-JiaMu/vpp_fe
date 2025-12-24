@@ -1,13 +1,13 @@
 <!-- 顶部栏 -->
 <template>
   <div
-    class="w-full bg-[var(--default-bg-color)]"
+    class="w-full bg-white"
     :class="[
       tabStyle === 'tab-card' || tabStyle === 'tab-google' ? 'mb-5 max-sm:mb-3 !bg-box' : ''
     ]"
   >
     <div
-      class="relative box-border flex-b h-15 leading-15 select-none"
+      class="top-nav relative box-border flex-b h-10 pr-10 leading-10 select-none"
       :class="[
         tabStyle === 'tab-card' || tabStyle === 'tab-google'
           ? 'border-b border-[var(--art-card-border)]'
@@ -28,7 +28,7 @@
 
         <!-- 菜单按钮 -->
         <ArtIconButton
-          v-if="isLeftMenu && shouldShowMenuButton"
+          v-if="shouldShowMenuButton"
           icon="ri:menu-2-fill"
           class="ml-3 max-sm:ml-[7px]"
           @click="visibleMenu"
@@ -49,9 +49,9 @@
         </ArtFastEnter>
 
         <!-- 面包屑 -->
-        <ArtBreadcrumb
+        <!--     <ArtBreadcrumb
           v-if="(shouldShowBreadcrumb && isLeftMenu) || (shouldShowBreadcrumb && isDualMenu)"
-        />
+        /> -->
 
         <!-- 顶部菜单 -->
         <ArtHorizontalMenu v-if="isTopMenu" :list="menuList" />
@@ -109,16 +109,6 @@
           </template>
         </ElDropdown>
 
-        <!-- 通知按钮 -->
-        <ArtIconButton
-          v-if="shouldShowNotification"
-          icon="ri:notification-2-line"
-          class="notice-button relative"
-          @click="visibleNotice"
-        >
-          <div class="absolute top-2 right-2 size-1.5 !bg-danger rounded-full"></div>
-        </ArtIconButton>
-
         <!-- 聊天按钮 -->
         <ArtIconButton
           v-if="shouldShowChat"
@@ -151,9 +141,22 @@
         <!-- 主题切换按钮 -->
         <ArtIconButton
           v-if="shouldShowThemeToggle"
-          @click="themeAnimation"
-          :icon="isDark ? 'ri:sun-fill' : 'ri:moon-line'"
+          @click="settingStore.toggleMenuThemeColor"
+          :icon="isMenuDark ? 'ri:sun-fill' : 'ri:moon-line'"
         />
+        <!-- 通知按钮 -->
+        <ArtIconButton
+          v-if="shouldShowNotification"
+          icon="ri:message-3-line"
+          class="notice-button relative"
+          @click="visibleNotice"
+        >
+          <div class="absolute top-2 right-2 size-1.5 !bg-danger rounded-full"></div>
+        </ArtIconButton>
+        <!-- 天气 -->
+        <ArtWeather />
+
+        <div class="divider-line"></div>
 
         <!-- 用户头像、菜单 -->
         <ArtUserMenu />
@@ -162,7 +165,8 @@
 
     <!-- 标签页 -->
     <ArtWorkTab />
-
+    <!-- 面包屑 -->
+    <ArtBreadcrumb v-if="shouldShowBreadcrumb" />
     <!-- 通知 -->
     <ArtNotification v-model:value="showNotice" ref="notice" />
   </div>
@@ -213,7 +217,7 @@
     fastEnterMinWidth: headerBarFastEnterMinWidth
   } = useHeaderBar()
 
-  const { menuOpen, systemThemeColor, showSettingGuide, menuType, isDark, tabStyle } =
+  const { menuOpen, systemThemeColor, showSettingGuide, menuType, isDark, tabStyle, isMenuDark } =
     storeToRefs(settingStore)
 
   const { language } = storeToRefs(userStore)
@@ -434,6 +438,15 @@
       opacity: 0.4;
       transform: scale(0.9);
     }
+  }
+  .top-nav {
+    box-shadow: 0px 3px 14px 0px rgba(98, 100, 172, 0.05);
+  }
+  .divider-line {
+    width: 0px;
+    height: 21px;
+    border: 1px solid #ced1d9;
+    margin: 0 10px;
   }
 
   /* Hover animation classes */

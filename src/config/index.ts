@@ -91,7 +91,7 @@ const appConfig: SystemConfig = {
     },
     {
       theme: MenuThemeEnum.DARK,
-      background: '#191A23',
+      background: '#1F2126',
       systemNameColor: '#D9DADB',
       iconColor: '#BABBBD',
       textColor: '#BABBBD',
@@ -118,6 +118,7 @@ const appConfig: SystemConfig = {
   ],
   // 系统主色
   systemMainColor: [
+    '#2A4DFC',
     '#5D87FF',
     '#B48DF3',
     '#1D84FF',

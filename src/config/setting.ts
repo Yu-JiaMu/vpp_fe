@@ -30,7 +30,7 @@ export const SETTING_DEFAULT_CONFIG = {
   /** 菜单类型 */
   menuType: MenuTypeEnum.TOP_LEFT,
   /** 菜单展开宽度 */
-  menuOpenWidth: 230,
+  menuOpenWidth: 200,
   /** 菜单是否展开 */
   menuOpen: true,
   /** 双菜单是否显示文本 */
@@ -40,7 +40,7 @@ export const SETTING_DEFAULT_CONFIG = {
   /** 系统主题模式 */
   systemThemeMode: SystemThemeEnum.AUTO,
   /** 菜单风格 */
-  menuThemeType: MenuThemeEnum.DESIGN,
+  menuThemeType: MenuThemeEnum.DARK,
   /** 系统主题颜色 */
   systemThemeColor: AppConfig.systemMainColor[0],
   /** 是否显示菜单按钮 */
@@ -58,7 +58,7 @@ export const SETTING_DEFAULT_CONFIG = {
   /** 是否显示进度条 */
   showNprogress: false,
   /** 是否显示设置引导 */
-  showSettingGuide: true,
+  showSettingGuide: false,
   /** 是否显示节日文本 */
   showFestivalText: false,
   /** 是否显示水印 */

@@ -1,0 +1,35 @@
+@font-face {
+  font-family: 'Source Han Sans SC-Bold';
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Bold.otf')
+    format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Regular';
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Regular.otf')
+    format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Medium';
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Medium.otf')
+    format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Light';
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Light.otf')
+    format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}

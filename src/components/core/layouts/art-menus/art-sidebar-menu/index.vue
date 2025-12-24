@@ -76,8 +76,7 @@
           }"
         >
           <ArtLogo v-if="!isDualMenu" class="logo" />
-
-          <p
+          <!--   <p
             :class="{ 'is-dual-menu-name': isDualMenu }"
             :style="{
               color: getMenuTheme.systemNameColor,
@@ -85,7 +84,15 @@
             }"
           >
             {{ AppConfig.systemInfo.name }}
-          </p>
+          </p> -->
+          <img
+            class="logo-title ml-2.5"
+            :src="logoTitleImg"
+            :style="{
+              opacity: !menuOpen ? 0 : 1
+            }"
+            alt=""
+          />
         </div>
 
         <ElMenu
@@ -109,11 +116,11 @@
         </ElMenu>
       </ElScrollbar>
 
-      <!-- 双列菜单右侧折叠按钮 -->
-      <div class="dual-menu-collapse-btn" v-if="isDualMenu" @click="toggleMenuVisibility">
+      <!-- 菜单右侧折叠按钮 -->
+      <div class="dual-menu-collapse-btn" @click="toggleMenuVisibility">
         <ArtSvgIcon
           class="text-g-500/70"
-          :icon="menuOpen ? 'ri:arrow-left-wide-fill' : 'ri:arrow-right-wide-fill'"
+          :icon="menuOpen ? 'ri:menu-fold-3-line' : 'ri:menu-fold-4-line'"
         />
       </div>
 
@@ -139,6 +146,9 @@
   import SidebarSubmenu from './widget/SidebarSubmenu.vue'
   import { useCommon } from '@/hooks/core/useCommon'
   import { useWindowSize, useTimeoutFn } from '@vueuse/core'
+  import { MenuThemeEnum } from '@/enums/appEnum'
+  import darkTitleLogo from '@/assets/images/common/dark-title-logo.png'
+  import lightTitleLogo from '@/assets/images/common/light-title-logo.png'
 
   defineOptions({ name: 'ArtSidebarMenu' })
 
@@ -152,6 +162,10 @@
 
   const { getMenuOpenWidth, menuType, uniqueOpened, dualMenuShowText, menuOpen, getMenuTheme } =
     storeToRefs(settingStore)
+
+  const logoTitleImg = computed(() => {
+    return getMenuTheme.value.theme === MenuThemeEnum.DARK ? darkTitleLogo : lightTitleLogo
+  })
 
   // 组件内部状态
   const defaultOpenedMenus = ref<string[]>([])
@@ -351,5 +365,9 @@
     .el-menu--collapse {
       width: v-bind(menuclosewidth);
     }
+  }
+  .logo-title {
+    width: 102px;
+    height: 30px;
   }
 </style>

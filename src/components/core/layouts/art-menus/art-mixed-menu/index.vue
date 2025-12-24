@@ -16,11 +16,11 @@
       @scroll="handleScroll"
       @wheel="handleWheel"
     >
-      <div class="box-border flex-c flex-shrink-0 flex-nowrap h-15 whitespace-nowrap">
+      <div class="box-border flex-c flex-shrink-0 flex-nowrap h-[41px] whitespace-nowrap">
         <template v-for="item in processedMenuList" :key="item.meta.title">
           <div
             v-if="!item.meta.isHide"
-            class="menu-item relative flex-shrink-0 h-10 px-3 text-sm flex-c c-p hover:text-theme"
+            class="menu-item relative flex-shrink-0 h-10 px-10 text-sm flex-c c-p hover:text-theme"
             :class="{
               'menu-item-active text-theme': item.isActive
             }"
@@ -28,13 +28,9 @@
           >
             <ArtSvgIcon
               :icon="item.meta.icon"
-              class="text-lg text-g-700 dark:text-g-800 mr-1"
-              :class="item.isActive && '!text-theme'"
+              class="menu-text text-lg text-g-700 dark:text-g-800 mr-1"
             />
-            <span
-              class="text-md text-g-700 dark:text-g-800"
-              :class="item.isActive && '!text-theme'"
-            >
+            <span class="menu-text text-md text-g-700 dark:text-g-800">
               {{ item.formattedTitle }}
             </span>
             <div v-if="item.meta.showBadge" class="art-badge art-badge-mixed" />
@@ -44,7 +40,7 @@
     </ElScrollbar>
 
     <!-- 右侧滚动按钮 -->
-    <div v-show="showRightArrow" class="button-arrow right-2" @click="scroll('right')">
+    <div v-show="showRightArrow" class="button-arrow right-0" @click="scroll('right')">
       <ElIcon>
         <ArrowRight />
       </ElIcon>
@@ -232,6 +228,7 @@
     top-1/2
     z-2 
     flex
+		bg-white
     items-center
     justify-center
     size-7.5
@@ -246,7 +243,7 @@
   }
 </style>
 
-<style scoped>
+<style scoped lang="scss">
   :deep(.el-scrollbar__bar.is-horizontal) {
     bottom: 5px;
     display: none;
@@ -256,9 +253,31 @@
   :deep(.scrollbar-wrapper) {
     flex: 1;
     min-width: 0;
-    margin: 0 50px 0 30px;
+    margin: 0 50px 0 0px;
   }
 
+  .menu-item {
+    border-right: 1px solid #eeeff1;
+    &:last-child {
+      border-right: none;
+    }
+    .menu-text {
+      font-size: 15px;
+      font-weight: 400;
+      text-align: left;
+      color: #afb2b8;
+    }
+  }
+  .menu-item-active.menu-item {
+    .menu-text {
+      color: #1a1e20;
+      font-family:
+        Source Han Sans SC,
+        Source Han Sans SC-Bold;
+      font-weight: 700;
+    }
+  }
+  /* 
   .menu-item-active::after {
     position: absolute;
     right: 0;
@@ -269,11 +288,11 @@
     margin: auto;
     content: '';
     background-color: var(--theme-color);
-  }
+  } */
 
   @media (width <= 1440px) {
     :deep(.scrollbar-wrapper) {
-      margin: 0 45px;
+      margin: 0 0px;
     }
   }
 </style>

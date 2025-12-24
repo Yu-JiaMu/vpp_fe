@@ -8,5 +8,16 @@
   "i18n-ally.enabledFrameworks": ["vue", "react"],
   "i18n-ally.keystyle": "nested",
   "i18n-ally.sortKeys": true,
-  "i18n-ally.namespace": true
+  "i18n-ally.namespace": true,
+	"alias-skip.mappings": {
+    "@": "/src",
+    "common_libs": "/src/common_libs",
+		"@views": "src/views",
+		"@imgs": "src/assets/images",
+		"@icons": "src/assets/icons",
+		"@utils": "src/utils",
+		"@stores": "src/store",
+		"@plugins": "src/plugins",
+		"@styles": "src/assets/styles"
+  },
 }

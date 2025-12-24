@@ -1,59 +1,41 @@
 <!-- 用户菜单 -->
 <template>
+  <!-- <div class="user-info flex items-center"> </div> -->
   <ElPopover
     ref="userMenuPopover"
     placement="bottom-end"
-    :width="240"
+    width="auto"
     :hide-after="0"
     :offset="10"
     trigger="hover"
-    :show-arrow="false"
+    :show-arrow="true"
     popper-class="user-menu-popover"
     popper-style="padding: 5px 16px;"
   >
     <template #reference>
-      <img
-        class="size-8.5 mr-5 c-p rounded-full max-sm:w-6.5 max-sm:h-6.5 max-sm:mr-[16px]"
-        src="@imgs/user/avatar.webp"
-        alt="avatar"
-      />
+      <div class="user-info flex items-center">
+        <img
+          class="size-5 mr-2.5 c-p rounded-full max-sm:w-6.5 max-sm:h-6.5 max-sm:mr-[16px]"
+          src="@imgs/user/avatar.webp"
+          alt="avatar"
+        />
+        <span class="user-name max-w-24 truncate"> {{ userInfo.userName }} </span>
+        <ArtSvgIcon icon="ri:more-2-fill" class="ml-5" />
+      </div>
     </template>
+
     <template #default>
-      <div class="pt-3">
-        <div class="flex-c pb-1 px-0">
-          <img
-            class="w-10 h-10 mr-3 ml-0 overflow-hidden rounded-full float-left"
-            src="@imgs/user/avatar.webp"
-          />
-          <div class="w-[calc(100%-60px)] h-full">
-            <span class="block text-sm font-medium text-g-800 truncate">{{
-              userInfo.userName
-            }}</span>
-            <span class="block mt-0.5 text-xs text-g-500 truncate">{{ userInfo.email }}</span>
-          </div>
-        </div>
-        <ul class="py-4 mt-3 border-t border-g-300/80">
-          <li class="btn-item" @click="goPage('/system/user-center')">
-            <ArtSvgIcon icon="ri:user-3-line" />
+      <div class="">
+        <ul class="py-2">
+          <li class="btn-item user-name" @click="goPage('/system/user-center')">
+            <img class="w-5 h-5 mr-1" src="@/assets/images/icon/icon-user-center.png" alt="" />
             <span>{{ $t('topBar.user.userCenter') }}</span>
           </li>
-          <li class="btn-item" @click="toDocs()">
-            <ArtSvgIcon icon="ri:book-2-line" />
-            <span>{{ $t('topBar.user.docs') }}</span>
-          </li>
-          <li class="btn-item" @click="toGithub()">
-            <ArtSvgIcon icon="ri:github-line" />
-            <span>{{ $t('topBar.user.github') }}</span>
-          </li>
-          <li class="btn-item" @click="lockScreen()">
-            <ArtSvgIcon icon="ri:lock-line" />
-            <span>{{ $t('topBar.user.lockScreen') }}</span>
-          </li>
-          <div class="w-full h-px my-2 bg-g-300/80"></div>
-          <div class="log-out c-p" @click="loginOut">
-            {{ $t('topBar.user.logout') }}
-          </div>
         </ul>
+        <div class="log-out user-name c-p flex items-center p-2" @click="loginOut">
+          <img class="w-5 h-5 mr-1" src="@/assets/images/icon/icon-logout.png" alt="" />
+          {{ $t('topBar.user.logout') }}
+        </div>
       </div>
     </template>
   </ElPopover>
@@ -153,15 +135,24 @@
   }
 
   .log-out {
-    @apply py-1.5
-    mt-5
-    text-xs
-    text-center
-    border
-    border-g-400
-    rounded-md
-    transition-all
+    @apply transition-all
     duration-200
     hover:shadow-xl;
+  }
+</style>
+
+<style scoped lang="scss">
+  .user-name {
+    font-size: 13px;
+    font-weight: 400;
+    text-align: left;
+    color: #303537;
+    line-height: 20px;
+  }
+
+  .log-out {
+    background: #1f2126;
+    border-radius: 5px;
+    color: #ffffff;
   }
 </style>

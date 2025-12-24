@@ -165,7 +165,7 @@ $popup-menu-radius: 6px;
   // ---------------------- Dark theme menu ----------------------
   .el-menu-dark {
     @include theme-menu-base;
-    @include menu-active(#fff, #27282d, #fff);
+    @include menu-active(#fff, #3a3e48, #fff);
     @include menu-hover(#0f1015);
 
     .el-sub-menu__icon-arrow {

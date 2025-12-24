@@ -1,11 +1,12 @@
 <!-- 面包屑导航 -->
 <template>
-  <nav class="ml-2.5 max-lg:!hidden" aria-label="breadcrumb">
+  <nav class="breadcrumb pl-10 flex items-center max-lg:!hidden" aria-label="breadcrumb">
+    <img class="h-4.5 w-4.5" src="@/assets/images/icon/local.webp" alt="" />当前位置：
     <ul class="flex-c h-full">
       <li
         v-for="(item, index) in breadcrumbItems"
         :key="item.path"
-        class="box-border flex-c h-7 text-sm leading-7"
+        class="box-border flex-c h-[31px] text-sm leading-7"
       >
         <div
           :class="
@@ -16,13 +17,13 @@
           @click="handleBreadcrumbClick(item, index)"
         >
           <span
-            class="block max-w-46 overflow-hidden text-ellipsis whitespace-nowrap px-1.5 text-sm text-g-600 dark:text-g-800"
+            class="block max-w-46 overflow-hidden text-ellipsis whitespace-nowrap px-1.5 text-xs dark:text-g-800"
             >{{ formatMenuTitle(item.meta?.title as string) }}</span
           >
         </div>
         <div
           v-if="!isLastItem(index) && item.meta?.title"
-          class="mx-1 text-sm not-italic text-g-500"
+          class="mx-1 text-xs not-italic"
           aria-hidden="true"
         >
           /
@@ -140,3 +141,13 @@
     }
   }
 </script>
+
+<style scoped lang="scss">
+  .breadcrumb {
+    background: #e5e6ec;
+    line-height: 33px;
+    font-size: 12px;
+    font-weight: 400;
+    color: #505658;
+  }
+</style>

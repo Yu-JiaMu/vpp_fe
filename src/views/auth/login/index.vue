@@ -119,7 +119,7 @@
   defineOptions({ name: 'Login' })
 
   const settingStore = useSettingStore()
-  const { isDark } = storeToRefs(settingStore)
+  const { isDark, menuThemeType } = storeToRefs(settingStore)
   const { t, locale } = useI18n()
   const formKey = ref(0)
 
