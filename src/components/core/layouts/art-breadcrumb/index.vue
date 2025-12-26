@@ -148,6 +148,6 @@
     line-height: 33px;
     font-size: 12px;
     font-weight: 400;
-    color: #505658;
+    color: var(--art-gray-3);
   }
 </style>

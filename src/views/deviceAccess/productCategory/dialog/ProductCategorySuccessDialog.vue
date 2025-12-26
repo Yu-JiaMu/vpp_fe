@@ -116,12 +116,12 @@
     .font1 {
       font-size: 16px;
       font-weight: 700;
-      color: #303537;
+      color: var(--art-gray-4);
     }
     .font2 {
       font-size: 16px;
       font-weight: 400;
-      color: #505658;
+      color: var(--art-gray-3);
     }
   }
 </style>

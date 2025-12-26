@@ -146,7 +146,7 @@
     font-size: 13px;
     font-weight: 400;
     text-align: left;
-    color: #303537;
+    color: var(--art-gray-4);
     line-height: 20px;
   }
 

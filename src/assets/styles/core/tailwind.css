@@ -8,13 +8,13 @@
   --theme-color: var(--main-color);
 
   /* Theme Colors - OKLCH Format */
-  --art-primary: oklch(0.7 0.23 260);
-  --art-secondary: oklch(0.72 0.19 231.6);
+  --art-primary: oklch(0.5248 0.259 266.8);
+  --art-secondary: oklch(0.6372 0.1872 255.15);
   --art-error: oklch(0.73 0.15 25.3);
   --art-info: oklch(0.58 0.03 254.1);
-  --art-success: oklch(0.78 0.17 166.1);
-  --art-warning: oklch(0.78 0.14 75.5);
-  --art-danger: oklch(0.68 0.22 25.3);
+  --art-success: oklch(0.741 0.1924 149.39);
+  --art-warning: oklch(0.8143 0.161 75.05);
+  --art-danger: oklch(0.6431 0.2277 15.92);
 
   /* Gray Scale - Light Mode */
   --art-gray-100: #f9fafb;
@@ -26,6 +26,12 @@
   --art-gray-700: #4d5875;
   --art-gray-800: #383853;
   --art-gray-900: #323251;
+
+  --art-gray-1: #ced1d9;
+  --art-gray-2: #afb2b8;
+  --art-gray-3: #505658;
+  --art-gray-4: #303537;
+  --art-gray-5: #131617;
 
   /* Border Colors */
   --art-card-border: rgba(0, 0, 0, 0.08);

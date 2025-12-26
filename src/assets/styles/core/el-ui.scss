@@ -517,3 +517,16 @@ html.dark .el-card {
     height: calc((var(--el-component-size) / 2)) !important;
   }
 }
+
+// table 样式修改
+.el-table {
+  --el-table-header-bg-color: #ebecf1 !important;
+}
+.el-table--default {
+  th {
+    padding: 18px 0 !important;
+  }
+  td {
+    padding: 14px 0 !important;
+  }
+}

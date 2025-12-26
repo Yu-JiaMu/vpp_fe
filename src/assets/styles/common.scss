@@ -22,7 +22,7 @@
 
 .fixed-label {
   padding: 0 16px; /* 精确的左右间距 */
-  color: #303537; /* 纯黑色文字 */
+  color: var(--art-gray-4); /* 纯黑色文字 */
   font-size: 14px; /* 标准字体大小 */
   font-weight: 400; /* 正常字重，非粗体 */
   line-height: 1;

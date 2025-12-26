@@ -17,7 +17,12 @@ module.exports = {
         "100vh": "100vh"
       },
       colors: {
-        "#D5B887": "#D5B887"
+				"#D5B887": "#D5B887",
+				'g-1': 'var(--art-gray-1)',
+        'g-2': 'var(--art-gray-2)',
+        'g-3': 'var(--art-gray-3)',
+        'g-4': 'var(--art-gray-4)',
+        'g-5': 'var(--art-gray-5)',
       },
       fontFamily: {
         hkRegular: ["HKGrotesk-Regular"],
@@ -29,20 +34,11 @@ module.exports = {
         hkSemiBold: ["HKGrotesk-SemiBold"],
         timesBold: ["Times-Bold"],
         hkMedium: ["HKGrotesk-Medium"],
-        hkSemiBoldLegacy: ["font-hkSemiBoldLegacy"]
-      },
-      fontSize: {
-        12: "12px",
-        13: "13px",
-        14: ["14px", "20px"],
-        15: "15px",
-        16: ["16px", "24px"],
-        17: "17px",
-        18: "18px",
-        19: "19px",
-        20: ["20px", "28px"],
-        21: "21px",
-        22: "22px"
+				hkSemiBoldLegacy: ["font-hkSemiBoldLegacy"]
+				scBold: ["Source Han Sans SC-Bold"],
+				scRegular: ["Source Han Sans SC-Regular"],
+				scMedium: ["Source Han Sans SC-Medium"],
+				scLight: ["Source Han Sans SC-Light"]
       },
       fontWeight: {
         100: 100,

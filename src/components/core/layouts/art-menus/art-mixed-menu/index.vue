@@ -265,7 +265,7 @@
       font-size: 15px;
       font-weight: 400;
       text-align: left;
-      color: #afb2b8;
+      color: var(--art-gray-2);
     }
   }
   .menu-item-active.menu-item {

@@ -15,7 +15,7 @@
     font-size: 13px;
     font-weight: 400;
     text-align: left;
-    color: #505658;
+    color: var(--art-gray-3);
     letter-spacing: 0.26px;
     line-height: 20px;
     .weather {
