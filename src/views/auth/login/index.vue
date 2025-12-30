@@ -1,203 +1,171 @@
-<!-- 登录页面 -->
 <template>
-  <div class="flex w-full h-screen">
-    <LoginLeftView />
+  <div class="flex items-center justify-center w-full h-screen login" :class="{ dark: isMenuDark }">
+    <div class="relative flex login-con">
+      <div class="left"></div>
+      <div class="right relative px-[98px] dark:!bg-[#161615] dark:text-white">
+        <img :src="logo" alt="" class="absolute logo" />
+        <h4 class="title font-scBold">登录</h4>
+        <el-form :model="form" ref="formRef" label-width="auto" class="w-full" :rules="rules">
+          <el-form-item label="">
+            <el-select
+              v-model="form.tenant"
+              class="h-8 dark:bg-transparent"
+              placeholder="请选择"
+              popper-class="tenant-select"
+            >
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+              <template #prefix>
+                <span class="text-g-4 dark:text-[#AFAFAF]">租户</span>
+                <div class="mx-3 select-line"></div>
+              </template>
+            </el-select>
+          </el-form-item>
 
-    <div class="relative flex-1">
-      <AuthTopBar />
+          <template v-if="!isAccountLogin">
+            <el-form-item prop="phone">
+              <el-input v-model="form.phone" placeholder="请输入手机号" />
+            </el-form-item>
 
-      <div class="auth-right-wrap">
-        <div class="form">
-          <h3 class="title">{{ $t('login.title') }}</h3>
-          <p class="sub-title">{{ $t('login.subTitle') }}</p>
-          <ElForm
-            ref="formRef"
-            :model="formData"
-            :rules="rules"
-            :key="formKey"
-            @keyup.enter="handleSubmit"
-            style="margin-top: 25px"
-          >
-            <ElFormItem prop="account">
-              <ElSelect v-model="formData.account" @change="setupAccount">
-                <ElOption
-                  v-for="account in accounts"
-                  :key="account.key"
-                  :label="account.label"
-                  :value="account.key"
+            <el-form-item prop="code">
+              <div class="w-full gap-10 flex-cb">
+                <el-input v-model="form.code" placeholder="请输入验证码" />
+                <el-button
+                  :type="codeButtonType"
+                  :disabled="isCounting"
+                  class="!h-11"
+                  @click="sendCode"
                 >
-                  <span>{{ account.label }}</span>
-                </ElOption>
-              </ElSelect>
-            </ElFormItem>
-            <ElFormItem prop="username">
-              <ElInput
-                class="custom-height"
-                :placeholder="$t('login.placeholder.username')"
-                v-model.trim="formData.username"
-              />
-            </ElFormItem>
-            <ElFormItem prop="password">
-              <ElInput
-                class="custom-height"
-                :placeholder="$t('login.placeholder.password')"
-                v-model.trim="formData.password"
-                type="password"
-                autocomplete="off"
-                show-password
-              />
-            </ElFormItem>
-
-            <!-- 推拽验证 -->
-            <div class="relative pb-5 mt-6">
-              <div
-                class="relative z-[2] overflow-hidden select-none rounded-lg border border-transparent tad-300"
-                :class="{ '!border-[#FF4E4F]': !isPassing && isClickPass }"
-              >
-                <ArtDragVerify
-                  ref="dragVerify"
-                  v-model:value="isPassing"
-                  :text="$t('login.sliderText')"
-                  textColor="var(--art-gray-700)"
-                  :successText="$t('login.sliderSuccessText')"
-                  progressBarBg="var(--main-color)"
-                  :background="isDark ? '#26272F' : '#F1F1F4'"
-                  handlerBg="var(--default-box-color)"
-                />
+                  <template v-if="isCounting">{{ count }}s</template>
+                  <template v-else>{{ codeButtonText }}</template>
+                </el-button>
               </div>
-              <p
-                class="absolute top-0 z-[1] px-px mt-2 text-xs text-[#f56c6c] tad-300"
-                :class="{ 'translate-y-10': !isPassing && isClickPass }"
-              >
-                {{ $t('login.placeholder.slider') }}
-              </p>
-            </div>
+            </el-form-item>
+          </template>
 
-            <div class="flex-cb mt-2 text-sm">
-              <ElCheckbox v-model="formData.rememberPassword">{{
-                $t('login.rememberPwd')
-              }}</ElCheckbox>
-              <RouterLink class="text-theme" :to="{ name: 'ForgetPassword' }">{{
-                $t('login.forgetPwd')
-              }}</RouterLink>
-            </div>
+          <template v-else>
+            <el-form-item prop="username">
+              <el-input v-model="form.username" placeholder="请输入账号" />
+            </el-form-item>
 
-            <div style="margin-top: 30px">
-              <ElButton
-                class="w-full custom-height"
-                type="primary"
-                @click="handleSubmit"
-                :loading="loading"
-                v-ripple
-              >
-                {{ $t('login.btnText') }}
-              </ElButton>
-            </div>
+            <el-form-item prop="password">
+              <el-input v-model="form.password" type="password" placeholder="请输入密码" />
+            </el-form-item>
 
-            <div class="mt-5 text-sm text-gray-600">
-              <span>{{ $t('login.noAccount') }}</span>
-              <RouterLink class="text-theme" :to="{ name: 'Register' }">{{
-                $t('login.register')
-              }}</RouterLink>
-            </div>
-          </ElForm>
-        </div>
+            <el-form-item prop="code">
+              <div class="items-center w-full gap-10 flex-cb">
+                <el-input v-model="form.code" placeholder="请输入验证码" />
+                <img :src="codeImageUrl" alt="captcha" class="captcha-img" @click="fetchCaptcha" />
+              </div>
+            </el-form-item>
+          </template>
+
+          <div class="mt-2 text-sm flex-cb text-g-3">
+            <ElCheckbox v-model="form.rememberPassword">
+              <span class="dark:text-g-3">{{ $t('login.rememberPwd') }}</span>
+            </ElCheckbox>
+            <RouterLink class="" :to="{ name: 'ForgetPassword' }">
+              {{ $t('login.forgetPwd') }}
+            </RouterLink>
+          </div>
+
+          <div style="margin-top: 120px">
+            <ElButton
+              class="w-full !h-11"
+              type="primary"
+              @click="handleSubmit"
+              :loading="loading"
+              v-ripple
+            >
+              {{ $t('login.btnText') }}
+            </ElButton>
+          </div>
+        </el-form>
+      </div>
+      <div class="absolute text-sm login-type dark:text-[#C7CAD2]" @click="toggleLoginType">
+        <img class="absolute w-9 h-9" :src="iconLoginType" alt="" />
+        {{ isAccountLogin ? '手机登录' : '账号登录' }}
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import AppConfig from '@/config'
-  import { useUserStore } from '@/store/modules/user'
-  import { useI18n } from 'vue-i18n'
-  import { HttpError } from '@/utils/http/error'
-  import { fetchLogin } from '@/api/auth'
-  import { ElNotification, type FormInstance, type FormRules } from 'element-plus'
   import { useSettingStore } from '@/store/modules/setting'
+  import { MenuThemeEnum } from '@/enums/appEnum'
+  import darkLogo from '@/assets/images/login/dark-logo-icon.webp'
+  import lightLogo from '@/assets/images/login/light-logo-icon.webp'
+  import { ElNotification, ElMessage, type FormInstance, type FormRules } from 'element-plus'
+  import { useUserStore } from '@/store/modules/user'
+  import { fetchLogin } from '@/api/auth'
+  import AppConfig from '@/config'
+  import iconPhone from '@/assets/images/login/icon-mobile.webp'
+  import iconAccount from '@/assets/images/login/icon-account.webp'
+  import iconPhoneDark from '@/assets/images/login/icon-mobile-dark.webp'
+  import iconAccountDark from '@/assets/images/login/icon-account-dark.webp'
 
-  defineOptions({ name: 'Login' })
-
-  const settingStore = useSettingStore()
-  const { isDark, menuThemeType } = storeToRefs(settingStore)
-  const { t, locale } = useI18n()
-  const formKey = ref(0)
-
-  // 监听语言切换，重置表单
-  watch(locale, () => {
-    formKey.value++
-  })
-
-  type AccountKey = 'super' | 'admin' | 'user'
-
-  export interface Account {
-    key: AccountKey
-    label: string
-    userName: string
+  interface RuleForm {
+    account: string
+    phone: string
+    code: string
+    rememberPassword: boolean
+    tenant: string
+    username: string
     password: string
-    roles: string[]
   }
 
-  const accounts = computed<Account[]>(() => [
-    {
-      key: 'super',
-      label: t('login.roles.super'),
-      userName: 'Super',
-      password: '123456',
-      roles: ['R_SUPER']
-    },
-    {
-      key: 'admin',
-      label: t('login.roles.admin'),
-      userName: 'Admin',
-      password: '123456',
-      roles: ['R_ADMIN']
-    },
-    {
-      key: 'user',
-      label: t('login.roles.user'),
-      userName: 'User',
-      password: '123456',
-      roles: ['R_USER']
-    }
-  ])
+  const settingStore = useSettingStore()
+  const { getMenuTheme, isMenuDark } = storeToRefs(settingStore)
+  const form = reactive({
+    account: '',
+    phone: '',
+    code: '',
+    rememberPassword: false,
+    tenant: '',
+    username: '',
+    password: ''
+  })
+  const rules = reactive<FormRules<RuleForm>>({
+    username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
+    password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+    phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
+    code: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
+  })
 
-  const dragVerify = ref()
+  const options = [
+    {
+      value: 'Option1',
+      label: 'Option1'
+    },
+    {
+      value: 'Option2',
+      label: 'Option2'
+    },
+    {
+      value: 'Option3',
+      label: 'Option3'
+    },
+    {
+      value: 'Option4',
+      label: 'Option4'
+    },
+    {
+      value: 'Option5',
+      label: 'Option5'
+    }
+  ]
+
+  const formRef = useTemplateRef<FormInstance>('formRef')
+  const loading = ref(false)
+  const isAccountLogin = ref(false)
 
   const userStore = useUserStore()
   const router = useRouter()
   const route = useRoute()
-  const isPassing = ref(false)
-  const isClickPass = ref(false)
-
-  const systemName = AppConfig.systemInfo.name
-  const formRef = ref<FormInstance>()
-
-  const formData = reactive({
-    account: '',
-    username: '',
-    password: '',
-    rememberPassword: true
-  })
-
-  const rules = computed<FormRules>(() => ({
-    username: [{ required: true, message: t('login.placeholder.username'), trigger: 'blur' }],
-    password: [{ required: true, message: t('login.placeholder.password'), trigger: 'blur' }]
-  }))
-
-  const loading = ref(false)
-
-  onMounted(() => {
-    setupAccount('super')
-  })
-
-  // 设置账号
-  const setupAccount = (key: AccountKey) => {
-    const selectedAccount = accounts.value.find((account: Account) => account.key === key)
-    formData.account = key
-    formData.username = selectedAccount?.userName ?? ''
-    formData.password = selectedAccount?.password ?? ''
-  }
 
   // 登录
   const handleSubmit = async () => {
@@ -208,19 +176,21 @@
       const valid = await formRef.value.validate()
       if (!valid) return
 
-      // 拖拽验证
-      if (!isPassing.value) {
-        isClickPass.value = true
-        return
-      }
-
       loading.value = true
 
       // 登录请求
-      const { username, password } = formData
+      let userName = ''
+      let password = ''
+      if (isAccountLogin.value) {
+        userName = form.username
+        password = form.password
+      } else {
+        userName = form.phone
+        password = form.code
+      }
 
       const { token, refreshToken } = await fetchLogin({
-        userName: username,
+        userName,
         password
       })
 
@@ -240,45 +210,217 @@
       const redirect = route.query.redirect as string
       router.push(redirect || '/')
     } catch (error) {
-      // 处理 HttpError
-      if (error instanceof HttpError) {
-        // console.log(error.code)
-      } else {
-        // 处理非 HttpError
-        // ElMessage.error('登录失败，请稍后重试')
-        console.error('[Login] Unexpected error:', error)
-      }
+      console.error('[Login] Unexpected error:', error)
     } finally {
       loading.value = false
-      resetDragVerify()
     }
   }
 
-  // 重置拖拽验证
-  const resetDragVerify = () => {
-    dragVerify.value.reset()
-  }
+  const logo = computed(() =>
+    getMenuTheme.value.theme === MenuThemeEnum.DARK ? darkLogo : lightLogo
+  )
+
+  const iconLoginType = computed(() => {
+    if (isMenuDark.value) {
+      return isAccountLogin.value ? iconPhoneDark : iconAccountDark
+    }
+    return isAccountLogin.value ? iconPhone : iconAccount
+  })
+
+  const loginBackgroundImg1 = computed(() => {
+    const img = isMenuDark.value
+      ? new URL('@/assets/images/login/bg1-dark.webp', import.meta.url).href
+      : new URL('@/assets/images/login/bg1-light.webp', import.meta.url).href
+    return `url(${img})`
+  })
+
+  const loginBackgroundImg2 = computed(() => {
+    const img = isMenuDark.value
+      ? new URL('@/assets/images/login/bg2-dark.webp', import.meta.url).href
+      : new URL('@/assets/images/login/bg2-light.webp', import.meta.url).href
+    return `url(${img})`
+  })
+
+  watch(
+    isMenuDark,
+    (newVal, oldVal) => {
+      if (newVal) {
+        document.documentElement.setAttribute('class', 'dark')
+      } else {
+        document.documentElement.setAttribute('class', '')
+      }
+    },
+    {
+      immediate: true
+    }
+  )
+
+  const systemName = AppConfig.systemInfo.name
 
   // 登录成功提示
   const showLoginSuccessNotice = () => {
     setTimeout(() => {
       ElNotification({
-        title: t('login.success.title'),
+        title: '登录成功',
         type: 'success',
         duration: 2500,
         zIndex: 10000,
-        message: `${t('login.success.message')}, ${systemName}!`
+        message: `欢迎回来, ${systemName}!`
       })
     }, 1000)
   }
+
+  // 发送验证码与倒计时
+  const INITIAL_COUNT = 60
+  const count = ref(INITIAL_COUNT)
+  const isCounting = ref(false)
+  const codeButtonText = ref('发送验证码')
+  const codeButtonType = ref<'primary' | 'danger'>('primary')
+  const codeImageUrl = ref('')
+  let timer: number | null = null
+
+  const clearTimer = () => {
+    if (timer) {
+      clearInterval(timer)
+      timer = null
+    }
+  }
+
+  const startCount = () => {
+    isCounting.value = true
+    count.value = INITIAL_COUNT
+    codeButtonType.value = 'primary'
+    timer = window.setInterval(() => {
+      count.value -= 1
+      if (count.value <= 0) {
+        clearTimer()
+        isCounting.value = false
+        codeButtonText.value = '重新发送'
+        codeButtonType.value = 'danger'
+      }
+    }, 1000)
+  }
+
+  const fetchCaptcha = () => {
+    // TODO: 这里使用常见后端接口路径，实际按后端调整。
+    codeImageUrl.value = `/api/auth/captcha?ts=${Date.now()}`
+  }
+
+  const sendCode = async () => {
+    if (!form.phone) {
+      ElMessage({ message: '请输入手机号', type: 'warning' })
+      return
+    }
+
+    // 如果正在倒计时中，直接返回
+    if (isCounting.value) return
+
+    try {
+      // TODO: 调用后端发送短信验证码接口，例如: await request.post('/api/auth/send-code', { phone: form.phone })
+      startCount()
+      ElMessage({ message: '验证码已发送', type: 'success' })
+    } catch (err) {
+      ElMessage({ message: String(err || '发送验证码失败'), type: 'error' })
+    }
+  }
+
+  const toggleLoginType = () => {
+    isAccountLogin.value = !isAccountLogin.value
+    /*     // 重置表单字段与按钮状态
+    count.value = INITIAL_COUNT
+    isCounting.value = false
+    codeButtonText.value = '发送验证码'
+    codeButtonType.value = 'primary' */
+  }
+
+  onUnmounted(() => {
+    clearTimer()
+    document.documentElement.setAttribute('class', '')
+  })
 </script>
 
-<style scoped>
-  @import './style.css';
-</style>
+<!-- <style lang="scss">
+  .tenant-select.el-select__popper:not(.el-tree-select__popper) {
+    --select-option-hover: #1f2126;
 
+    .el-select-dropdown__list .el-select-dropdown__item:hover {
+      background-color: var(--select-option-hover) !important;
+    }
+  }
+</style> -->
 <style lang="scss" scoped>
-  :deep(.el-select__wrapper) {
-    height: 40px !important;
+  .login {
+    --gray-divider-line: #e5e6ec;
+
+    background: url('@/assets/images/login/bg1-light.webp') no-repeat center/cover;
+    background-image: v-bind(loginBackgroundImg1);
+    .login-con {
+      width: calc(560px * 2);
+      .left {
+        width: 560px;
+        height: 750px;
+        background: url('@/assets/images/login/bg2-light.webp') no-repeat center/cover;
+        background-image: v-bind(loginBackgroundImg2);
+      }
+
+      .right {
+        width: 560px;
+        height: 750px;
+        background-color: var(--art-color);
+        border-radius: 0px 6px 6px 0px;
+        .logo {
+          top: -35px;
+          left: 98px;
+          width: 109px;
+          height: 125px;
+        }
+        .title {
+          margin-top: 146px;
+          margin-bottom: 37px;
+          font-size: 30px;
+        }
+        .select-line {
+          width: 1px;
+          height: 20px;
+          background-color: var(--gray-divider-line);
+        }
+        :deep(.el-select--default .el-select__wrapper) {
+          min-height: 32px !important;
+        }
+        :deep(.el-input) {
+          height: 44px !important;
+        }
+      }
+
+      .login-type {
+        right: -56px;
+        width: 36px;
+        height: 124px;
+        padding-top: 32px;
+        border-radius: 36px;
+        background-color: var(--art-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        writing-mode: vertical-rl;
+        text-orientation: upright;
+        &:hover {
+          color: #52eff4 !important;
+        }
+        img {
+          top: 0;
+        }
+      }
+      .captcha-img {
+        width: 128px;
+        height: 44px;
+        background: rgba(0, 0, 0, 0);
+        border-radius: 8px;
+        cursor: pointer;
+        object-fit: contain;
+        border: 1px solid red;
+      }
+    }
   }
 </style>

@@ -125,6 +125,18 @@
   --color-g-700: var(--art-gray-700);
   --color-g-800: var(--art-gray-800);
   --color-g-900: var(--art-gray-900);
+
+  --color-g-1: var(--art-gray-1);
+  --color-g-2: var(--art-gray-2);
+  --color-g-3: var(--art-gray-3);
+  --color-g-4: var(--art-gray-4);
+  --color-g-5: var(--art-gray-5);
+
+  /* Font Families */
+  --font-scRegular: 'Source Han Sans SC-Regular';
+  --font-scMedium: 'Source Han Sans SC-Medium';
+  --font-scBold: 'Source Han Sans SC-Bold';
+  --font-scLight: 'Source Han Sans SC-Light';
 }
 
 /* ==================== Custom Border Radius Utilities ==================== */

@@ -82,8 +82,11 @@ html.dark .el-card {
 
 // -------------------------------- 修改 el-size=default 组件默认高度 start --------------------------------
 // 修改 el-button 高度
-.el-button--default {
-  height: var(--el-component-custom-height) !important;
+body {
+  .el-button,
+  .el-button--default {
+    height: var(--el-component-custom-height);
+  }
 }
 
 // circle 按钮宽度优化
