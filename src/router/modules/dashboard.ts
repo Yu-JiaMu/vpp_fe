@@ -6,8 +6,8 @@ export const dashboardRoutes: AppRouteRecord = {
   component: '/index/index',
   meta: {
     title: 'menus.dashboard.title',
-    icon: 'ri:pie-chart-line',
-    roles: ['R_SUPER', 'R_ADMIN']
+
+    roles: ['R_SUPER', 'R_ADMIN', 'admin']
   },
   children: [
     {
@@ -15,6 +15,7 @@ export const dashboardRoutes: AppRouteRecord = {
       name: 'Console',
       component: '/dashboard/console',
       meta: {
+        icon: 'ri:home-4-fill',
         title: 'menus.dashboard.console',
         keepAlive: false,
         fixedTab: false

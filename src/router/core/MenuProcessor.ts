@@ -68,6 +68,7 @@ export class MenuProcessor {
     return menu.reduce((acc: AppRouteRecord[], item) => {
       const itemRoles = item.meta?.roles
       const hasPermission = !itemRoles || itemRoles.some((role) => roles?.includes(role))
+      // console.log('item', hasPermission, roles, item)
 
       if (hasPermission) {
         const filteredItem = { ...item }

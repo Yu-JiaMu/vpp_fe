@@ -64,14 +64,17 @@ declare namespace Api {
   namespace Auth {
     /** 登录参数 */
     interface LoginParams {
-      userName: string
+      username: string
       password: string
+      uuid: string
+      code: string
     }
 
     /** 登录响应 */
     interface LoginResponse {
       token: string
       refreshToken: string
+      access_token: string
     }
 
     /** 用户信息 */
@@ -82,6 +85,12 @@ declare namespace Api {
       userName: string
       email: string
       avatar?: string
+    }
+
+    /** 图形验证码 */
+    interface Captcha {
+      img: string
+      uuid: string
     }
   }
 

@@ -5,8 +5,7 @@ export const energyIot: AppRouteRecord = {
   path: '/energyIot',
   component: '/index/index',
   meta: {
-    title: '能源物联网',
-    icon: 'ri:pie-chart-line'
+    title: '能源物联网'
   },
   children: [
     {
@@ -14,7 +13,8 @@ export const energyIot: AppRouteRecord = {
       name: 'DeviceAccess',
       component: '',
       meta: {
-        title: '设备接入'
+        title: '设备接入',
+        icon: 'ri:settings-3-fill'
       },
       children: [
         {

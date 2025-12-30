@@ -31,6 +31,11 @@ export default ({ mode }: { mode: string }) => {
         '/api': {
           target: VITE_API_PROXY_URL,
           changeOrigin: true
+        },
+        '/stage-api': {
+          target: VITE_API_PROXY_URL,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/stage-api/, '')
         }
       },
       host: true

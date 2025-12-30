@@ -1,5 +1,6 @@
 <template>
   <div class="flex items-center justify-center w-full h-screen login" :class="{ dark: isMenuDark }">
+    <AuthTopBar />
     <div class="relative flex login-con">
       <div class="left"></div>
       <div class="right relative px-[98px] dark:!bg-[#161615] dark:text-white">
@@ -28,12 +29,12 @@
 
           <template v-if="!isAccountLogin">
             <el-form-item prop="phone">
-              <el-input v-model="form.phone" placeholder="请输入手机号" />
+              <el-input v-model.trim="form.phone" placeholder="请输入手机号" />
             </el-form-item>
 
             <el-form-item prop="code">
               <div class="w-full gap-10 flex-cb">
-                <el-input v-model="form.code" placeholder="请输入验证码" />
+                <el-input v-model.trim="form.code" placeholder="请输入验证码" />
                 <el-button
                   :type="codeButtonType"
                   :disabled="isCounting"
@@ -49,17 +50,30 @@
 
           <template v-else>
             <el-form-item prop="username">
-              <el-input v-model="form.username" placeholder="请输入账号" />
+              <el-input v-model.trim="form.username" placeholder="请输入账号" />
             </el-form-item>
 
             <el-form-item prop="password">
-              <el-input v-model="form.password" type="password" placeholder="请输入密码" />
+              <el-input
+                v-model.trim="form.password"
+                type="password"
+                placeholder="请输入密码"
+                autocomplete="off"
+                show-password
+              />
             </el-form-item>
 
             <el-form-item prop="code">
               <div class="items-center w-full gap-10 flex-cb">
-                <el-input v-model="form.code" placeholder="请输入验证码" />
-                <img :src="codeImageUrl" alt="captcha" class="captcha-img" @click="fetchCaptcha" />
+                <el-input v-model.trim="form.code" class="flex-1" placeholder="请输入验证码" />
+                <div class="captcha-img">
+                  <img
+                    v-if="codeImageUrl"
+                    :src="codeImageUrl"
+                    alt="captcha"
+                    @click="fetchCaptcha"
+                  />
+                </div>
               </div>
             </el-form-item>
           </template>
@@ -101,7 +115,8 @@
   import lightLogo from '@/assets/images/login/light-logo-icon.webp'
   import { ElNotification, ElMessage, type FormInstance, type FormRules } from 'element-plus'
   import { useUserStore } from '@/store/modules/user'
-  import { fetchLogin } from '@/api/auth'
+  import { localStorage as appLocalStorage } from '@/utils/util'
+  import { fetchLogin, fetchGetCaptcha } from '@/api/auth'
   import AppConfig from '@/config'
   import iconPhone from '@/assets/images/login/icon-mobile.webp'
   import iconAccount from '@/assets/images/login/icon-account.webp'
@@ -132,7 +147,10 @@
   const rules = reactive<FormRules<RuleForm>>({
     username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
     password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-    phone: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
+    phone: [
+      { required: true, message: '请输入手机号', trigger: 'blur' },
+      { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号', trigger: ['blur'] }
+    ],
     code: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
   })
 
@@ -161,7 +179,29 @@
 
   const formRef = useTemplateRef<FormInstance>('formRef')
   const loading = ref(false)
-  const isAccountLogin = ref(false)
+  const isAccountLogin = ref(true)
+
+  const REMEMBER_KEY = 'login_remember'
+
+  // 初始化：如果曾记住过，填充表单
+  try {
+    const saved = appLocalStorage[REMEMBER_KEY]
+    if (saved) {
+      // saved 示例: { type: 'account'|'phone', username?, password?, phone? }
+      if (saved.type === 'account') {
+        form.username = saved.username || ''
+        form.password = saved.password || ''
+        form.rememberPassword = true
+        isAccountLogin.value = true
+      } else if (saved.type === 'phone') {
+        form.phone = saved.phone || ''
+        form.rememberPassword = true
+        isAccountLogin.value = false
+      }
+    }
+  } catch (e) {
+    console.error('读取记住登录信息失败', e)
+  }
 
   const userStore = useUserStore()
   const router = useRouter()
@@ -173,26 +213,24 @@
 
     try {
       // 表单验证
-      const valid = await formRef.value.validate()
-      if (!valid) return
+      /*  const valid = await formRef.value.validate()
+      if (!valid) return */
 
       loading.value = true
 
       // 登录请求
-      let userName = ''
-      let password = ''
+
+      const params: any = { uuid: captchaUuid }
       if (isAccountLogin.value) {
-        userName = form.username
-        password = form.password
+        params.username = form.username
+        params.password = form.password
+        params.code = form.code
       } else {
-        userName = form.phone
-        password = form.code
+        params.username = form.phone
+        params.password = form.code
       }
 
-      const { token, refreshToken } = await fetchLogin({
-        userName,
-        password
-      })
+      const { access_token: token, refreshToken } = await fetchLogin(params)
 
       // 验证token
       if (!token) {
@@ -206,11 +244,42 @@
       // 登录成功处理
       showLoginSuccessNotice()
 
+      // 根据记住密码选项保存/删除登录信息
+      const saveRemember = () => {
+        try {
+          if (form.rememberPassword) {
+            if (isAccountLogin.value) {
+              appLocalStorage[REMEMBER_KEY] = {
+                type: 'account',
+                username: form.username,
+                password: form.password
+              }
+            } else {
+              appLocalStorage[REMEMBER_KEY] = {
+                type: 'phone',
+                phone: form.phone
+              }
+            }
+          } else {
+            // 清除记住信息
+            appLocalStorage[REMEMBER_KEY] = undefined
+          }
+        } catch (e) {
+          console.error('保存记住信息失败', e)
+        }
+      }
+
+      saveRemember()
+
       // 获取 redirect 参数，如果存在则跳转到指定页面，否则跳转到首页
       const redirect = route.query.redirect as string
       router.push(redirect || '/')
     } catch (error) {
       console.error('[Login] Unexpected error:', error)
+      if (isAccountLogin.value) {
+        form.code = ''
+        fetchCaptcha()
+      }
     } finally {
       loading.value = false
     }
@@ -265,7 +334,7 @@
         type: 'success',
         duration: 2500,
         zIndex: 10000,
-        message: `欢迎回来, ${systemName}!`
+        message: `欢迎回来, ${userStore.info.userName}!`
       })
     }, 1000)
   }
@@ -301,9 +370,11 @@
     }, 1000)
   }
 
-  const fetchCaptcha = () => {
-    // TODO: 这里使用常见后端接口路径，实际按后端调整。
-    codeImageUrl.value = `/api/auth/captcha?ts=${Date.now()}`
+  let captchaUuid = ''
+  const fetchCaptcha = async () => {
+    const { img, uuid } = await fetchGetCaptcha()
+    codeImageUrl.value = `data:image/gif;base64,${img}`
+    captchaUuid = uuid
   }
 
   const sendCode = async () => {
@@ -332,6 +403,10 @@
     codeButtonText.value = '发送验证码'
     codeButtonType.value = 'primary' */
   }
+
+  onMounted(() => {
+    isAccountLogin.value && fetchCaptcha()
+  })
 
   onUnmounted(() => {
     clearTimer()
@@ -415,11 +490,15 @@
       .captcha-img {
         width: 128px;
         height: 44px;
-        background: rgba(0, 0, 0, 0);
-        border-radius: 8px;
+        // background: rgba(0, 0, 0, 0);
+        // border-radius: 8px;
         cursor: pointer;
         object-fit: contain;
-        border: 1px solid red;
+        // border: 1px solid red;
+        img {
+          height: inherit;
+          width: inherit;
+        }
       }
     }
   }
