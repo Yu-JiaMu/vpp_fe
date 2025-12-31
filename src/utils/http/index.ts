@@ -151,7 +151,7 @@ class HttpRequest {
     while (true) {
       try {
         const res = await this.instance.request<BaseResponse<T>>(config)
-        console.log('res', res)
+        // console.log('res', res)
 
         if (config.showSuccessMessage && res.data.msg) {
           showSuccess(res.data.msg)

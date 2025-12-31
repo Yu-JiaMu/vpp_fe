@@ -1,12 +1,19 @@
 <template>
   <div class="flex items-center justify-center w-full h-screen login" :class="{ dark: isMenuDark }">
     <AuthTopBar />
-    <div class="relative flex login-con">
+    <div class="relative flex login-con max-2xl:scale-85">
       <div class="left"></div>
       <div class="right relative px-[98px] dark:!bg-[#161615] dark:text-white">
         <img :src="logo" alt="" class="absolute logo" />
         <h4 class="title font-scBold">登录</h4>
-        <el-form :model="form" ref="formRef" label-width="auto" class="w-full" :rules="rules">
+        <el-form
+          :model="form"
+          ref="formRef"
+          label-width="auto"
+          class="w-full"
+          :rules="rules"
+          @keyup.enter="handleSubmit"
+        >
           <el-form-item label="">
             <el-select
               v-model="form.tenant"
