@@ -230,9 +230,21 @@ function initStorage(stub: Storage, propMap: Record<string, boolean>) {
     return key // 如果需要在实际键名上做修改，可以在这里调整
   }
 }
-
 /**
- * 把unix时间戳转为其他格式显示
+ * 把unix时间戳(毫秒)转为其他格式显示
+ * @param timestamp
+ * @param format
+ * @returns
+ */
+export function formatTime(timestamp: any, format = 'YYYY-MM-DD HH:mm:ss', isNow = false) {
+  if (isNow) {
+    timestamp = Date.now()
+  }
+  if (!timestamp) return ''
+  return dayjs(timestamp).format(format)
+}
+/**
+ * 把unix时间戳(秒)转为其他格式显示
  * @param timestamp
  * @param format
  * @returns

@@ -348,7 +348,7 @@ body {
 }
 
 .el-table__column-filter-trigger i {
-  color: var(--theme-color) !important;
+  // color: var(--theme-color) !important;
   margin: -3px 0 0 2px;
 }
 
@@ -527,9 +527,15 @@ body {
 }
 .el-table--default {
   th {
-    padding: 18px 0 !important;
+    padding: 16px 0 !important;
   }
   td {
     padding: 14px 0 !important;
+  }
+}
+
+.input-with-select {
+  .el-input-group__prepend {
+    background-color: var(--el-fill-color-blank);
   }
 }

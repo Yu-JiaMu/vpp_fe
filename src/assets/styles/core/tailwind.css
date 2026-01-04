@@ -148,66 +148,67 @@
   border-radius: calc(var(--custom-radius) / 2 + 2px);
 }
 
-/* ==================== Custom Utility Classes ==================== */
-@layer utilities {
-  /* Flexbox Layout Utilities */
-  .flex-c {
-    @apply flex items-center;
-  }
+/* =========================
+ * Custom Utilities (Tailwind v4)
+ * ========================= */
 
-  .flex-b {
-    @apply flex justify-between;
-  }
+/* Flexbox Layout Utilities */
+@utility flex-c {
+  @apply flex items-center;
+}
 
-  .flex-cc {
-    @apply flex items-center justify-center;
-  }
+@utility flex-b {
+  @apply flex justify-between;
+}
 
-  .flex-cb {
-    @apply flex items-center justify-between;
-  }
+@utility flex-cc {
+  @apply flex items-center justify-center;
+}
 
-  /* Transition Utilities */
-  .tad-200 {
-    @apply transition-all duration-200;
-  }
+@utility flex-cb {
+  @apply flex items-center justify-between;
+}
 
-  .tad-300 {
-    @apply transition-all duration-300;
-  }
+/* Transition Utilities */
+@utility tad-200 {
+  @apply transition-all duration-200;
+}
 
-  /* Border Utilities */
-  .border-full-d {
-    @apply border border-[var(--default-border)];
-  }
+@utility tad-300 {
+  @apply transition-all duration-300;
+}
 
-  .border-b-d {
-    @apply border-b border-[var(--default-border)];
-  }
+/* Border Utilities */
+@utility border-full-d {
+  @apply border border-[var(--default-border)];
+}
 
-  .border-t-d {
-    @apply border-t border-[var(--default-border)];
-  }
+@utility border-b-d {
+  @apply border-b border-[var(--default-border)];
+}
 
-  .border-l-d {
-    @apply border-l border-[var(--default-border)];
-  }
+@utility border-t-d {
+  @apply border-t border-[var(--default-border)];
+}
 
-  .border-r-d {
-    @apply border-r border-[var(--default-border)];
-  }
+@utility border-l-d {
+  @apply border-l border-[var(--default-border)];
+}
 
-  /* Cursor Utilities */
-  .c-p {
-    @apply cursor-pointer;
-  }
+@utility border-r-d {
+  @apply border-r border-[var(--default-border)];
+}
+
+/* Cursor Utilities */
+@utility c-p {
+  @apply cursor-pointer;
 }
 
 /* ==================== Custom Component Classes ==================== */
 @layer components {
   /* Art Card Header Component */
   .art-card-header {
-    @apply flex justify-between pr-6 pb-1;
+    @apply flex justify-between pb-1 pr-6;
 
     .title {
       h4 {

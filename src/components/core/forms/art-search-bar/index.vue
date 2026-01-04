@@ -2,7 +2,7 @@
 <!-- 支持常用表单组件、自定义组件、插槽、校验、隐藏表单项 -->
 <!-- 写法同 ElementPlus 官方文档组件，把属性写在 props 里面就可以了 -->
 <template>
-  <section class="art-search-bar art-card-xs" :class="{ 'is-expanded': isExpanded }">
+  <section class="art-search-bar" :class="{ 'is-expanded': isExpanded }">
     <ElForm
       ref="formRef"
       :model="modelValue"
@@ -71,9 +71,6 @@
         <ElCol :xs="24" :sm="24" :md="span" :lg="span" :xl="span" class="action-column">
           <div class="action-buttons-wrapper" :style="actionButtonsStyle">
             <div class="form-buttons">
-              <ElButton v-if="showReset" class="reset-button" @click="handleReset" v-ripple>
-                {{ t('table.searchBar.reset') }}
-              </ElButton>
               <ElButton
                 v-if="showSearch"
                 type="primary"
@@ -82,8 +79,12 @@
                 v-ripple
                 :disabled="disabledSearch"
               >
-                {{ t('table.searchBar.search') }}
+                搜索
               </ElButton>
+              <!-- <ElButton v-if="showReset" class="reset-button" @click="handleReset" v-ripple>
+                {{ t('table.searchBar.reset') }}
+              </ElButton> -->
+              <ArtResetBtn v-if="showReset" @click="handleReset" v-ripple />
             </div>
             <div v-if="shouldShowExpandToggle" class="filter-toggle" @click="toggleExpand">
               <span>{{ expandToggleText }}</span>
@@ -217,8 +218,8 @@
     isExpand: false,
     labelPosition: 'right',
     labelWidth: '70px',
-    showExpand: true,
-    defaultExpanded: false,
+    showExpand: false,
+    defaultExpanded: true,
     buttonLeftLimit: 2,
     showReset: true,
     showSearch: true,
@@ -363,7 +364,7 @@
 
 <style lang="scss" scoped>
   .art-search-bar {
-    padding: 15px 20px 0;
+    /* padding: 15px 20px 0; */
 
     .action-column {
       flex: 1;
