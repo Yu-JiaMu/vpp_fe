@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-start pt-10">
+  <div class="flex justify-start pt-5">
     <el-pagination
       background
       layout="prev, pager, next, jumper, ->, total, sizes"

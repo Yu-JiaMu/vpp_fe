@@ -1,6 +1,7 @@
 <template>
   <div class="product">
     <ElCard class="art-table-card" shadow="never">
+      <!-- <div class="art-search-from"> -->
       <ArtSearchBar
         ref="searchBarRef"
         v-model="form"
@@ -12,13 +13,16 @@
         @search="onReset"
       >
       </ArtSearchBar>
+      <!-- </div> -->
 
-      <ArtAddBtn class="mb-6" @click="onNew">新增产品</ArtAddBtn>
+      <ArtAddBtn class="mb-4" @click="onNew">新增产品</ArtAddBtn>
 
-      <el-table :data="pagedData" stripe style="width: 100%">
+      <el-table :data="pagedData" border style="width: 100%">
         <el-table-column prop="name" label="产品名称" min-width="180">
           <template #default="{ row }">
-            <el-link type="primary" @click.prevent="viewDetails(row)">{{ row.name }}</el-link>
+            <span class="text-theme cursor-pointer" @click.prevent="viewDetails(row)">
+              {{ row.name }}
+            </span>
           </template>
         </el-table-column>
         <el-table-column prop="productId" label="产品ID" min-width="200" />
@@ -33,7 +37,7 @@
         <el-table-column prop="updatedAt" label="更新时间" width="180" sortable />
         <el-table-column label="操作" fixed="right" width="245">
           <template #default="{ row }">
-            <el-button link @click.prevent="viewDetails(row)">详情</el-button>
+            <el-button link type="primary" @click.prevent="viewDetails(row)">详情</el-button>
             <el-button link type="primary" @click.prevent="manageDevices(row)">管理设备</el-button>
             <el-button link type="danger" @click.prevent="deleteProduct(row)">删除</el-button>
           </template>
@@ -91,6 +95,7 @@
       type: 'select',
       props: {
         placeholder: '请选择产品品类',
+        filterable: true,
         options: statusOptions.value
       }
     },
@@ -100,6 +105,7 @@
       type: 'select',
       props: {
         placeholder: '请选择节点类型',
+        filterable: true,
         options: [
           { label: '直连设备', value: '1' },
           { label: '网关设备', value: '2' },
@@ -113,6 +119,7 @@
       type: 'select',
       props: {
         placeholder: '请选择协议类型',
+        filterable: true,
         options: statusOptions.value
       }
     },
@@ -122,6 +129,7 @@
       type: 'select',
       props: {
         placeholder: '请选择',
+        filterable: true,
         options: [
           { label: '启用', value: '1' },
           { label: '禁用', value: '2' }

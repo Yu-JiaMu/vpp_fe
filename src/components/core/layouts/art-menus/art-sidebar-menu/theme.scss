@@ -174,7 +174,7 @@ $popup-menu-radius: 6px;
   }
 
   // ---------------------- Light theme menu ----------------------
-  .el-menu-light {
+  /*  .el-menu-light {
     .el-sub-menu__title,
     .el-menu-item {
       .menu-icon {
@@ -200,6 +200,15 @@ $popup-menu-radius: 6px;
       }
     }
 
+    @include menu-hover($hover-bg-color);
+
+    .el-sub-menu__icon-arrow {
+      color: var(--art-gray-600);
+    }
+  } */
+  .el-menu-light {
+    @include theme-menu-base;
+    @include menu-active(var(--theme-color), var(--el-color-primary-light-9));
     @include menu-hover($hover-bg-color);
 
     .el-sub-menu__icon-arrow {

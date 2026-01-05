@@ -28,8 +28,12 @@
 
 // 优化 el-form-item 标签高度
 .el-form-item__label {
+  color: var(--art-gray-4) !important;
   height: var(--el-component-custom-height) !important;
   line-height: var(--el-component-custom-height) !important;
+}
+.el-form-item--default {
+  margin-bottom: 15px !important;
 }
 
 // 日期选择器
@@ -523,11 +527,14 @@ body {
 
 // table 样式修改
 .el-table {
+  border-radius: 6px;
   --el-table-header-bg-color: #ebecf1 !important;
+  --el-table-border-color: #e5e6ec !important;
+  --el-table-header-text-color: var(--art-gray-4) !important;
 }
 .el-table--default {
   th {
-    padding: 16px 0 !important;
+    padding: 14px 0 !important;
   }
   td {
     padding: 14px 0 !important;

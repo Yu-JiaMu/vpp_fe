@@ -481,7 +481,7 @@
   )
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .google-tab.activ-tab {
     color: var(--theme-color) !important;
     background-color: var(--el-color-primary-light-9) !important;
@@ -575,13 +575,11 @@
   }
   .activ-tab {
     .tag-item {
-      font-family:
-        Source Han Sans SC,
-        Source Han Sans SC-Bold;
+      font-family: 'Source Han Sans SC-Bold';
       &::after {
         content: '';
         position: absolute;
-        bottom: -6px;
+        bottom: -7px;
         left: 0;
         width: 100%;
         height: 2px;

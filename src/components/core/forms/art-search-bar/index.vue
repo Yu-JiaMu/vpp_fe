@@ -73,7 +73,6 @@
             <div class="form-buttons">
               <ElButton
                 v-if="showSearch"
-                type="primary"
                 class="search-button"
                 @click="handleSearch"
                 v-ripple
@@ -365,7 +364,7 @@
 <style lang="scss" scoped>
   .art-search-bar {
     /* padding: 15px 20px 0; */
-
+    /* padding: 0 20px 0 12px; */
     .action-column {
       flex: 1;
       max-width: 100%;
@@ -380,7 +379,7 @@
 
       .form-buttons {
         display: flex;
-        gap: 8px;
+        /* gap: 8px; */
       }
 
       .filter-toggle {

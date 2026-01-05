@@ -12,6 +12,6 @@
   .el-button.is-text {
     color: var(--art-gray-4);
     padding-left: 4px;
-    padding-right: 4px;
+    padding-right: 8px;
   }
 </style>
