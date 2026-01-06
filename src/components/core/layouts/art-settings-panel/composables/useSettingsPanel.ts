@@ -82,7 +82,7 @@ export function useSettingsPanel() {
           // 切换到移动端布局
           if (!hasChangedMenu.value) {
             beforeMenuType.value = menuType.value
-            useSettingsState().switchMenuLayouts(MenuTypeEnum.LEFT)
+            // useSettingsState().switchMenuLayouts(MenuTypeEnum.LEFT)
             settingStore.setMenuOpen(false)
             hasChangedMenu.value = true
           }

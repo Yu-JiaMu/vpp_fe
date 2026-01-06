@@ -314,3 +314,38 @@ export function validateBankCard(value: string): boolean {
 
   return sum % 10 === 0
 }
+
+// 计算字符长度：中文2字符，其他1字符
+export const getByteLength = (str: string) => {
+  if (!str) return 0
+  return str.length + (str.match(/[^\x00-\xff]/g) || []).length
+}
+
+// 名称校验
+export function validateNameLength(rule: any, value: any, callback: any) {
+  if (!value) return callback(new Error('请输入产品名称'))
+  if (getByteLength(value) > 50) {
+    callback(new Error('不能超过50个字符（中文占2位）'))
+  } else {
+    callback()
+  }
+}
+
+// 通用校验规则（中英文字母、数字、-、_、@）
+export function validateCommon(rule: any, value: any, callback: any) {
+  const pattern = /^[a-zA-Z0-9\u4e00-\u9fa5\-_@]*$/
+  if (value && !pattern.test(value)) {
+    callback(new Error('支持中文、英文字母、数字、短划线、下划线、@'))
+  } else {
+    callback()
+  }
+}
+
+// 描述校验
+export function validateDescLength(rule: any, value: any, callback: any) {
+  if (value && getByteLength(value) > 200) {
+    callback(new Error('描述不能超过200个字符（中文占2位）'))
+  } else {
+    callback()
+  }
+}

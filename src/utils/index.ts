@@ -38,3 +38,6 @@ export * from './util'
 
 // 类型判断相关
 export * from './is'
+
+// 工厂函数
+export * from './factory'

@@ -3,7 +3,7 @@ import { createApp } from 'vue'
 import { initStore } from './store'                 // Store
 import { initRouter } from './router'               // Router
 import language from './locales'                    // 国际化
-import '@/assets/styles/zhu-app.scss'
+// import '@/assets/styles/zhu-app.scss'
 import '@styles/core/tailwind.css'                  // tailwind
 import '@styles/index.scss'                         // 样式
 import { setupGlobDirectives } from './directives'

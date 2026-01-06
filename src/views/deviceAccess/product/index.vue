@@ -55,6 +55,9 @@
 
 <script setup>
   import { formatTime } from '@/utils'
+  import { NODE_TYPES } from '@/enums'
+  const router = useRouter()
+
   const form = reactive({
     name: '',
     region: '',
@@ -106,11 +109,7 @@
       props: {
         placeholder: '请选择节点类型',
         filterable: true,
-        options: [
-          { label: '直连设备', value: '1' },
-          { label: '网关设备', value: '2' },
-          { label: '网关子设备', value: '3' }
-        ]
+        options: NODE_TYPES.options
       }
     },
     {
@@ -199,6 +198,9 @@
   function onNew() {
     // navigate to new product form or open modal
     console.log('新增产品')
+    router.push({
+      name: 'addProduct'
+    })
   }
 
   function viewDetails(row) {

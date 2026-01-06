@@ -91,6 +91,13 @@ body {
   .el-button--default {
     height: var(--el-component-custom-height);
   }
+  .el-button--info {
+    --el-button-text-color: #767c80;
+    &:hover {
+      // --el-button-hover-text-color: #767c80;
+      background-color: #909399;
+    }
+  }
 }
 
 // circle 按钮宽度优化

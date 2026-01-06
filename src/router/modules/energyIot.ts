@@ -44,6 +44,17 @@ export const energyIot: AppRouteRecord = {
             title: '产品',
             keepAlive: true
           }
+        },
+        {
+          path: 'add-product',
+          name: 'addProduct',
+          component: '/deviceAccess/product/add-product',
+          meta: {
+            title: '创建产品',
+            keepAlive: true,
+            isHide: true,
+            activePath: '/energyIot/deviceAccess/product'
+          }
         }
       ]
     }
