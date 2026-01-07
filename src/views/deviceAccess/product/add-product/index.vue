@@ -32,6 +32,7 @@
       <el-form-item class="relative" label="产品品类" prop="category" label-width="400px">
         <div
           class="absolute flex-c pl-1 cursor-pointer top-[-36px] right-0 open-box w-[68px] h-[32px] bg-white rounded-md text-g-3"
+          @click="thingModelRef.open(form, true)"
         >
           <img class="w-5 h-5 mr-1" src="@/assets/images/icon/icon-open-eye.png" alt="" />
           查看
@@ -179,9 +180,11 @@
       </div>
     </el-form>
 
-    <el-drawer v-model="drawer" title="选择产品品类" size="30%">
-      <p>这里是品类选择列表...</p>
-    </el-drawer>
+    <!-- 选择产品品类 -->
+    <SelectProductCategory v-model="isProductSelectVisible" />
+
+    <!-- 查看物模型 -->
+    <ThingModelDetailDialog ref="thingModel" />
   </div>
 </template>
 
@@ -189,9 +192,15 @@
   import { ArrowLeft, ArrowDown, Picture, Cloudy, CircleClose } from '@element-plus/icons-vue'
   import { validateNameLength, validateCommon, validateDescLength, getByteLength } from '@/utils'
   import { NODE_TYPES, CONNECTION_TYPES } from '@/enums'
+  import SelectProductCategory from './components/select-product-category.vue'
+  import ThingModelDetailDialog from './components/thing-model-detail-dialog.vue'
 
   const productFormRef = ref(null)
-  const drawer = ref(false)
+  const thingModelRef = useTemplateRef('thingModel')
+
+  const isProductSelectVisible = ref(false)
+  const isThingModelVisible = ref(false)
+
   const isShowMore = ref(false)
 
   const form = reactive({
@@ -231,7 +240,7 @@
   }
 
   const handleCategoryChange = () => {
-    drawer.value = true // 模拟点击后弹出抽屉
+    isProductSelectVisible.value = true // 模拟点击后弹出抽屉
   }
 
   const submitForm = async () => {
