@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="dialogVisible" align-center title="查看物模型" width="680">
+  <el-dialog v-model="dialogVisible" align-center title="新增产品" :show-close="false" width="680">
     <div class="thing-model-detail-dialog">
       <h4 class="font-scMedium text-g-4 text-base flex-c mb-1.5">
         <img class="w-4 h-4 mr-2" src="@/assets/images/icon/icon-instrument.png" alt="" />

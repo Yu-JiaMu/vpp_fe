@@ -132,6 +132,12 @@
   --color-g-4: var(--art-gray-4);
   --color-g-5: var(--art-gray-5);
 
+  --color-g-ced1d9: #ced1d9;
+  --color-g-afb2b8: #afb2b8;
+  --color-g-303537: #303537;
+  --color-g-505658: #505658;
+  --color-g-131617: #131617;
+
   /* Font Families */
   --font-scRegular: 'Source Han Sans SC-Regular';
   --font-scMedium: 'Source Han Sans SC-Medium';

@@ -185,6 +185,9 @@
 
     <!-- 查看物模型 -->
     <ThingModelDetailDialog ref="thingModel" />
+
+    <!-- 产品创建成功 -->
+    <ProductCreateSuccessDialog ref="productCreateSuccess" />
   </div>
 </template>
 
@@ -194,12 +197,13 @@
   import { NODE_TYPES, CONNECTION_TYPES } from '@/enums'
   import SelectProductCategory from './components/select-product-category.vue'
   import ThingModelDetailDialog from './components/thing-model-detail-dialog.vue'
+  import ProductCreateSuccessDialog from './components/product-create-success-dialog.vue'
 
   const productFormRef = ref(null)
   const thingModelRef = useTemplateRef('thingModel')
+  const productCreateSuccessRef = useTemplateRef('productCreateSuccess')
 
   const isProductSelectVisible = ref(false)
-  const isThingModelVisible = ref(false)
 
   const isShowMore = ref(false)
 
@@ -244,12 +248,13 @@
   }
 
   const submitForm = async () => {
+    // TODO: 测试创建成功弹窗
+    productCreateSuccessRef.value.open()
+    return
     if (!productFormRef.value) return
-    await productFormRef.value.validate((valid) => {
-      if (valid) {
-        console.log('提交数据:', form)
-      }
-    })
+    const valid = await productFormRef.value.validate()
+
+    if (!valid) return
   }
 </script>
 

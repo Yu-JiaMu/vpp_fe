@@ -131,8 +131,9 @@ body {
   border-radius: var(--el-border-radius-small) !important;
 }
 body {
+  --el-dialog-padding-y: 30px;
   .el-dialog {
-    padding: var(--el-dialog-padding-primary) 30px;
+    padding: var(--el-dialog-padding-primary) var(--el-dialog-padding-y);
     border-radius: 6px;
     overflow: hidden;
     .el-dialog__headerbtn .el-dialog__close {
