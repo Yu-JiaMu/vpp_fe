@@ -69,8 +69,10 @@
     <!-- 底部按钮 -->
     <template #footer>
       <div class="dialog-footer flex flex-sp-center">
-        <el-button class="btn-width-177" @click="handleCancel">取消</el-button>
-        <el-button class="btn-width-177" type="primary" @click="handleSubmit">确认</el-button>
+        <el-button type="info" class="btn-width-177" v-ripple @click="handleCancel">取消</el-button>
+        <el-button class="btn-width-177" type="primary" v-ripple @click="handleSubmit"
+          >确认</el-button
+        >
       </div>
     </template>
   </el-dialog>
