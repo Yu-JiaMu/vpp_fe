@@ -218,11 +218,10 @@
   const handleSubmit = async () => {
     if (!formRef.value) return
 
+    // 表单验证
+    const valid = await formRef.value.validate()
+    if (!valid) return
     try {
-      // 表单验证
-      const valid = await formRef.value.validate()
-      if (!valid) return
-
       loading.value = true
 
       // 登录请求
