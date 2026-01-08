@@ -220,8 +220,8 @@
 
     try {
       // 表单验证
-      /*  const valid = await formRef.value.validate()
-      if (!valid) return */
+      const valid = await formRef.value.validate()
+      if (!valid) return
 
       loading.value = true
 

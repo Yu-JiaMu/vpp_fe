@@ -38,7 +38,7 @@
     </div>
 
     <!-- 基础信息 -->
-    <BaseInfo v-if="activeTab === 'info'" :product="product"></BaseInfo>
+    <BaseInfo v-if="activeTab === 'info'" :product="product" @refresh="getDetail"></BaseInfo>
   </div>
 </template>
 
@@ -83,13 +83,12 @@
       value: 'ext'
     }
   ]
-  const handleEdit = () => {
-    console.log('编辑产品信息')
-  }
 
   const handleViewDevices = () => {
     console.log('查看设备列表')
   }
+
+  const getDetail = () => {}
 </script>
 
 <style lang="scss" scoped>

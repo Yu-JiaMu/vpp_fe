@@ -335,7 +335,7 @@ export function validateNameLength(rule: any, value: any, callback: any) {
 export function validateCommon(rule: any, value: any, callback: any) {
   const pattern = /^[a-zA-Z0-9\u4e00-\u9fa5\-_@]*$/
   if (value && !pattern.test(value)) {
-    callback(new Error('支持中文、英文字母、数字、短划线、下划线、@'))
+    callback(new Error('仅支持中文、英文字母、数字、短划线、下划线、@'))
   } else {
     callback()
   }
