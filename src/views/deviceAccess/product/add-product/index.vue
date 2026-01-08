@@ -1,6 +1,6 @@
 <template>
-  <div class="add-product pt-9">
-    <ArtButtonBack class="mb-7"> 新增产品 </ArtButtonBack>
+  <div class="add-product pt-5">
+    <ArtButtonBack class="mb-2.5"> 新增产品 </ArtButtonBack>
     <el-form
       ref="productFormRef"
       :model="form"

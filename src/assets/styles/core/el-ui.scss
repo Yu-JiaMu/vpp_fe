@@ -597,3 +597,25 @@ body {
     padding: 30px;
   }
 }
+
+// el-descriptions 组件
+body {
+  .el-descriptions__body .el-descriptions__table.is-bordered .el-descriptions__cell {
+    padding: 16px 20px;
+  }
+  .el-descriptions__label.el-descriptions__cell.is-bordered-label {
+    color: var(--color-g-303537);
+  }
+  .el-descriptions__content.el-descriptions__cell.is-bordered-content {
+    color: var(--color-g-505658);
+  }
+  .el-descriptions {
+    --el-descriptions-item-bordered-label-background: #fff;
+
+    .el-descriptions__label {
+      font-family:
+        Source Han Sans SC,
+        Source Han Sans SC-Bold;
+    }
+  }
+}

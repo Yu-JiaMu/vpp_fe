@@ -1,6 +1,6 @@
 <template>
   <div class="art-button-back text-g-5 text-lg font-scBold">
-    <el-button class="icon-back" @click="goBack">
+    <el-button class="icon-back mr-2.5" @click="goBack">
       <ArtSvgIcon icon="ri:arrow-left-line" class="text-g-5 text-lg" />
     </el-button>
     <slot />

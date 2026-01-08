@@ -205,6 +205,12 @@
 
   function viewDetails(row) {
     console.log('详情', row)
+    router.push({
+      name: 'productDetail',
+      query: {
+        id: row.id
+      }
+    })
   }
 
   function manageDevices(row) {
