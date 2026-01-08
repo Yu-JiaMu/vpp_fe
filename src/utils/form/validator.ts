@@ -321,6 +321,20 @@ export const getByteLength = (str: string) => {
   return str.length + (str.match(/[^\x00-\xff]/g) || []).length
 }
 
+// id校验
+export function validateProductId(rule: any, value: any, callback: any) {
+  const maxLength = 18
+  const regex = /^[a-zA-Z0-9]*$/
+
+  if (value.length > maxLength) {
+    callback(new Error(`不能超过${maxLength}个字符`))
+  } else if (!regex.test(value)) {
+    callback(new Error('只能包含字母和数字'))
+  } else {
+    callback() // 验证通过
+  }
+}
+
 // 名称校验
 export function validateNameLength(rule: any, value: any, callback: any) {
   if (!value) return callback(new Error('请输入产品名称'))

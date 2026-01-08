@@ -193,7 +193,13 @@
 
 <script setup>
   import { ArrowLeft, ArrowDown, Picture, Cloudy, CircleClose } from '@element-plus/icons-vue'
-  import { validateNameLength, validateCommon, validateDescLength, getByteLength } from '@/utils'
+  import {
+    validateNameLength,
+    validateCommon,
+    validateDescLength,
+    getByteLength,
+    validateProductId
+  } from '@/utils'
   import { NODE_TYPES, CONNECTION_TYPES } from '@/enums'
   import SelectProductCategory from './components/select-product-category.vue'
   import ThingModelDetailDialog from './components/thing-model-detail-dialog.vue'
@@ -224,6 +230,7 @@
   })
 
   const rules = {
+    productId: [{ validator: validateProductId, trigger: 'blur' }],
     productName: [
       {
         required: true,
@@ -249,8 +256,8 @@
 
   const submitForm = async () => {
     // TODO: 测试创建成功弹窗
-    productCreateSuccessRef.value.open()
-    return
+    /*  productCreateSuccessRef.value.open()
+    return */
     if (!productFormRef.value) return
     const valid = await productFormRef.value.validate()
 
