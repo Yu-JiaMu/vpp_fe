@@ -1,6 +1,6 @@
 <template>
   <div class="product-detail p-5 min-h-full">
-    <ArtButtonBack class="mb-2.5"> 返回 </ArtButtonBack>
+    <ArtButtonBack class="mb-2.5" is-back> 返回 </ArtButtonBack>
 
     <!-- 顶部产品信息 -->
     <div class="bg-white rounded-md px-4 py-5 mb-2.5 flex items-center gap-4">
