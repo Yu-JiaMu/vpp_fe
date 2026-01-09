@@ -158,7 +158,7 @@
   })
 
   const emits = defineEmits(['refresh'])
-  const dialogVisible = ref(true)
+  const dialogVisible = ref(false)
 
   const handleEdit = () => {
     Object.assign(form, pick(props.product, ['logo', 'name', 'vendor', 'model', 'desc']))

@@ -11,6 +11,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import tailwindcss from '@tailwindcss/vite'
 // import { visualizer } from 'rollup-plugin-visualizer'
 import vueSetupExtend from 'unplugin-vue-setup-extend-plus/vite'
+import monacoEditorPlugin from 'vite-plugin-monaco-editor'
 
 export default ({ mode }: { mode: string }) => {
   const root = process.cwd()
@@ -81,6 +82,7 @@ export default ({ mode }: { mode: string }) => {
     },
     plugins: [
       vue(),
+
       tailwindcss(),
       // 自动按需导入 API
       AutoImport({
@@ -113,7 +115,11 @@ export default ({ mode }: { mode: string }) => {
       }),
       vueDevTools(),
       // name 可以写在 script 标签上
-      vueSetupExtend({})
+      vueSetupExtend({}),
+      monacoEditorPlugin.default({
+        languageWorkers: ['editorWorkerService', 'json', 'typescript']
+      })
+
       // 打包分析
       // visualizer({
       //   open: true,

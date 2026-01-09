@@ -1,5 +1,5 @@
 <template>
-  <div class="product-detail p-5 min-h-full">
+  <div class="min-h-full p-5 product-detail">
     <ArtButtonBack class="mb-2.5" is-back> 返回 </ArtButtonBack>
 
     <!-- 顶部产品信息 -->
@@ -12,12 +12,12 @@
       <!-- 产品名称 -->
       <div class="flex-1">
         <div class="flex items-center gap-2 mb-1.5">
-          <span class="text-base font-scMedium text-gray-800"> 产品名称：{{ product.name }} </span>
+          <span class="text-base text-gray-800 font-scMedium"> 产品名称：{{ product.name }} </span>
           <el-switch v-model="product.enabled" size="small" />
         </div>
         <div class="text-sm text-g-505658">
           设备数量：
-          <span class="text-primary underline" @click="handleViewDevices">
+          <span class="underline text-primary" @click="handleViewDevices">
             {{ product.deviceCount }}
           </span>
         </div>
@@ -25,7 +25,7 @@
     </div>
 
     <!-- Tabs -->
-    <div class="tab-con h-12 flex bg-white w-fit">
+    <div class="flex h-12 bg-white tab-con w-fit">
       <div
         v-for="item in TABS"
         :key="item.value"
@@ -39,13 +39,17 @@
 
     <!-- 基础信息 -->
     <BaseInfo v-if="activeTab === 'info'" :product="product" @refresh="getDetail"></BaseInfo>
+
+    <!-- 物模型 -->
+    <ThingModel v-if="activeTab === 'model'" :product="product" @refresh="getDetail"></ThingModel>
   </div>
 </template>
 
 <script setup>
   import BaseInfo from './components/base-info.vue'
+  import ThingModel from './components/thing-model/index.vue'
 
-  const activeTab = ref('info')
+  const activeTab = ref('model')
 
   const product = ref({
     id: '1955073219080001',

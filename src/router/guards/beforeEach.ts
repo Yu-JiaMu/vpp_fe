@@ -262,7 +262,7 @@ async function handleDynamicRoutes(
   try {
     // TODO: 暂时注释
     // 1. 获取用户信息
-    await fetchUserInfo()
+    // await fetchUserInfo()
 
     // 2. 获取菜单数据
     const menuList = await menuProcessor.getMenuList()

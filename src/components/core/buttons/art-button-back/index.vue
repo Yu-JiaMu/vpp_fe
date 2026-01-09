@@ -2,6 +2,7 @@
   <div
     class="art-button-back relative text-g-5 text-lg font-scBold w-fit"
     :class="{ 'is-back': isBack }"
+    @click="fullBack"
   >
     <el-button class="icon-back mr-2.5" @click="goBack">
       <ArtSvgIcon icon="ri:arrow-left-line" class="text-g-5 text-lg" />
@@ -12,7 +13,7 @@
 
 <script setup>
   const router = useRouter()
-  defineProps({
+  const props = defineProps({
     isBack: {
       type: Boolean,
       default: false
@@ -21,6 +22,10 @@
 
   const goBack = () => {
     router.back()
+  }
+  const fullBack = () => {
+    if (!props.isBack) return
+    goBack()
   }
 </script>
 
