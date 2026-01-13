@@ -35,3 +35,11 @@ export function apiGetSceneList(params) {
     }, 1000)
   })
 }
+/**
+ * 产品品类列表
+ * @param {*} params
+ * @returns
+ */
+export function apiGetProductCategoryList(params) {
+  return request.get('/stage-api/model/productCateory/list', params)
+}
