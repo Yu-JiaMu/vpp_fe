@@ -21,13 +21,13 @@
     }
   })
 
-  const emit = defineEmits(['size-change', 'page-change'])
+  const emit = defineEmits(['size-change', 'current-change'])
   const onSizeChange = (val) => {
     props.pagination.current = 1
     emit('size-change', val)
   }
   const onPageChange = (val) => {
-    emit('page-change', val)
+    emit('current-change', val)
   }
 </script>
 
