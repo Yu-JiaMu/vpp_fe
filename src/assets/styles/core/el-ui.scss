@@ -314,39 +314,41 @@ body {
   }
 }
 
-.el-checkbox {
-  .el-checkbox__inner {
-    border-radius: 2px !important;
-  }
-}
-
-// 优化复选框样式
-.el-checkbox--default {
-  .el-checkbox__inner {
-    width: 16px !important;
-    height: 16px !important;
-    border-radius: 4px !important;
-
-    &::before {
-      content: '';
-      height: 4px !important;
-      top: 5px !important;
-      background-color: #fff !important;
-      transform: scale(0.6) !important;
+body {
+  .el-checkbox {
+    .el-checkbox__inner {
+      border-radius: 2px;
     }
   }
 
-  .is-checked {
+  // 优化复选框样式
+  .el-checkbox--default {
     .el-checkbox__inner {
-      &::after {
-        width: 3px;
-        height: 8px;
-        margin: auto;
-        border: 2px solid var(--el-checkbox-checked-icon-color);
-        border-left: 0;
-        border-top: 0;
-        transform: translate(-45%, -60%) rotate(45deg) scale(0.86) !important;
-        transform-origin: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+
+      &::before {
+        content: '';
+        height: 4px;
+        top: 5px;
+        background-color: #fff;
+        transform: scale(0.6);
+      }
+    }
+
+    .is-checked {
+      .el-checkbox__inner {
+        &::after {
+          width: 3px;
+          height: 8px;
+          margin: auto;
+          border: 2px solid var(--el-checkbox-checked-icon-color);
+          border-left: 0;
+          border-top: 0;
+          transform: translate(-45%, -60%) rotate(45deg) scale(0.86);
+          transform-origin: center;
+        }
       }
     }
   }
@@ -357,6 +359,15 @@ body {
 }
 
 // 修改 el-message-box 样式
+
+body {
+  .el-message-box__headerbtn .el-message-box__close {
+    --el-color-info: #909399;
+  }
+  .el-message-box__content {
+    color: var(--art-gray-4);
+  }
+}
 .el-message-box__headerbtn .el-message-box__close,
 .el-dialog__headerbtn .el-dialog__close {
   top: 7px;

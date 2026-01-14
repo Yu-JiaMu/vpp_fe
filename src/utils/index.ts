@@ -41,3 +41,6 @@ export * from './is'
 
 // 工厂函数
 export * from './factory'
+
+// iot业务相关
+export * from './iot'

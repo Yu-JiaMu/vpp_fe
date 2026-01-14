@@ -1,7 +1,13 @@
 <template>
   <div class="bg-white rounded-md thing-model">
     <!-- 顶部搜索区 -->
-    <div class="flex items-center justify-between p-5">
+    <div
+      class="flex p-5"
+      :class="{
+        'items-center justify-between': !isSettingModel,
+        'flex-col': isSettingModel
+      }"
+    >
       <div class="flex items-center gap-2.5">
         <el-input
           v-model="form.name"
@@ -30,19 +36,48 @@
           </el-select>
         </ArtSelectPrepend>
 
-        <el-button type="primary" @click="handleSearch"> 搜索 </el-button>
+        <el-button @click="handleSearch"> 搜索 </el-button>
         <ArtResetBtn class="!ml-0" @click="handleReset" />
       </div>
 
-      <div class="flex items-center">
+      <div v-if="!isSettingModel" class="flex items-center">
         <el-button text class="!text-g-303537" @click="handleExportModel">
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-export-eye.png" alt="" />
           导出物模型
         </el-button>
-        <el-button text class="!text-g-303537 !ml-0">
+        <el-button text class="!text-g-303537 !ml-0" @click="handleSetModel">
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-setting-blue.png" alt="" />
           设置物模型
         </el-button>
+      </div>
+
+      <div v-else class="flex items-center justify-end mt-1">
+        <el-button text class="!text-g-303537" @click="handleExportModel">
+          <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-001.png" alt="" />
+          添加自定义功能点
+        </el-button>
+        <div class="dividing-line"></div>
+        <el-button text class="!text-g-303537 !ml-0" @click="handleSetModel">
+          <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-002.png" alt="" />
+          添加系统功能点
+        </el-button>
+        <div class="dividing-line"></div>
+        <el-button text class="!text-g-303537 !ml-0" @click="handleImportModel">
+          <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-003.png" alt="" />
+          导入物模型
+        </el-button>
+        <div class="dividing-line"></div>
+        <el-button text class="!text-g-303537 !ml-0" @click="handleSetModel">
+          <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-004.png" alt="" />
+          删除
+        </el-button>
+        <div class="dividing-line"></div>
+        <div class="flex ml-4">
+          <el-button color="#ffffff" class="btn-setting-back" @click="handleCancelSetting">
+            返回
+          </el-button>
+          <el-button @click="handleSearch"> 保存 </el-button>
+        </div>
       </div>
     </div>
 
@@ -124,22 +159,35 @@
       <el-table-column prop="rw" label="读写类型" width="100" />
 
       <!-- 操作 -->
-      <el-table-column label="操作" width="80" fixed="right">
+      <el-table-column label="操作" :width="isSettingModel ? 160 : 80" fixed="right">
         <template #default>
           <el-button type="primary" link> 详情 </el-button>
+          <template v-if="isSettingModel">
+            <el-button type="primary" link> 编辑 </el-button>
+            <el-button type="danger" link> 删除 </el-button>
+          </template>
         </template>
       </el-table-column>
     </el-table>
 
     <!-- 导出物模型弹窗 -->
     <ExportModelDialog ref="exportModelDialogRef" />
+
+    <!-- 导入物模型弹窗 -->
+    <ImportModelDialog ref="importModelDialogRef" />
+
+    <!-- 添加系统功能点 -->
+    <AddSystemFunctionPointsDialog ref="addSystemFunctionPointsDialogRef" />
   </div>
 </template>
 
 <script setup>
   import ExportModelDialog from './export-model-dialog/index.vue'
+  import ImportModelDialog from './import-model-dialog/index.vue'
+  import AddSystemFunctionPointsDialog from './add-system-function-points-dialog/index.vue'
   import { ref } from 'vue'
   import thingJson from './thing.json'
+  import { transformThingJsonToTable } from '@/utils'
   import {
     FUNCTION_MODE_MAP,
     THING_SOURCE_MAP,
@@ -149,63 +197,13 @@
     DATA_TYPE_MAP
   } from '@/enums'
 
-  const transformThingJsonToTable = (thingJson) => {
-    const result = []
+  const isSettingModel = ref(true)
+  const handleSetModel = () => {
+    isSettingModel.value = true
+  }
 
-    function handleDataType(item) {
-      if (item.dataType?.type) {
-        return `${item.dataType.type}(${DATA_TYPE_MAP.getLabel(item.dataType.type)})`
-      }
-      return '-'
-    }
-
-    function buildRow(item, overrides = {}) {
-      return {
-        originData: item,
-        type: FUNCTION_MODE_MAP.getLabel(item.functionMode) ?? '-',
-        source: THING_SOURCE_MAP.getLabel(item.functionType) ?? '-',
-        name: item.name ?? '-',
-        code: item.identifier ?? '-',
-        dataType: handleDataType(item), // 数据类型
-        define: item.dataType || {}, // 数据定义
-        rw: ACCESS_MODE_MAP.getLabel(item.accessMode) ?? '-',
-        functionMode: item.functionMode,
-        ...overrides
-      }
-    }
-
-    const MODULE_HANDLERS = [
-      {
-        key: 'properties',
-        map: (item) => buildRow(item)
-      },
-      {
-        key: 'events',
-        map: (item) =>
-          buildRow(item, {
-            dataType: '-',
-            rw: '-'
-          })
-      },
-      {
-        key: 'functions',
-        map: (item) =>
-          buildRow(item, {
-            dataType: '-',
-            rw: '-'
-          })
-      }
-    ]
-
-    thingJson.modules?.forEach((module) => {
-      MODULE_HANDLERS.forEach(({ key, map }) => {
-        module[key]?.forEach((item) => {
-          result.push(map(item))
-        })
-      })
-    })
-
-    return result
+  const handleCancelSetting = () => {
+    isSettingModel.value = false
   }
 
   const form = ref({
@@ -249,6 +247,11 @@
     exportModelDialogRef.value.open()
   }
 
+  const importModelDialogRef = useTemplateRef('importModelDialogRef')
+  const handleImportModel = () => {
+    importModelDialogRef.value.open()
+  }
+
   onMounted(() => {
     tableData.value = [...originTableData.value]
   })
@@ -262,6 +265,20 @@
       // border-radius: 7px;
       color: #505658;
       // padding: 2px 10px;
+    }
+    .dividing-line {
+      height: 20px;
+      width: 1px;
+      background-color: #ced1d9;
+    }
+    .btn-setting-back {
+      background: #ffffff;
+      border: 1px solid #e5e6ec;
+      color: #ced1d9;
+      &:hover {
+        color: var(--art-gray-4);
+        border: 1px solid var(--art-gray-4);
+      }
     }
   }
 </style>
