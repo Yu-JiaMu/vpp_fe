@@ -19,8 +19,14 @@
         class="custom-dialog-form"
       >
         <!-- 行业选择 -->
-        <el-form-item label="行业" prop="industry" class="form-item-required">
-          <el-select v-model="formData.industry" placeholder="请选择" clearable class="full-width">
+        <el-form-item label="行业" prop="industryCode" class="form-item-required">
+          <el-select
+            v-model="formData.industryCode"
+            placeholder="请选择"
+            @change="industryCodeChange"
+            clearable
+            class="full-width"
+          >
             <el-option
               v-for="item in industryOptions"
               :key="item.value"
@@ -31,8 +37,8 @@
         </el-form-item>
 
         <!-- 场景选择 -->
-        <el-form-item label="场景" prop="scene" class="form-item-required">
-          <el-select v-model="formData.scene" placeholder="请选择" clearable class="full-width">
+        <el-form-item label="场景" prop="sceneCode" class="form-item-required">
+          <el-select v-model="formData.sceneCode" placeholder="请选择" clearable class="full-width">
             <el-option
               v-for="item in sceneOptions"
               :key="item.value"
@@ -43,9 +49,9 @@
         </el-form-item>
 
         <!-- 产品品类输入 -->
-        <el-form-item label="产品品类" prop="category" class="form-item-required">
+        <el-form-item label="产品品类" prop="name" class="form-item-required">
           <el-input
-            v-model="formData.category"
+            v-model="formData.name"
             placeholder="请输入产品品类名称"
             clearable
             class="full-width"
@@ -53,9 +59,9 @@
         </el-form-item>
 
         <!-- 描述文本域 -->
-        <el-form-item label="描述" prop="description" class="description-item">
+        <el-form-item label="描述" prop="remark" class="description-item">
           <el-input
-            v-model="formData.description"
+            v-model="formData.remark"
             type="textarea"
             :rows="4"
             placeholder="请输入产品品类说明"
@@ -81,7 +87,7 @@
 <script setup>
   import { ref, reactive, watch, computed } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { apiGetIndustryList, apiGetSceneList } from '@/api/iot/productCategory'
+  import * as productCategoryApi from '@/api/iot/productCategory.js'
   // 定义 props
   const props = defineProps({
     modelValue: {
@@ -101,41 +107,52 @@
 
   // 表单数据
   const formData = reactive({
-    industry: '',
-    scene: '',
-    category: '',
-    description: ''
+    id: '',
+    industryCode: '',
+    sceneCode: '',
+    name: '',
+    remark: ''
   })
 
   // 表单验证规则
   const formRules = {
-    industry: [{ required: true, message: '请选择行业', trigger: 'change' }],
-    scene: [{ required: true, message: '请选择场景', trigger: 'change' }],
-    category: [
+    industryCode: [{ required: true, message: '请选择行业', trigger: 'change' }],
+    sceneCode: [{ required: true, message: '请选择场景', trigger: 'change' }],
+    name: [
       { required: true, message: '请输入产品品类名称', trigger: 'blur' },
       { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
     ],
-    description: [{ max: 99, message: '不能超过 99 个字符', trigger: 'blur' }]
+    remark: [{ max: 99, message: '不能超过 99 个字符', trigger: 'blur' }]
   }
 
   // 通过接口 选项数据
-  const industryOptions = ref([
-    { label: '制造业', value: 'manufacturing' },
-    { label: '零售业', value: 'retail' },
-    { label: '金融业', value: 'finance' },
-    { label: '医疗健康', value: 'healthcare' },
-    { label: '教育行业', value: 'education' }
-  ])
-  async function getIndustryList() {
-    const res = await apiGetIndustryList()
-    industryOptions.value = res.data
-  }
+  const industryOptions = ref([])
   const sceneOptions = ref([])
-  async function getSceneList() {
-    const res = await apiGetSceneList()
-    sceneOptions.value = res.data
+  async function getIndustryList() {
+    const res = await productCategoryApi.apiGetIndustryList()
+    console.log(res, 'res')
+    industryOptions.value = res.map((item) => {
+      return {
+        label: item.label,
+        value: item.code,
+        children: item.children || []
+      }
+    })
   }
-
+  function industryCodeChange(e) {
+    if (e) {
+      const children = industryOptions.value.find((item) => item.value === e)?.children || []
+      sceneOptions.value = children.map((item) => {
+        return {
+          label: item.label,
+          value: item.code
+        }
+      })
+    } else {
+      sceneOptions.value = []
+      formData.sceneCode = ''
+    }
+  }
   // 监听弹窗打开状态
   watch(
     () => props.modelValue,
@@ -146,21 +163,10 @@
       } else {
         // 弹窗打开关闭时，做逻辑处理
         getIndustryList()
-        getSceneList()
+        // getSceneList()
       }
     }
   )
-
-  // 监听描述变化
-  watch(
-    () => formData.description,
-    (newVal) => {
-      if (newVal && newVal.length > 99) {
-        formData.description = newVal.substring(0, 99)
-      }
-    }
-  )
-
   // 表单提交处理
   const handleSubmit = async () => {
     if (!formRef.value) return
@@ -170,6 +176,11 @@
 
       // 表单验证通过
       console.log('表单数据:', JSON.stringify(formData, null, 2))
+      if (formData.id) {
+        await productCategoryApi.apiProductCategoryEdit({ ...formData })
+      } else {
+        await productCategoryApi.apiProductCategoryAdd({ ...formData })
+      }
 
       // 提交成功提示
       ElMessage({
@@ -200,7 +211,7 @@
 
   // 检查表单是否有数据
   const isFormDirty = () => {
-    return formData.industry || formData.scene || formData.category || formData.description
+    return formData.industryCode || formData.sceneCode || formData.name || formData.remark
   }
 
   // 显示关闭确认对话框
@@ -231,10 +242,19 @@
       })
     }
   }
-
+  //编辑时初始化表单数据
+  const initFormData = (data) => {
+    formData.id = data.id
+    formData.industryCode = data.industryCode || ''
+    formData.sceneCode = data.sceneCode || ''
+    formData.name = data.name || ''
+    formData.remark = data.remark || ''
+    industryCodeChange(formData.industryCode)
+  }
   // 暴露方法给父组件
   defineExpose({
-    resetForm
+    resetForm,
+    initFormData
   })
 </script>
 
