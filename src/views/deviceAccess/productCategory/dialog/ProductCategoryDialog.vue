@@ -81,7 +81,7 @@
 <script setup>
   import { ref, reactive, watch, computed } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { apiGetIndustryList, apiGetSceneList } from '@/api/productCategory'
+  import { apiGetIndustryList, apiGetSceneList } from '@/api/iot/productCategory'
   // 定义 props
   const props = defineProps({
     modelValue: {
