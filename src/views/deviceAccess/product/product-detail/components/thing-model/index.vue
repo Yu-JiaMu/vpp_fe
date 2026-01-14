@@ -1,13 +1,7 @@
 <template>
   <div class="bg-white rounded-md thing-model">
     <!-- 顶部搜索区 -->
-    <div
-      class="flex p-5"
-      :class="{
-        'items-center justify-between': !isSettingModel,
-        'flex-col': isSettingModel
-      }"
-    >
+    <div class="flex items-center justify-between p-5 search-con">
       <div class="flex items-center gap-2.5">
         <el-input
           v-model="form.name"
@@ -40,7 +34,7 @@
         <ArtResetBtn class="!ml-0" @click="handleReset" />
       </div>
 
-      <div v-if="!isSettingModel" class="flex items-center">
+      <div v-if="!isSettingModel" class="flex items-center op-con">
         <el-button text class="!text-g-303537" @click="handleExportModel">
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-export-eye.png" alt="" />
           导出物模型
@@ -51,7 +45,7 @@
         </el-button>
       </div>
 
-      <div v-else class="flex items-center justify-end mt-1">
+      <div v-else class="flex items-center op-con">
         <el-button text class="!text-g-303537" @click="handleExportModel">
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-001.png" alt="" />
           添加自定义功能点
@@ -76,7 +70,7 @@
           <el-button color="#ffffff" class="btn-setting-back" @click="handleCancelSetting">
             返回
           </el-button>
-          <el-button @click="handleSearch"> 保存 </el-button>
+          <el-button @click="handleSubmit"> 保存 </el-button>
         </div>
       </div>
     </div>
@@ -261,8 +255,11 @@
     addSystemFunctionPointsDialogRef.value.open()
   }
 
+  const isChange = ref(false) // 已修改未保存
+
   const addFunctionPoint = (data) => {
     console.log(data)
+    isChange.value = true
     const model = thingJson.modules[0]
 
     data.forEach((item) => {
@@ -279,6 +276,10 @@
 
     originTableData.value = transformThingJsonToTable(thingJson)
     handleSearch()
+  }
+
+  const handleSubmit = () => {
+    isChange.value = false
   }
   onMounted(() => {
     tableData.value = [...originTableData.value]
@@ -306,6 +307,17 @@
       &:hover {
         color: var(--art-gray-4);
         border: 1px solid var(--art-gray-4);
+      }
+    }
+
+    @media screen and (max-width: 1600px) {
+      .search-con {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .op-con {
+        margin-top: 4px;
+        align-self: flex-end;
       }
     }
   }
