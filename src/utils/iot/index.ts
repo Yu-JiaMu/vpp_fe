@@ -51,10 +51,11 @@ export const transformThingJsonToTable = (thingJson: ThingJson): Record<string, 
       type: FUNCTION_MODE_MAP.getLabel?.(item.functionMode) ?? '-', // 功能类型
       source: THING_SOURCE_MAP.getLabel?.(item.functionType) ?? '-', // 功能来源
       name: item.name ?? '-', // 功能名称
-      code: item.identifier ?? '-', // 标识符
+      identifier: item.identifier ?? '-', // 标识符
+      id: item.identifier ?? '-', // 标识符别名
       dataType: handleDataType(item), // 数据类型
       define: item.dataType || {}, // 数据定义
-      rw: ACCESS_MODE_MAP.getLabel?.(item.accessMode) ?? '-', // 读写权限
+      accessMode: ACCESS_MODE_MAP.getLabel?.(item.accessMode) ?? '-', // 读写权限
       functionMode: item.functionMode,
       ...overrides
     }
@@ -65,20 +66,21 @@ export const transformThingJsonToTable = (thingJson: ThingJson): Record<string, 
       key: 'properties',
       map: (item) => buildRow(item)
     },
-    {
-      key: 'events',
-      map: (item) =>
-        buildRow(item, {
-          dataType: '-',
-          rw: '-'
-        })
-    },
+
     {
       key: 'functions',
       map: (item) =>
         buildRow(item, {
           dataType: '-',
-          rw: '-'
+          accessMode: '-'
+        })
+    },
+    {
+      key: 'events',
+      map: (item) =>
+        buildRow(item, {
+          dataType: '-',
+          accessMode: '-'
         })
     }
   ]

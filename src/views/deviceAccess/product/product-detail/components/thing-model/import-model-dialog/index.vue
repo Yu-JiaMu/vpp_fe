@@ -29,7 +29,7 @@
             <el-table-column type="index" label="序号" width="60" />
             <el-table-column prop="type" label="功能类型" />
             <el-table-column prop="name" label="功能名称" />
-            <el-table-column prop="code" label="标识符" />
+            <el-table-column prop="identifier" label="标识符" />
             <el-table-column prop="dataType" label="数据类型" />
           </el-table>
         </template>

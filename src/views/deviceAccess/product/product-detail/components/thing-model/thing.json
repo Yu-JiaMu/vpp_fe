@@ -219,7 +219,7 @@
             ],
             "events": [
                 {
-                    "identifier": "Error",
+                    "identifier": "Error1",
                     "name": "故障上报",
                     "functionType": "st",
                     "eventType": "error",

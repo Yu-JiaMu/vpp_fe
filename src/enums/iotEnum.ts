@@ -47,9 +47,9 @@ export const CONNECTION_TYPES = createEnum({
 
 // 功能类型
 export const FUNCTION_MODE_MAP = createEnum({
-  PROPERTY: { label: '属性', value: 'property' },
-  EVENT: { label: '事件', value: 'event' },
-  SERVICE: { label: '功能', value: 'service' }
+  PROPERTY: { label: '属性', value: 'property', pKey: 'properties' },
+  EVENT: { label: '事件', value: 'event', pKey: 'events' },
+  SERVICE: { label: '功能', value: 'service', pKey: 'functions' }
 })
 
 // 物模型来源

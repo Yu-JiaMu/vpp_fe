@@ -1,11 +1,11 @@
 <template>
   <div
-    class="point-card relative p-3 border border-[#ebecf1] rounded-md hover:border-primary bg-white"
+    class="point-card w-full relative p-3 border border-[#ebecf1] rounded-md hover:border-primary bg-white"
   >
     <div class="flex-1">
       <div class="flex items-center gap-2">
         <span class="font-scMedium">{{ info.name }}</span>
-        <el-tag size="small" type="success">{{ info.category }}</el-tag>
+        <el-tag size="small" type="success">{{ info.type }}</el-tag>
       </div>
       <div class="mt-1 text-g-505658">
         <span class="mr-4"> 标识符: {{ info.identifier }}</span>

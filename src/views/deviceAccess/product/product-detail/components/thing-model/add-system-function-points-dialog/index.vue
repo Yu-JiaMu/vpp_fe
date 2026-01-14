@@ -72,8 +72,8 @@
           @click="dialogVisible = false"
           >取消</el-button
         >
-        <el-button type="primary" class="w-[177px]" v-ripple @click="handleExport">
-          导入物模型
+        <el-button type="primary" class="w-[177px]" v-ripple @click="handleAddPoint">
+          确认
         </el-button>
       </div>
     </template>
@@ -82,59 +82,19 @@
 
 <script setup>
   import { ref, computed } from 'vue'
-  import { Search, ArrowRight, Close } from '@element-plus/icons-vue'
+  import * as api from '@/api/iot'
   import PointCard from './point-card.vue'
+  import { transformThingJsonToTable } from '@/utils'
+
+  const emits = defineEmits(['addFunctionPoint'])
   /** 弹窗状态 */
-  const dialogVisible = ref(true)
+  const dialogVisible = ref(false)
 
   /** 搜索关键字 */
   const keyword = ref('')
 
   /** 模拟数据（后续可直接换 thingJson 转换结果） */
-  const allFunctionPoints = ref([
-    {
-      id: '1',
-      name: 'Voltage',
-      identifier: 'voltage',
-      category: 'Property',
-      accessMode: '只读'
-    },
-    {
-      id: '2',
-      name: 'Current',
-      identifier: 'current',
-      category: 'Property',
-      accessMode: '只读'
-    },
-    {
-      id: '3',
-      name: 'Switch',
-      identifier: 'switch',
-      category: 'Function',
-      accessMode: '读写'
-    },
-    {
-      id: '4',
-      name: 'Voltage',
-      identifier: 'voltage',
-      category: 'Property',
-      accessMode: '只读'
-    },
-    {
-      id: '5',
-      name: 'Current',
-      identifier: 'current',
-      category: 'Property',
-      accessMode: '只读'
-    },
-    {
-      id: '6',
-      name: 'Switch',
-      identifier: 'switch',
-      category: 'Function',
-      accessMode: '读写'
-    }
-  ])
+  const allFunctionPoints = ref([])
 
   /** 已选功能点 */
   const selectedList = ref([])
@@ -178,12 +138,26 @@
   }
 
   /** 提交 */
-  const handleExport = () => {
+  const handleAddPoint = () => {
     console.log('Selected Function Points:', selectedList.value)
+    emits('addFunctionPoint', selectedList.value)
     dialogVisible.value = false
   }
 
-  onMounted(() => {})
+  async function getSystemPoint() {
+    const res = await api.getSystemFunctionPoint()
+    const data = transformThingJsonToTable(res)
+    allFunctionPoints.value = data
+  }
+  const open = (row) => {
+    dialogVisible.value = true
+  }
+
+  defineExpose({ open })
+
+  onMounted(() => {
+    getSystemPoint()
+  })
 </script>
 
 <style lang="scss" scoped>

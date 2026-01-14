@@ -57,7 +57,7 @@
           添加自定义功能点
         </el-button>
         <div class="dividing-line"></div>
-        <el-button text class="!text-g-303537 !ml-0" @click="handleSetModel">
+        <el-button text class="!text-g-303537 !ml-0" @click="openSystemFunctionDialog">
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-002.png" alt="" />
           添加系统功能点
         </el-button>
@@ -86,7 +86,7 @@
       <el-table-column prop="type" label="功能类型" width="100" />
       <el-table-column prop="source" label="功能来源" width="100" />
       <el-table-column prop="name" label="功能名称" width="120" />
-      <el-table-column prop="code" label="标识符" width="160" />
+      <el-table-column prop="identifier" label="标识符" width="160" />
       <el-table-column prop="dataType" label="数据类型" width="140" />
 
       <!-- 数据定义 -->
@@ -156,7 +156,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column prop="rw" label="读写类型" width="100" />
+      <el-table-column prop="accessMode" label="读写类型" width="100" />
 
       <!-- 操作 -->
       <el-table-column label="操作" :width="isSettingModel ? 160 : 80" fixed="right">
@@ -177,7 +177,10 @@
     <ImportModelDialog ref="importModelDialogRef" />
 
     <!-- 添加系统功能点 -->
-    <AddSystemFunctionPointsDialog ref="addSystemFunctionPointsDialogRef" />
+    <AddSystemFunctionPointsDialog
+      ref="addSystemFunctionPointsDialogRef"
+      @addFunctionPoint="addFunctionPoint"
+    />
   </div>
 </template>
 
@@ -252,6 +255,31 @@
     importModelDialogRef.value.open()
   }
 
+  const addSystemFunctionPointsDialogRef = useTemplateRef('addSystemFunctionPointsDialogRef')
+
+  const openSystemFunctionDialog = () => {
+    addSystemFunctionPointsDialogRef.value.open()
+  }
+
+  const addFunctionPoint = (data) => {
+    console.log(data)
+    const model = thingJson.modules[0]
+
+    data.forEach((item) => {
+      // 模型已存在
+      const existModel = originTableData.value.find(
+        (modelItem) => modelItem.identifier === item.identifier
+      )
+      if (existModel) return
+
+      let key = FUNCTION_MODE_MAP.getItem(item.functionMode).pKey
+
+      model[key].push(item.originData)
+    })
+
+    originTableData.value = transformThingJsonToTable(thingJson)
+    handleSearch()
+  }
   onMounted(() => {
     tableData.value = [...originTableData.value]
   })
