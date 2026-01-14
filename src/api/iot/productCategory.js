@@ -25,6 +25,14 @@ export function apiProductCategoryEdit(params) {
   return request.put('/stage-api/model/productCateory/edit', params)
 }
 // 产品品类删除
-export function apiProductCategoryDelete(ids) {
-  return request.delete(`/stage-api/model/productCateory/${ids}`)
+export function apiProductCategoryDelete(params) {
+  return request.post(`/stage-api/model/productCateory/delete`, params)
+}
+// 产品品类详情
+export function apiProductCategoryDetail(id) {
+  return request.get(`/stage-api/model/productCateory/${id}`)
+}
+//导出
+export function apiProductCategoryExport(id, params) {
+  return request.get(`/stage-api/model/productCateory/export/thingModel/${id}`, params)
 }
