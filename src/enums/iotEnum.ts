@@ -10,7 +10,6 @@
 import { createEnum } from '@/utils'
 
 /**
- * 节点类型定义：包含不同节点的标签和值。
  // --- 使用场景 ---
 
 // A. 下拉框渲染
@@ -25,6 +24,10 @@ import { createEnum } from '@/utils'
 // D. 获取额外属性
 // const color = NODE_TYPE.getItem('direct')?.color;
 */
+
+/**
+ * 节点类型定义：包含不同节点的标签和值。
+ */
 export const NODE_TYPES = createEnum({
   DIRECT: { label: '直连设备', value: 'direct' },
   GATEWAY: { label: '网关设备', value: 'gateway' },
@@ -40,4 +43,52 @@ export const CONNECTION_TYPES = createEnum({
   ETHERNET: { label: '以太网', value: 'ethernet' },
   LORAWAN: { label: 'LoRaWAN', value: 'lorawan' },
   OTHER: { label: '其他', value: 'other' }
+})
+
+// 功能类型
+export const FUNCTION_MODE_MAP = createEnum({
+  PROPERTY: { label: '属性', value: 'property' },
+  EVENT: { label: '事件', value: 'event' },
+  SERVICE: { label: '功能', value: 'service' }
+})
+
+// 物模型来源
+export const THING_SOURCE_MAP = createEnum({
+  SYSTEM: { label: '系统', value: 'st' },
+  CUSTOM: { label: '自定义', value: 'custom' }
+})
+
+// 读写类型
+export const ACCESS_MODE_MAP = createEnum({
+  READ: { label: '只读', value: 'r' },
+  WRITE: { label: '只写', value: 'w' },
+  READ_WRITE: { label: '读写', value: 'rw' }
+})
+
+// 同异步方式
+export const CALL_TYPE_MAP = createEnum({
+  SYNC: { label: '同步', value: 'sync' },
+  ASYNC: { label: '异步', value: 'async' }
+})
+
+// 事件类型
+export const EVENT_TYPE_MAP = createEnum({
+  INFO: { label: '普通', value: 'info' },
+  WARN: { label: '警告', value: 'warn' },
+  ERROR: { label: '紧急', value: 'error' }
+})
+
+// 数据类型
+export const DATA_TYPE_MAP = createEnum({
+  INT: { label: '整数', value: 'int' },
+  FLOAT: { label: '浮点数', value: 'float' },
+  DOUBLE: { label: '双精度浮点数', value: 'double' },
+  TEXT: { label: '文本', value: 'text' },
+  DATE: { label: '时间戳', value: 'date' },
+  BOOLEAN: { label: '布尔', value: 'boolean' },
+  ENUM: { label: '枚举', value: 'enum' },
+  ARRAY: { label: '数组', value: 'array' },
+  OBJECT: { label: '结构体', value: 'object' },
+  PASSWORD: { label: '密码', value: 'password' },
+  GEO_POINT: { label: '坐标', value: 'geo_point' }
 })
