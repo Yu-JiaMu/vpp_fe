@@ -342,6 +342,7 @@
     router.push({
       name: 'ProductCategoryDetail',
       query: { id: row.id }
+      // params: { id: row.id }
     })
   }
 
