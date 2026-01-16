@@ -363,3 +363,120 @@ export function validateDescLength(rule: any, value: any, callback: any) {
     callback()
   }
 }
+
+// 标识符校验
+export function validateIdentifier(rule: any, value: any, callback: any) {
+  if (!value) {
+    return callback(new Error('请输入标识符'))
+  }
+
+  // 长度校验
+  if (value.length > 20) {
+    return callback(new Error('长度不能超过20个字符'))
+  }
+
+  // 格式校验：首字母 + 字母/数字/下划线
+  const identifierReg = /^[A-Za-z][A-Za-z0-9_]*$/
+
+  if (!identifierReg.test(value)) {
+    return callback(new Error('仅支持英文字母、数字、下划线，且首字符必须为英文字母'))
+  }
+
+  callback()
+}
+
+/**
+ * 唯一性校验（数组对象）
+ * @param list - 数据源数组（对象数组）
+ * @param field - 唯一字段名，如 'identifier'
+ * @param options - 可选配置
+ */
+export function createUniqueValidator(
+  list: Record<string, any>[],
+  field: string,
+  options?: {
+    /** 当前值（编辑场景排除自己） */
+    currentValue?: string
+    /** 是否忽略大小写 */
+    ignoreCase?: boolean
+    /** 自定义错误提示 */
+    message?: string
+  }
+) {
+  const { currentValue, ignoreCase = false, message = '该值已存在，请更换' } = options || {}
+
+  return function validateUnique(rule: any, value: any, callback: any) {
+    if (!value) return callback()
+
+    const exists = list.some((item) => {
+      const itemValue = item?.[field]
+      if (!itemValue) return false
+
+      const v1 = ignoreCase ? String(itemValue).toLowerCase() : itemValue
+      const v2 = ignoreCase ? String(value).toLowerCase() : value
+
+      // 编辑态排除自身
+      if ((currentValue !== undefined || currentValue !== '') && v1 === currentValue) {
+        return false
+      }
+
+      return v1 === v2
+    })
+
+    if (exists) {
+      return callback(new Error(message))
+    }
+
+    callback()
+  }
+}
+
+/**
+ * 异步唯一性校验
+ * @param checkFn - 校验接口函数，返回 Promise<boolean>
+ *                 true：已存在（不通过）
+ *                 false：不存在（通过）
+ * @param options - 配置项
+ */
+export function createAsyncUniqueValidator(
+  checkFn: (value: string) => Promise<boolean>,
+  options?: {
+    /** 编辑态原始值（相同则跳过校验） */
+    currentValue?: string
+    /** 自定义错误提示 */
+    message?: string
+    /** 防抖时间（ms） */
+    debounce?: number
+  }
+) {
+  const { currentValue, message = '该值已存在，请更换', debounce = 300 } = options || {}
+
+  let timer: number | null = null
+
+  return function validate(rule: any, value: string) {
+    if (!value) return Promise.resolve()
+
+    // 编辑态值未变化，直接通过
+    if (currentValue !== undefined && value === currentValue) {
+      return Promise.resolve()
+    }
+
+    // 防抖处理
+    if (timer) {
+      clearTimeout(timer)
+      timer = null
+    }
+
+    return new Promise<void>((resolve, reject) => {
+      timer = window.setTimeout(async () => {
+        try {
+          const exists = await checkFn(value)
+          exists ? reject(new Error(message)) : resolve()
+        } catch (err) {
+          // 接口异常，一般放行或给统一错误
+          resolve()
+        }
+      }, debounce)
+    })
+  }
+}

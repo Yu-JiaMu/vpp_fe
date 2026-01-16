@@ -46,7 +46,7 @@
       </div>
 
       <div v-else class="flex items-center op-con">
-        <el-button text class="!text-g-303537" @click="handleExportModel">
+        <el-button text class="!text-g-303537" @click="openCustomFunctionDialog">
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-001.png" alt="" />
           添加自定义功能点
         </el-button>
@@ -175,6 +175,12 @@
       ref="addSystemFunctionPointsDialogRef"
       @addFunctionPoint="addFunctionPoint"
     />
+
+    <!-- 添加自定义功能点 -->
+    <AddCustomFunctionPointDialog
+      ref="addCustomFunctionPointDialogRef"
+      @addFunctionPoint="addFunctionPoint"
+    />
   </div>
 </template>
 
@@ -182,6 +188,7 @@
   import ExportModelDialog from './export-model-dialog/index.vue'
   import ImportModelDialog from './import-model-dialog/index.vue'
   import AddSystemFunctionPointsDialog from './add-system-function-points-dialog/index.vue'
+  import AddCustomFunctionPointDialog from './add-custom-function-point-dialog/index.vue'
   import { ref } from 'vue'
   import thingJson from './thing.json'
   import { transformThingJsonToTable } from '@/utils'
@@ -253,6 +260,11 @@
 
   const openSystemFunctionDialog = () => {
     addSystemFunctionPointsDialogRef.value.open()
+  }
+
+  const addCustomFunctionPointDialogRef = useTemplateRef('addCustomFunctionPointDialogRef')
+  const openCustomFunctionDialog = () => {
+    addCustomFunctionPointDialogRef.value.open()
   }
 
   const isChange = ref(false) // 已修改未保存

@@ -61,7 +61,6 @@ export const THING_SOURCE_MAP = createEnum({
 // 读写类型
 export const ACCESS_MODE_MAP = createEnum({
   READ: { label: '只读', value: 'r' },
-  WRITE: { label: '只写', value: 'w' },
   READ_WRITE: { label: '读写', value: 'rw' }
 })
 
