@@ -47,7 +47,13 @@
         </div>
       </div>
 
-      <el-table ref="tableRef" :data="tableData" border style="width: 100%">
+      <el-table
+        ref="tableRef"
+        :data="tableData"
+        border
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+      >
         <el-table-column type="selection" width="55" />
         <el-table-column prop="categoryType" label="品类类别">
           <template #default="{ row }">
@@ -175,16 +181,6 @@
         options: industryOptions.value
       }
     }
-    // {
-    //   label: '所属场景',
-    //   key: 'sceneCode',
-    //   type: 'select',
-    //   props: {
-    //     placeholder: '请选择所属场景',
-    //     filterable: true,
-    //     options: sceneOptions.value
-    //   }
-    // }
   ])
 
   // 行业选项（根据实际数据动态生成）
@@ -256,6 +252,12 @@
     fetchTableData()
   }
 
+  // 处理表格选择变化
+  const handleSelectionChange = (selection) => {
+    selectedRows.value = selection
+    console.log('选中了', selectedRows.value.length, '条记录')
+  }
+
   // 获取表格数据
   const tableData = ref([])
 
@@ -272,6 +274,7 @@
   const formatThingModelStatus = (thingModelJson) => {
     return thingModelJson ? true : false
   }
+
   const handleIndustryChange = (type = 'industryCode') => {
     if (form.industryCodeAndsceneCode.length === 0) {
       form.industryCode = ''
@@ -281,6 +284,7 @@
     if (type === 'industryCode') return form.industryCodeAndsceneCode[0] || ''
     if (type === 'sceneCode') return form.industryCodeAndsceneCode[1] || ''
   }
+
   // 获取表格数据函数
   const fetchTableData = async () => {
     try {
@@ -302,7 +306,6 @@
 
       if (response.code === 200) {
         // API返回的数据是 response.rows
-
         const apiData = response.rows || []
         // 转换数据格式以匹配表格列
         tableData.value = apiData.map((item) => ({
@@ -339,6 +342,7 @@
     router.push({
       name: 'ProductCategoryDetail',
       query: { id: row.id }
+      // params: { id: row.id }
     })
   }
 
@@ -352,13 +356,9 @@
       })
 
       // 调用删除API
-      // const response = await productCategoryApi.deleteProductCategory(row.id)
-      // if (response.code === 200) {
+      await productCategoryApi.apiProductCategoryDelete([row.id])
       ElMessage.success('删除成功')
       fetchTableData() // 刷新表格
-      // } else {
-      //   ElMessage.error(response.msg || '删除失败')
-      // }
     } catch (error) {
       if (error !== 'cancel') {
         console.error('删除失败:', error)
@@ -386,16 +386,16 @@
       .then(async () => {
         try {
           // 调用批量删除API
-          // const ids = selectedRows.value.map(row => row.id)
-          // const response = await productCategoryApi.batchDeleteProductCategory(ids)
-          // if (response.code === 200) {
+          const ids = selectedRows.value.map((row) => row.id)
+          await productCategoryApi.apiProductCategoryDelete(ids)
           ElMessage.success(`成功删除 ${selectedRows.value.length} 条记录`)
           fetchTableData() // 刷新表格
-          // } else {
-          //   ElMessage.error(response.msg || '批量删除失败')
-          // }
+          // 清空选中状态
+          tableRef.value.clearSelection()
+          selectedRows.value = []
         } catch (error) {
-          ElMessage.error(error, '批量删除失败')
+          console.error('批量删除失败:', error)
+          ElMessage.error('批量删除失败')
         }
       })
       .catch(() => {
@@ -411,16 +411,6 @@
     }
 
     try {
-      const dataStr = JSON.stringify(row.rawData.thingModelJson, null, 2)
-      const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr)
-
-      const exportFileDefaultName = `${row.name}_物模型.json`
-
-      const linkElement = document.createElement('a')
-      linkElement.setAttribute('href', dataUri)
-      linkElement.setAttribute('download', exportFileDefaultName)
-      linkElement.click()
-
       ElMessage.success('导出成功')
     } catch (error) {
       console.error('导出失败:', error)
@@ -429,7 +419,7 @@
   }
 
   // 批量导出物模型
-  const handleExportThingModel = () => {
+  const handleExportThingModel = async () => {
     if (selectedRows.value.length === 0) {
       ElMessage.warning('请选择要导出的产品品类')
       return
@@ -442,18 +432,61 @@
     }
 
     try {
-      // 如果有多个选中的，导出第一个
-      if (hasThingModelRows.length > 0) {
+      // 如果只选择了一个且有物模型，导出单个
+      if (hasThingModelRows.length === 1) {
         handleExportSingle(hasThingModelRows[0])
+        return
       }
 
-      // 如果需要批量导出多个，可以使用以下代码
-      // if (hasThingModelRows.length === 1) {
-      //   handleExportSingle(hasThingModelRows[0])
-      // } else {
-      //   // 多个文件，可以打包成zip
-      //   ElMessage.info('批量导出功能开发中...')
-      // }
+      // 批量导出多个
+      ElMessageBox.confirm(
+        `将导出选中的 ${hasThingModelRows.length} 个物模型，是否继续？`,
+        '批量导出确认',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'info'
+        }
+      )
+        .then(async () => {
+          // 批量导出接口调用
+          const categoryIds = hasThingModelRows.map((row) => row.id)
+
+          try {
+            // 调用批量导出接口
+            const response = await productCategoryApi.batchExportThingModel(categoryIds)
+
+            if (response.code === 200) {
+              if (response.data && response.data.downloadUrl) {
+                // 如果有下载链接，直接下载
+                window.open(response.data.downloadUrl, '_blank')
+                ElMessage.success('批量导出成功，开始下载')
+              } else if (response.data && response.data.fileContent) {
+                // 如果有文件内容，创建下载
+                const blob = new Blob([response.data.fileContent], { type: 'application/zip' })
+                const url = window.URL.createObjectURL(blob)
+                const link = document.createElement('a')
+                link.href = url
+                link.download = `物模型批量导出_${new Date().getTime()}.zip`
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+                window.URL.revokeObjectURL(url)
+                ElMessage.success('批量导出成功，开始下载')
+              } else {
+                ElMessage.success('批量导出请求已提交，请稍后查看下载')
+              }
+            } else {
+              ElMessage.error(response.msg || '批量导出失败')
+            }
+          } catch (error) {
+            console.error('批量导出失败:', error)
+            ElMessage.error('批量导出失败')
+          }
+        })
+        .catch(() => {
+          // 用户取消
+        })
     } catch (error) {
       console.error('批量导出失败:', error)
       ElMessage.error('批量导出失败')
@@ -473,11 +506,15 @@
       productCategoryDialogRef.value.initFormData(data)
     }
   }
+
   // 处理编辑
-  const handleEdit = (row) => {
+  const handleEdit = async (row) => {
     console.log('编辑:', row)
-    openDialog('edit', row)
+    const res = await productCategoryApi.apiProductCategoryDetail(row.id)
+    console.log(res)
+    openDialog('edit', res)
   }
+
   // 成功弹窗
   const showSuccessDialog = ref(false)
 
@@ -487,15 +524,15 @@
     if (formData.id) return
     try {
       // 这里调用新增API
-      // const response = await productCategoryApi.addProductCategory(formData)
-      // if (response.code === 200) {
-      ElMessage.success('新增成功')
-      showSuccessDialog.value = true
-      // 刷新表格数据
-      fetchTableData()
-      // } else {
-      //   ElMessage.error(response.msg || '新增失败')
-      // }
+      const response = await productCategoryApi.addProductCategory(formData)
+      if (response.code === 200) {
+        ElMessage.success('新增成功')
+        showSuccessDialog.value = true
+        // 刷新表格数据
+        fetchTableData()
+      } else {
+        ElMessage.error(response.msg || '新增失败')
+      }
     } catch (error) {
       console.error('新增失败:', error)
       ElMessage.error('新增失败，请稍后重试')
@@ -512,15 +549,6 @@
     getIndustryList()
     fetchTableData()
   })
-
-  // 监听搜索条件变化
-  watch(
-    () => [currentPage.value, pageSize.value],
-    () => {
-      fetchTableData()
-    },
-    { immediate: false }
-  )
 </script>
 
 <style lang="scss" scoped>

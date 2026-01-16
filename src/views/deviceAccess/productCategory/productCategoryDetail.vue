@@ -1,75 +1,92 @@
 <template>
-  <div>
+  <div class="product-category-detail">
     <ElCard class="art-table-card" shadow="never">
       <div>便携式电源</div>
       <el-row class="mt20">
         <el-col :span="6">
-          <span>所属行业/场景:</span>
-          <span>所属行业</span>
+          <span class="mr5">所属行业/场景:</span>
+          <span
+            >{{ productCategoryDetail.industryCode }}/{{ productCategoryDetail.sceneCode }}</span
+          >
         </el-col>
         <el-col :span="6">
-          <span>描述:</span>
-          <span>无</span>
+          <span class="mr5">描述:</span>
+          <span>{{ productCategoryDetail.remark }}</span>
         </el-col>
         <div></div>
       </el-row>
       <el-row class="mt10">
         <el-col :span="6">
-          <span>创建时间:</span>
-          <span>无</span>
+          <span class="mr5">创建时间:</span>
+          <span>{{ productCategoryDetail.createTime }}</span>
         </el-col>
         <el-col :span="6">
-          <span>更新时间:</span>
-          <span>2024-06-10 14:20:00</span>
+          <span class="mr5">更新时间:</span>
+          <span>{{ productCategoryDetail.updateTime }}</span>
         </el-col>
       </el-row>
     </ElCard>
-    <div class="w-m-x flex flex-cz-center flex-sp-center mt20">
-      <el-button type="primary" class="btn-width-118">物模型</el-button>
-    </div>
-    <ElCard class="art-table-card" shadow="never">
-      <div class="flex flex-cz-center flex-space-between mb20">
-        <div class="flex flex-cz-center">
-          <div class="input-container">
-            <span class="fixed-label">功能名称</span>
-            <input v-model="inputValue" type="text" class="inner-input" placeholder="请输入" />
-          </div>
-          <div class="flex flex-cz-center ml10">
-            <el-button class="mr10 btn-height-45" style="width: 145px">搜索</el-button>
-            <div class="btn-rest flex flex-cz-center flex-sp-center">
-              <img
-                src="~@/assets/images/deviceAccess/4.png"
-                style="width: 20px; height: 20px"
-                class="mr5"
-              />
-              <span>重置</span>
-            </div>
-          </div>
-        </div>
-        <div class="flex">
-          <div class="flex flex-cz-center flex-sp-center add-container mr10">
-            <img
-              src="~@/assets/images/deviceAccess/2.png"
-              style="width: 20px; height: 20px"
-              class="mr5"
-            />
-            <span>删除</span>
-          </div>
-          <div class="flex flex-cz-center flex-sp-center add-container">
-            <img
-              src="~@/assets/images/deviceAccess/3.png"
-              style="width: 20px; height: 20px"
-              class="mr5"
-            />
-            <span>设置物模型</span>
-          </div>
-        </div>
+    <div class="mt10 flex h-12 bg-white tab-con w-fit">
+      <div
+        v-for="item in TABS"
+        :key="item.value"
+        class="tab-item w-[135px] flex-cc cursor-pointer"
+        :class="{ active: activeTab === item.value }"
+        @click="activeTab = item.value"
+      >
+        <div class="tab-btn w-[118px] h-8 rounded-sm">{{ item.label }}</div>
       </div>
-    </ElCard>
+    </div>
+    <!-- 物模型 -->
+    <ThingModel v-if="activeTab === 'model'" :product="product" @refresh="getDetail"></ThingModel>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+  import * as productCategoryApi from '@/api/iot/productCategory.js'
+  import ThingModel from '@/views/deviceAccess/product/product-detail/components/thing-model/index.vue'
+  const inputValue = ref('')
+  const route = useRoute()
+  const productCategoryId = route.query.id
+  const productCategoryDetail = reactive({})
+  //获取详情
+  const getProductCategoryDetail = async () => {
+    const res = await productCategoryApi.apiProductCategoryDetail(productCategoryId)
+    Object.keys(res).forEach((key) => {
+      productCategoryDetail[key] = res[key]
+    })
+    console.log(productCategoryDetail)
+  }
+  //tab切换
+  const activeTab = ref('model')
+  const TABS = [
+    {
+      label: '物模型',
+      value: 'model'
+    }
+  ]
+  const product = ref({
+    id: '1955073219080001',
+    name: '计量电表001',
+    enabled: true,
+    deviceCount: 41,
+    category: '能源电力 / 电表 / 表计',
+    nodeType: '网关设备',
+    protocol: 'MQTT',
+    network: 'WIFI',
+    dataFormat: 'JSON',
+    authType: '设备序列号',
+    vendor: '安科瑞',
+    productType: '104表计',
+    createdAt: '2025-08-31 12:00:00',
+    updatedAt: '2025-08-31 12:00:00',
+    desc: '用于MQTT协议相关产品'
+  })
+  const getDetail = () => {}
+  onMounted(() => {
+    getProductCategoryDetail()
+  })
+</script>
 
 <style lang="scss" scoped>
   .w-m-x {
@@ -82,5 +99,50 @@
   .art-table-card {
     margin-top: 0 !important;
     border-radius: 0px 6px 6px 6px !important;
+  }
+  .product-category-detail {
+    .tab-con {
+      border-radius: 6px 6px 0px 0px;
+      border: 1px solid var(--default-border);
+      .tab-item {
+        position: relative;
+        font-size: 15px;
+        line-height: 32px;
+        text-align: center;
+        font-family:
+          Source Han Sans SC,
+          Source Han Sans SC-Bold;
+        color: var(--color-g-303537);
+        &:hover:not(.active) {
+          color: var(--art-primary);
+        }
+        &::after {
+          content: '';
+          position: absolute;
+          width: 1px;
+          height: 20px;
+          background-color: #ced1d9;
+          right: 0;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+        &.active {
+          color: #ffffff;
+          font-family:
+            Source Han Sans SC,
+            Source Han Sans SC-Regular;
+          .tab-btn {
+            background-color: var(--art-primary);
+          }
+        }
+      }
+      .tab-item:last-child::after {
+        content: none;
+      }
+    }
+
+    .base-info-table {
+      border: 1px solid var(--default-border);
+    }
   }
 </style>
