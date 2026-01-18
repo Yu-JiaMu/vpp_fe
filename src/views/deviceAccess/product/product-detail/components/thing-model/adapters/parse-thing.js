@@ -25,7 +25,8 @@ export function parseDataType(dataType) {
       children: specsArray.map((item) => ({
         identifier: item.identifier,
         name: item.name,
-        dataType: parseDataType(item.dataType)
+        dataType: parseDataType(item.dataType),
+        desc: item.desc
       }))
     }
   }

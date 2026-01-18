@@ -86,67 +86,7 @@
       <!-- 数据定义 -->
       <el-table-column label="数据定义" min-width="260">
         <template #default="{ row }">
-          <!-- 属性 -->
-          <template v-if="row.functionMode === FUNCTION_MODE_MAP.values.PROPERTY">
-            <!-- int,float,double -->
-            <div v-if="['int', 'float', 'double'].includes(row.define.type)">
-              取值范围：{{ row.define.specs.min }} ~ {{ row.define.specs.max }}；
-              <br />
-              步长：{{ row.define.specs.step }}；
-              <!-- <br />
-            单位：{{ row.define.unit }} -->
-            </div>
-
-            <!-- text -->
-            <div v-if="row.define.type === 'text'"> 数据长度：{{ row.define.specs.length }} </div>
-
-            <!-- date -->
-            <div v-if="row.define.type === 'date'"> 整数类型Int64的UTC时间戳(毫秒) </div>
-
-            <!-- boolean/enum -->
-            <div v-if="['boolean', 'enum'].includes(row.define.type)" class="gap-2 flex-c">
-              <el-tag
-                class="enum-tag"
-                v-for="(value, label) in row.define.specs"
-                :key="value"
-                size="small"
-                type="primary"
-              >
-                {{ label }}-{{ value }}
-              </el-tag>
-            </div>
-
-            <!-- array -->
-            <div v-if="row.define.type === 'array'">
-              数组个数：{{ row.define.specs.maxItemsCount }}
-            </div>
-
-            <!-- object -->
-            <div v-if="row.define.type === 'object'"> - </div>
-
-            <!-- password -->
-            <div v-if="row.define.type === 'password'">
-              最大长度：{{ row.define.specs.length }}
-            </div>
-
-            <!-- geo_point -->
-            <div v-if="row.define.type === 'geo_point'"> 地址位置数据，以经纬度显示 </div>
-          </template>
-
-          <!-- 事件 -->
-          <template v-if="row.functionMode === FUNCTION_MODE_MAP.values.EVENT">
-            <div class="flex-c">
-              事件级别：
-              <el-tag :type="levelTagType(row.originData.eventType)" size="small">
-                {{ EVENT_TYPE_MAP.getLabel(row.originData.eventType) }}
-              </el-tag>
-            </div>
-          </template>
-
-          <!-- 功能 -->
-          <template v-if="row.functionMode === FUNCTION_MODE_MAP.values.SERVICE">
-            调用方式：{{ CALL_TYPE_MAP.getLabel(row.originData.callType) }}
-          </template>
+          <FunctionDefinePreview :row="row" />
         </template>
       </el-table-column>
 
@@ -179,7 +119,8 @@
     <!-- 添加自定义功能点 -->
     <AddCustomFunctionPointDialog
       ref="addCustomFunctionPointDialogRef"
-      @addFunctionPoint="addFunctionPoint"
+      :tableData="tableData"
+      @addFunctionPoint="addCustomPoint"
     />
   </div>
 </template>
@@ -189,6 +130,7 @@
   import ImportModelDialog from './import-model-dialog/index.vue'
   import AddSystemFunctionPointsDialog from './add-system-function-points-dialog/index.vue'
   import AddCustomFunctionPointDialog from './add-custom-function-point-dialog/index.vue'
+  import FunctionDefinePreview from './function-define-preview/index.vue'
   import { ref } from 'vue'
   import thingJson from './thing.json'
   import { transformThingJsonToTable } from '@/utils'
@@ -286,6 +228,15 @@
       model[key].push(item.originData)
     })
 
+    originTableData.value = transformThingJsonToTable(thingJson)
+    handleSearch()
+  }
+
+  const addCustomPoint = ({ data, functionMode }) => {
+    isChange.value = true
+    const model = thingJson.modules[0]
+    let key = FUNCTION_MODE_MAP.getItem(functionMode).pKey
+    model[key].push(data)
     originTableData.value = transformThingJsonToTable(thingJson)
     handleSearch()
   }

@@ -31,45 +31,91 @@
  */
 interface EnumItem {
   label: string
-  value: string | number
+  value: string | number | boolean
   [key: string]: any
 }
 
+type EnumValues<T extends Record<string, EnumItem>> = T[keyof T]['value']
+type EnumValueMap<T extends Record<string, EnumItem>> = {
+  readonly [K in keyof T]: T[K]['value']
+}
+
+// 类型体操：递归替换字符 (模拟 runtime 的 replace)
+type ReplaceAll<
+  S extends string,
+  From extends string,
+  To extends string
+> = S extends `${infer Prefix}${From}${infer Suffix}`
+  ? `${Prefix}${To}${ReplaceAll<Suffix, From, To>}`
+  : S
+
+// 类型体操：生成 Key (模拟 runtime 的 enumKeyFromValue)
+type GetEnumKey<V extends string | number | boolean> = ReplaceAll<Uppercase<`${V}`>, '-', '_'>
+// 运行时辅助函数
+function enumKeyFromValue(value: string | number | boolean): string {
+  return String(value).toUpperCase().replace(/-/g, '_')
+}
+
+// ✅ 1. 对象输入重载
+export function createEnum<T extends Record<string, EnumItem>>(
+  input: T
+): {
+  map: T
+  options: T[keyof T][]
+  values: EnumValueMap<T>
+  getLabel: (value: EnumValues<T>) => string
+  getItem: (value: EnumValues<T>) => T[keyof T] | undefined
+}
+
+// ✅ 2. 数组输入重载 (修复了 values 推断)
+export function createEnum<const T extends readonly EnumItem[]>(
+  input: T
+): {
+  map: Record<string, T[number]>
+  options: T[number][]
+  values: {
+    readonly [Item in T[number] as GetEnumKey<Item['value']>]: Item['value']
+  }
+  // 👈 修改点 3：参数支持 boolean
+  getLabel: (value: T[number]['value']) => string
+  getItem: (value: T[number]['value']) => T[number] | undefined
+}
 /**
  * 枚举工厂函数
  * 自动产出 下拉列表数组、值枚举、Label 映射表 以及 安全查询函数。
  */
-export function createEnum<T extends Record<string, EnumItem>>(config: T) {
-  // 使用类型断言明确告诉 TS，这里的所有项都符合 T 的属性类型
-  const options = Object.values(config) as T[keyof T][]
+export function createEnum(input: any) {
+  const map: Record<string, EnumItem> = Array.isArray(input)
+    ? input.reduce((acc: Record<string, EnumItem>, item: EnumItem) => {
+        const key = enumKeyFromValue(item.value)
+        acc[key] = item
+        return acc
+      }, {})
+    : input
 
-  // 这里的 kvMap 存储的是整项数据
-  const kvMap = Object.values(config).reduce(
+  const options = Object.values(map)
+
+  // 👈 修改点 4：构建查找表时，Key 统一转为 String (处理 boolean 无法作为索引的问题)
+  const kvMap = options.reduce(
     (acc, item) => {
-      acc[item.value] = item as T[keyof T] // 显式断言
+      acc[String(item.value)] = item
       return acc
     },
-    {} as Record<string | number, T[keyof T]>
+    {} as Record<string, EnumItem>
   )
 
-  const getLabel = (value: string | number): string => {
-    return kvMap[value]?.label || String(value)
-  }
+  // 👈 修改点 5：查询时，先 String(value) 再查
+  const getLabel = (value: string | number | boolean) =>
+    kvMap[String(value)]?.label ?? String(value)
+  const getItem = (value: string | number | boolean) => kvMap[String(value)]
 
-  const getItem = (value: string | number): T[keyof T] | undefined => {
-    return kvMap[value]
-  }
-
-  // 提取 values 时使用 mapped types 保持字面量类型
-  const values = Object.fromEntries(
-    Object.entries(config).map(([key, item]) => [key, item.value])
-  ) as { [K in keyof T]: T[K]['value'] }
+  const values = Object.fromEntries(Object.entries(map).map(([k, v]) => [k, v.value]))
 
   return {
-    map: config,
+    map,
     options,
+    values,
     getLabel,
-    getItem,
-    values
+    getItem
   }
 }

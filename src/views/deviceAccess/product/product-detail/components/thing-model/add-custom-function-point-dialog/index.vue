@@ -20,8 +20,7 @@
         </div>
       </div>
 
-      <!-- 物模型属性 -->
-      <ThingProperty ref="thingPropertyRef"></ThingProperty>
+      <component :is="componentMap[activeTab]" :ref="refMap[activeTab]" :tableData="tableData" />
     </div>
     <!-- Footer -->
     <template #footer>
@@ -40,29 +39,65 @@
 <script setup>
   import { ref, reactive } from 'vue'
   import { ElMessage } from 'element-plus'
-  import { CircleCheck } from '@element-plus/icons-vue'
   import { FUNCTION_MODE_MAP } from '@/enums'
   import ThingProperty from '../thing-property/index.vue'
+  import ThingService from '../thing-service/index.vue'
+  import ThingEvent from '../thing-event/index.vue'
+  const emits = defineEmits(['addFunctionPoint'])
 
+  const props = defineProps({
+    tableData: {
+      type: Array,
+      default: () => []
+    }
+  })
   const dialogVisible = ref(true)
   const activeTab = ref('property')
-  const formRef = ref(null)
 
+  const componentMap = {
+    property: ThingProperty,
+    service: ThingService,
+    event: ThingEvent
+  }
   const handleCancel = () => {
     dialogVisible.value = false
   }
 
-  const thingPropertyRef = useTemplateRef('thingPropertyRef')
-  const handleSubmit = () => {
-    console.log('thingPropertyRef', thingPropertyRef.value.getThingJson())
-    return
-    formRef.value.validate((valid) => {
-      if (!valid) return
-      console.log('提交数据:', form)
-      ElMessage.success('新增成功')
-      dialogVisible.value = false
-    })
+  const thingPropertyRef = ref()
+  const thingServiceRef = ref()
+  const thingEventRef = ref()
+
+  let refMap = {
+    property: thingPropertyRef,
+    service: thingServiceRef,
+    event: thingEventRef
   }
+
+  const handleSubmit = async () => {
+    const ref = refMap[activeTab.value]?.value
+    console.log(ref)
+
+    const { getThingJson } = ref
+    console.log('thingPropertyRef', getThingJson())
+
+    if (!ref?.submit) return
+
+    const data = await ref.submit()
+    console.log(data)
+
+    // if (!data) return
+    return
+    emits('addFunctionPoint', { data, functionMode: activeTab.value })
+    ElMessage.success('新增成功')
+    dialogVisible.value = false
+  }
+
+  const open = (row) => {
+    dialogVisible.value = true
+  }
+  onMounted(() => {})
+
+  defineExpose({ open })
 </script>
 
 <style lang="scss" scoped>

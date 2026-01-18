@@ -1,0 +1,175 @@
+<template>
+  <div class="thing-property">
+    <el-scrollbar max-height="650">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="90px" class="pr-8">
+        <el-form-item label="功能名称" prop="name">
+          <el-input v-model="form.name" placeholder="请输入功能名称" />
+        </el-form-item>
+
+        <el-form-item label="标识符" prop="identifier">
+          <el-input v-model="form.identifier" placeholder="请输入标识符" />
+        </el-form-item>
+
+        <el-form-item label="事件级别" prop="eventType">
+          <el-select v-model="form.eventType" class="w-full">
+            <el-option
+              v-for="item in EVENT_TYPE_MAP.options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="输出参数" class="relative">
+          <div class="add-btn absolute top-4 right-[-22px] z-10" @click="open('output')">
+            <img class="w-4.5 h-4.5" src="@/assets/images/icon/icon-add.png" alt="" />
+          </div>
+          <el-table :data="form.output" border>
+            <el-table-column prop="name" label="参数名称" />
+            <el-table-column prop="identifier" label="参数标识符" width="120" />
+            <el-table-column label="填写约束">
+              <template #default="{ row }">
+                {{ row.required ? '必填' : '选填' }}
+              </template>
+            </el-table-column>
+
+            <el-table-column label="数据类型">
+              <template #default="{ row }">
+                {{ row.dataType.type }}
+              </template>
+            </el-table-column>
+
+            <el-table-column label="数据定义">
+              <template #default="{ row }">
+                <FunctionDefinePreview :row="row" functionMode="property" />
+              </template>
+            </el-table-column>
+
+            <el-table-column label="操作" width="120">
+              <template #default="{ row, $index }">
+                <el-button type="primary" link @click="edit(row, $index, 'output')">编辑</el-button>
+                <el-button type="danger" link @click="remove($index, 'output')"> 删除 </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+
+        <el-form-item label="描述" prop="desc">
+          <el-input v-model="form.desc" type="textarea" :rows="5" maxlength="200" />
+          <div class="w-full mt-1 text-xs text-right text-gray-400">
+            {{ getByteLength(form.desc) }}/200
+          </div>
+        </el-form-item>
+      </el-form>
+    </el-scrollbar>
+
+    <ParamsDialog ref="dialogRef" v-model="form[paramsType]" />
+  </div>
+</template>
+
+<script setup>
+  import { EVENT_TYPE_MAP } from '@/enums'
+  import { buildThingModel } from '../adapters/build-thing'
+  import {
+    validateIdentifier,
+    validateNameLength,
+    validateDescLength,
+    validateCommon,
+    createUniqueValidator,
+    getByteLength
+  } from '@/utils'
+  import ParamsDialog from './params-dialog.vue'
+  import FunctionDefinePreview from '../function-define-preview/index.vue'
+
+  const props = defineProps({
+    tableData: {
+      type: Array,
+      default: () => []
+    },
+    parentType: {
+      type: String,
+      default: ''
+    }
+  })
+
+  const formRef = useTemplateRef('formRef')
+  const form = reactive({
+    name: '',
+    identifier: '',
+    eventType: '',
+    desc: '',
+
+    output: [
+      //   {
+      //     name: '',
+      //     identifier: '',
+      //     dataType: {
+      //       type: 'enum',
+      //       specs: {}
+      //     }
+      //   }
+    ]
+  })
+
+  const rules = {
+    name: [
+      { required: true, message: '请输入名称', trigger: 'blur' },
+      { validator: validateNameLength, trigger: 'blur' }
+    ],
+    identifier: [
+      { required: true, message: '请输入标识符', trigger: 'blur' },
+      { validator: validateIdentifier, trigger: 'blur' },
+      {
+        validator: createUniqueValidator(props.tableData, 'identifier', {
+          currentValue: () => form.identifier
+        }),
+        trigger: 'blur'
+      }
+    ],
+    eventType: [{ required: true, message: '请选择事件级别', trigger: 'change' }],
+    desc: [
+      { validator: validateCommon, trigger: 'blur' },
+      { validator: validateDescLength, trigger: 'blur' }
+    ]
+  }
+
+  const dialogRef = ref()
+  const paramsType = ref('')
+
+  const open = (type) => {
+    paramsType.value = type
+    dialogRef.value.open()
+  }
+
+  const edit = (row, index, type) => {
+    paramsType.value = type
+    dialogRef.value.open(row, index)
+  }
+
+  function remove(index, type) {
+    paramsType.value = type
+    form[paramsType.value].splice(index, 1)
+  }
+
+  const getThingJson = () => {
+    return buildThingModel(form, 'service')
+  }
+
+  const submit = async () => {
+    const valid = await formRef.value?.validate()
+    if (!valid) return null
+    return getThingJson()
+  }
+
+  defineExpose({
+    formRef,
+    form,
+    getThingJson,
+    submit
+  })
+</script>
+<style lang="scss" scoped>
+  .thing-property {
+  }
+</style>

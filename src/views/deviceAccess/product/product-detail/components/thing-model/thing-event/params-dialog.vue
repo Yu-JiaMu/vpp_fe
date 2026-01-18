@@ -1,12 +1,12 @@
 <template>
   <el-dialog
     v-model="visible"
-    :title="isEdit ? '编辑结构体参数' : '添加结构体参数'"
+    :title="isEdit ? '参数编辑' : '参数设置'"
     width="565"
     align-center
     :close-on-click-modal="false"
   >
-    <ThingProperty ref="refForm" parentType="object" :tableData="tableData" />
+    <ThingProperty ref="refForm" fromFunction :tableData="modelValue" />
     <template #footer>
       <div class="flex justify-center gap-[6px]">
         <el-button size="large" type="info" class="w-[177px]" v-ripple @click="visible = false">
@@ -19,14 +19,9 @@
 </template>
 
 <script setup>
-  import ThingProperty from './index.vue'
+  import ThingProperty from '../thing-property/index.vue'
 
-  const props = defineProps({
-    tableData: {
-      type: Array,
-      default: () => []
-    }
-  })
+  const props = defineProps({})
   const visible = ref(false)
   const modelValue = defineModel()
   const refForm = ref()
@@ -56,6 +51,8 @@
   }
 
   const open = (row, index) => {
+    // console.log(row, index)
+
     if (row && index !== undefined) {
       isEdit.value = true
       editIndex.value = index

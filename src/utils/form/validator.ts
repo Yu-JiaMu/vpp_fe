@@ -371,7 +371,7 @@ export function validateIdentifier(rule: any, value: any, callback: any) {
   }
 
   // 长度校验
-  if (value.length > 20) {
+  if (getByteLength(value) > 20) {
     return callback(new Error('长度不能超过20个字符'))
   }
 
@@ -403,7 +403,7 @@ export function createUniqueValidator(
     message?: string
   }
 ) {
-  const { currentValue, ignoreCase = false, message = '该值已存在，请更换' } = options || {}
+  const { currentValue, ignoreCase = false, message = '标识符已存在，请更换' } = options || {}
 
   return function validateUnique(rule: any, value: any, callback: any) {
     if (!value) return callback()
@@ -479,4 +479,77 @@ export function createAsyncUniqueValidator(
       }, debounce)
     })
   }
+}
+
+/**
+ * 参数描述校验（仅支持中文、英文字母、数字、短划线、下划线、@，必须中文或英文开头，长度不超过20字符）
+ */
+export function validateParamDesc(rule: any, value: any, callback: any) {
+  if (!value) {
+    return callback()
+  }
+
+  // 长度检查
+  if (getByteLength(value) > 20) {
+    return callback(new Error('长度不能超过20个字符'))
+  }
+
+  // 首字符检查：必须是中文或英文开头
+  const firstChar = value[0]
+  const isValidStart = /^[a-zA-Z\u4e00-\u9fa5]/.test(firstChar)
+
+  if (!isValidStart) {
+    return callback(new Error('必须以中文或英文字母开头'))
+  }
+
+  // 全字符检查：仅支持中文、英文字母、数字、短划线、下划线、@
+  const pattern = /^[a-zA-Z\u4e00-\u9fa5][a-zA-Z0-9\u4e00-\u9fa5\-_@]*$/
+
+  if (!pattern.test(value)) {
+    return callback(new Error('仅支持中文、英文字母、数字、短划线（-）、下划线（_）、@'))
+  }
+
+  callback()
+}
+
+/**
+ * 布尔值描述校验（必填，仅支持中文、英文字母、数字、短划线、下划线、@，必须中文或英文开头，长度不超过20字符）
+ */
+export function validateBooleanDesc(rule: any, value: any, callback: any) {
+  if (!value) {
+    return callback(new Error('请输入描述'))
+  }
+
+  // 长度检查
+  if (getByteLength(value) > 20) {
+    return callback(new Error('长度不能超过20个字符'))
+  }
+
+  // 首字符检查：必须是中文或英文开头
+  const firstChar = value[0]
+  const isValidStart = /^[a-zA-Z\u4e00-\u9fa5]/.test(firstChar)
+
+  if (!isValidStart) {
+    return callback(new Error('必须以中文或英文字母开头'))
+  }
+
+  // 全字符检查
+  const pattern = /^[a-zA-Z\u4e00-\u9fa5][a-zA-Z0-9\u4e00-\u9fa5\-_@]*$/
+
+  if (!pattern.test(value)) {
+    return callback(new Error('仅支持中文、英文字母、数字、短划线（-）、下划线（_）、@'))
+  }
+
+  callback()
+}
+
+/**
+ * 验证枚举值必须有一项
+ */
+export function validateEnumList(rule: any, value: any, callback: any) {
+  if (!Array.isArray(value) || value.length === 0) {
+    return callback(new Error('枚举值必须至少有一项'))
+  }
+
+  callback()
 }
