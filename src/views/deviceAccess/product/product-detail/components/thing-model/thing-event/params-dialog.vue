@@ -6,7 +6,13 @@
     align-center
     :close-on-click-modal="false"
   >
-    <ThingProperty ref="refForm" fromFunction :tableData="modelValue" />
+    <ThingProperty
+      ref="refForm"
+      fromFunction
+      :tableData="modelValue"
+      :key="`editIndex-${editIndex}`"
+      :currentIndex="editIndex"
+    />
     <template #footer>
       <div class="flex justify-center gap-[6px]">
         <el-button size="large" type="info" class="w-[177px]" v-ripple @click="visible = false">

@@ -389,38 +389,48 @@ export function validateIdentifier(rule: any, value: any, callback: any) {
  * 唯一性校验（数组对象）
  * @param list - 数据源数组（对象数组）
  * @param field - 唯一字段名，如 'identifier'
+ * @param index - 当前编辑项索引（新增时传 -1）
  * @param options - 可选配置
  */
-export function createUniqueValidator(
-  list: Record<string, any>[],
-  field: string,
+type MaybeGetter<T> = T | (() => T)
+export function createUniqueValidator<T extends Record<string, any>>(
+  list: T[],
+  field: keyof T,
+  index: MaybeGetter<any> = -1,
   options?: {
-    /** 当前值（编辑场景排除自己） */
-    currentValue?: string
     /** 是否忽略大小写 */
     ignoreCase?: boolean
     /** 自定义错误提示 */
     message?: string
   }
 ) {
-  const { currentValue, ignoreCase = false, message = '标识符已存在，请更换' } = options || {}
+  const { ignoreCase = false, message = '标识符已存在，请更换' } = options || {}
 
-  return function validateUnique(rule: any, value: any, callback: any) {
-    if (!value) return callback()
+  return function validateUnique(_: any, value: any, callback: any) {
+    index = typeof index === 'function' ? index() : index
+    // console.log(value, index, list)
 
-    const exists = list.some((item) => {
-      const itemValue = item?.[field]
-      if (!itemValue) return false
+    // 空值交给 required 处理
+    if (value === '' || value === null || value === undefined) {
+      return callback()
+    }
 
-      const v1 = ignoreCase ? String(itemValue).toLowerCase() : itemValue
-      const v2 = ignoreCase ? String(value).toLowerCase() : value
-
-      // 编辑态排除自身
-      if ((currentValue !== undefined || currentValue !== '') && v1 === currentValue) {
-        return false
+    const normalize = (val: any) => {
+      if (ignoreCase && typeof val === 'string') {
+        return val.toLowerCase()
       }
+      return val
+    }
 
-      return v1 === v2
+    const target = normalize(value)
+
+    const exists = list.some((item, i) => {
+      if (i === index) return false
+
+      const itemValue = normalize(item?.[field])
+      if (itemValue === undefined) return false
+
+      return itemValue === target
     })
 
     if (exists) {

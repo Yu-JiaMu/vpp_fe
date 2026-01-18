@@ -84,6 +84,10 @@
       // 是否来自功能
       type: Boolean,
       default: false
+    },
+    currentIndex: {
+      type: Number,
+      default: -1
     }
   })
 
@@ -109,9 +113,7 @@
       { required: true, message: '请输入标识符', trigger: 'blur' },
       { validator: validateIdentifier, trigger: 'blur' },
       {
-        validator: createUniqueValidator(props.tableData, 'identifier', {
-          currentValue: () => form.identifier
-        }),
+        validator: createUniqueValidator(props.tableData, 'identifier', props.currentIndex),
         trigger: 'blur'
       }
     ],
