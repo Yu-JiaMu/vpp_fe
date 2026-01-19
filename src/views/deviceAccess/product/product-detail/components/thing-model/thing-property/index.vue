@@ -1,10 +1,21 @@
 <template>
   <div class="thing-property">
     <el-scrollbar max-height="650">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="90px" class="pr-8">
+      <el-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        :disabled="isReadOnly || hasRegisterDevice"
+        label-width="90px"
+        class="pr-8"
+      >
         <!-- 功能名称 -->
         <el-form-item :label="labelName" prop="name">
-          <el-input v-model="form.name" :placeholder="`请输入${labelName}`" />
+          <el-input
+            v-model="form.name"
+            :placeholder="`请输入${labelName}`"
+            :disabled="!hasRegisterDevice || isReadOnly"
+          />
         </el-form-item>
 
         <!-- 标识符 -->
@@ -45,7 +56,13 @@
         />
 
         <el-form-item label="描述" prop="desc">
-          <el-input v-model="form.desc" type="textarea" :rows="5" maxlength="200" />
+          <el-input
+            v-model="form.desc"
+            type="textarea"
+            :rows="5"
+            maxlength="200"
+            :disabled="!hasRegisterDevice || isReadOnly"
+          />
           <div class="w-full mt-1 text-xs text-right text-gray-400">
             {{ getByteLength(form.desc) }}/200
           </div>
@@ -58,7 +75,7 @@
 <script setup>
   import { reactive, ref } from 'vue'
   import DataTypeEditor from './data-type-editor.vue'
-  import { buildThingModel } from '../adapters/build-thing'
+  import { buildThingModel, parseThingModel } from '../adapters'
   import {
     validateIdentifier,
     validateNameLength,
@@ -92,6 +109,8 @@
   })
 
   const formRef = useTemplateRef('formRef')
+  const isReadOnly = inject('isReadOnly')
+  const hasRegisterDevice = inject('hasRegisterDevice')
 
   const form = reactive({
     name: '',
@@ -181,6 +200,15 @@
     return buildThingModel(form, 'property')
   }
 
+  const initForm = (json) => {
+    const data = parseThingModel(json)
+    console.log('解析后的数据', data)
+
+    if (data) {
+      Object.assign(form, data)
+    }
+  }
+
   const submit = async () => {
     const valid = await formRef.value?.validate()
     if (!valid) return null
@@ -191,6 +219,7 @@
     formRef,
     form,
     getThingJson,
-    submit
+    submit,
+    initForm
   })
 </script>

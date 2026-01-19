@@ -36,19 +36,27 @@
             </el-form-item>
           </div>
 
-          <div class="flex justify-center w-8 h-9">
+          <div v-if="!(hasRegisterDevice || isReadOnly)" class="flex justify-center w-8 h-9">
             <div v-if="index === 0" :disabled="modelValue.length >= 100" @click="add">
-              <img class="w-4.5 h-4.5" src="@/assets/images/icon/icon-add.png" alt="" />
+              <img
+                class="w-4.5 h-4.5 cursor-pointer"
+                src="@/assets/images/icon/icon-add.png"
+                alt=""
+              />
             </div>
 
             <div v-else @click="remove(index)">
-              <img class="w-4.5 h-4.5" src="@/assets/images/icon/icon-subtract.png" alt="" />
+              <img
+                class="w-4.5 h-4.5 cursor-pointe"
+                src="@/assets/images/icon/icon-subtract.png"
+                alt=""
+              />
             </div>
           </div>
         </div>
 
         <div
-          v-if="modelValue.length === 0"
+          v-if="modelValue.length === 0 || !hasRegisterDevice"
           class="text-sm text-gray-400 cursor-pointer hover:text-blue-500"
           @click="add"
         >
@@ -62,6 +70,9 @@
 <script setup>
   import { validateParamDesc, createUniqueValidator } from '@/utils'
   const modelValue = defineModel()
+
+  const isReadOnly = inject('isReadOnly')
+  const hasRegisterDevice = inject('hasRegisterDevice')
 
   const createUniqueValueValidator = (index) => {
     return (rule, value, callback) => {

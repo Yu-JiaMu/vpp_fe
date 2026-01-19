@@ -7,7 +7,11 @@
       :rules="childrenRules"
       required
     >
-      <div class="add-btn absolute top-4 right-[-22px] z-10" @click="open">
+      <div
+        v-if="!(hasRegisterDevice || isReadOnly)"
+        class="add-btn absolute top-4 right-[-22px] z-10 cursor-pointer"
+        @click="open"
+      >
         <img class="w-4.5 h-4.5" src="@/assets/images/icon/icon-add.png" alt="" />
       </div>
       <el-table :data="modelValue" border class="w-full">
@@ -18,8 +22,21 @@
         </el-table-column>
         <el-table-column label="操作" width="120">
           <template #default="{ row, $index }">
-            <el-button type="primary" link @click="edit(row, $index)">编辑</el-button>
-            <el-button type="danger" link @click="remove($index)"> 删除 </el-button>
+            <el-button
+              :disabled="isReadOnly || hasRegisterDevice"
+              type="primary"
+              link
+              @click="edit(row, $index)"
+              >编辑</el-button
+            >
+            <el-button
+              :disabled="isReadOnly || hasRegisterDevice"
+              type="danger"
+              link
+              @click="remove($index)"
+            >
+              删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -44,6 +61,10 @@
     },
     formRef: Object
   })
+
+  const isReadOnly = inject('isReadOnly')
+  const hasRegisterDevice = inject('hasRegisterDevice')
+
   const modelValue = defineModel()
   const dialogRef = ref()
   const open = () => dialogRef.value.open()

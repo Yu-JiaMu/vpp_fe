@@ -1,14 +1,14 @@
 <template>
   <el-dialog
     v-model="dialogVisible"
-    title="新增功能点"
+    :title="dialogTitle"
     width="762"
     align-center
     :close-on-click-modal="false"
   >
     <div class="add-custom-function-point-dialog">
       <!-- Tabs -->
-      <div class="flex h-10 bg-white tab-con w-fit mb-2.5 rounded-md">
+      <div v-show="isAddPoint" class="flex h-10 bg-white tab-con w-fit mb-2.5 rounded-md">
         <div
           v-for="item in FUNCTION_MODE_MAP.options"
           :key="item.value"
@@ -20,7 +20,13 @@
         </div>
       </div>
 
-      <component :is="componentMap[activeTab]" :ref="refMap[activeTab]" :tableData="tableData" />
+      <component
+        :is="componentMap[activeTab]"
+        :key="refMap[activeTab]"
+        :ref="refMap[activeTab]"
+        :tableData="tableData"
+        :currentIndex="currentIndex"
+      />
     </div>
     <!-- Footer -->
     <template #footer>
@@ -41,7 +47,7 @@
   import { ElMessage } from 'element-plus'
   import { FUNCTION_MODE_MAP } from '@/enums'
   import ThingProperty from '../thing-property/index.vue'
-  import ThingService from '../thing-service/index.vue'
+  import ThingService from '../thing-function/index.vue'
   import ThingEvent from '../thing-event/index.vue'
   const emits = defineEmits(['addFunctionPoint'])
 
@@ -51,7 +57,9 @@
       default: () => []
     }
   })
-  const dialogVisible = ref(true)
+
+  const isReadOnly = inject('isReadOnly')
+  const dialogVisible = ref(false)
   const activeTab = ref('property')
 
   const componentMap = {
@@ -73,6 +81,16 @@
     event: thingEventRef
   }
 
+  const dialogTitle = computed(() => {
+    if (isReadOnly.value) {
+      return '查看'
+    } else if (isAddPoint.value) {
+      return '新增功能点'
+    } else {
+      return '编辑功能点'
+    }
+  })
+
   const handleSubmit = async () => {
     const ref = refMap[activeTab.value]?.value
     console.log(ref)
@@ -92,12 +110,31 @@
     dialogVisible.value = false
   }
 
-  const open = (row) => {
+  const currentIndex = ref(-1)
+  const isAddPoint = ref(false)
+
+  const open = async (row, index, type) => {
+    isAddPoint.value = !type
+    if (index !== undefined) {
+      currentIndex.value = index
+    }
     dialogVisible.value = true
+    row && (activeTab.value = row.functionMode)
+
+    await nextTick()
+    const ref = refMap[activeTab.value]?.value
+
+    if (row) {
+      ref.initForm(row.originData)
+    } else {
+      ref.formRef.clearValidate()
+      ref.formRef.resetFields()
+    }
   }
-  onMounted(() => {})
 
   defineExpose({ open })
+
+  onMounted(() => {})
 </script>
 
 <style lang="scss" scoped>

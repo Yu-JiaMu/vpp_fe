@@ -46,7 +46,7 @@
       </div>
 
       <div v-else class="flex items-center op-con">
-        <el-button text class="!text-g-303537" @click="openCustomFunctionDialog">
+        <el-button text class="!text-g-303537" @click="openCustomFunctionDialog()">
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-001.png" alt="" />
           添加自定义功能点
         </el-button>
@@ -61,7 +61,12 @@
           导入物模型
         </el-button>
         <div class="dividing-line"></div>
-        <el-button text class="!text-g-303537 !ml-0" @click="handleSetModel">
+        <el-button
+          :disabled="hasRegisterDevice"
+          text
+          class="!text-g-303537 !ml-0"
+          @click="handleSetModel"
+        >
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-004.png" alt="" />
           删除
         </el-button>
@@ -94,11 +99,22 @@
 
       <!-- 操作 -->
       <el-table-column label="操作" :width="isSettingModel ? 160 : 80" fixed="right">
-        <template #default>
-          <el-button type="primary" link> 详情 </el-button>
+        <template #default="{ row, $index }">
+          <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'look')">
+            详情
+          </el-button>
           <template v-if="isSettingModel">
-            <el-button type="primary" link> 编辑 </el-button>
-            <el-button type="danger" link> 删除 </el-button>
+            <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'edit')">
+              编辑
+            </el-button>
+            <el-button
+              :disabled="hasRegisterDevice"
+              type="danger"
+              link
+              @click="handleRemove($index)"
+            >
+              删除
+            </el-button>
           </template>
         </template>
       </el-table-column>
@@ -142,6 +158,12 @@
     EVENT_TYPE_MAP,
     DATA_TYPE_MAP
   } from '@/enums'
+
+  const hasRegisterDevice = ref(false)
+  provide('hasRegisterDevice', hasRegisterDevice)
+
+  const isReadOnly = ref(false)
+  provide('isReadOnly', isReadOnly)
 
   const isSettingModel = ref(true)
   const handleSetModel = () => {
@@ -205,9 +227,13 @@
   }
 
   const addCustomFunctionPointDialogRef = useTemplateRef('addCustomFunctionPointDialogRef')
-  const openCustomFunctionDialog = () => {
-    addCustomFunctionPointDialogRef.value.open()
+  const openCustomFunctionDialog = (row, index, type) => {
+    console.log(row, index, type)
+    isReadOnly.value = type === 'look'
+    addCustomFunctionPointDialogRef.value.open(row, index, type)
   }
+
+  const handleRemove = (index) => {}
 
   const isChange = ref(false) // 已修改未保存
 

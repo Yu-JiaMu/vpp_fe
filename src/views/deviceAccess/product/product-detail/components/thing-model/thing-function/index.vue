@@ -1,9 +1,20 @@
 <template>
   <div class="thing-property">
     <el-scrollbar max-height="650">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="90px" class="pr-8">
+      <el-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        :disabled="isReadOnly || hasRegisterDevice"
+        label-width="90px"
+        class="pr-8"
+      >
         <el-form-item label="功能名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入功能名称" />
+          <el-input
+            v-model="form.name"
+            placeholder="请输入功能名称"
+            :disabled="!hasRegisterDevice || isReadOnly"
+          />
         </el-form-item>
 
         <el-form-item label="标识符" prop="identifier">
@@ -11,7 +22,11 @@
         </el-form-item>
 
         <el-form-item label="调用方式" prop="callType">
-          <el-select v-model="form.callType" class="w-full">
+          <el-select
+            v-model="form.callType"
+            class="w-full"
+            :disabled="!hasRegisterDevice || isReadOnly"
+          >
             <el-option
               v-for="item in CALL_TYPE_MAP.options"
               :key="item.value"
@@ -22,7 +37,11 @@
         </el-form-item>
 
         <el-form-item label="输入参数" class="relative">
-          <div class="add-btn absolute top-4 right-[-22px] z-10" @click="open('input')">
+          <div
+            v-if="!(hasRegisterDevice || isReadOnly)"
+            class="add-btn absolute top-4 right-[-22px] z-10 cursor-pointer"
+            @click="open('input')"
+          >
             <img class="w-4.5 h-4.5" src="@/assets/images/icon/icon-add.png" alt="" />
           </div>
           <el-table :data="form.input" border>
@@ -42,21 +61,38 @@
 
             <el-table-column label="数据定义">
               <template #default="{ row }">
-                <FunctionDefinePreview :row="row" />
+                <FunctionDefinePreview :row="row" functionMode="property" />
               </template>
             </el-table-column>
 
             <el-table-column label="操作" width="120">
               <template #default="{ row, $index }">
-                <el-button type="primary" link @click="edit(row, $index, 'input')">编辑</el-button>
-                <el-button type="danger" link @click="remove($index, 'input')"> 删除 </el-button>
+                <el-button
+                  :disabled="isReadOnly || hasRegisterDevice"
+                  type="primary"
+                  link
+                  @click="edit(row, $index, 'input')"
+                  >编辑</el-button
+                >
+                <el-button
+                  :disabled="isReadOnly || hasRegisterDevice"
+                  type="danger"
+                  link
+                  @click="remove($index, 'input')"
+                >
+                  删除
+                </el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-form-item>
 
         <el-form-item label="输出参数" class="relative">
-          <div class="add-btn absolute top-4 right-[-22px] z-10" @click="open('output')">
+          <div
+            v-if="!(hasRegisterDevice || isReadOnly)"
+            class="add-btn absolute top-4 right-[-22px] z-10 cursor-pointer"
+            @click="open('output')"
+          >
             <img class="w-4.5 h-4.5" src="@/assets/images/icon/icon-add.png" alt="" />
           </div>
           <el-table :data="form.output" border>
@@ -76,21 +112,40 @@
 
             <el-table-column label="数据定义">
               <template #default="{ row }">
-                <FunctionDefinePreview :row="row" />
+                <FunctionDefinePreview :row="row" functionMode="property" />
               </template>
             </el-table-column>
 
             <el-table-column label="操作" width="120">
               <template #default="{ row, $index }">
-                <el-button type="primary" link @click="edit(row, $index, 'output')">编辑</el-button>
-                <el-button type="danger" link @click="remove($index, 'output')"> 删除 </el-button>
+                <el-button
+                  :disabled="isReadOnly || hasRegisterDevice"
+                  type="primary"
+                  link
+                  @click="edit(row, $index, 'output')"
+                  >编辑</el-button
+                >
+                <el-button
+                  :disabled="isReadOnly || hasRegisterDevice"
+                  type="danger"
+                  link
+                  @click="remove($index, 'output')"
+                >
+                  删除
+                </el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-form-item>
 
         <el-form-item label="描述" prop="desc">
-          <el-input v-model="form.desc" type="textarea" :rows="5" maxlength="200" />
+          <el-input
+            v-model="form.desc"
+            type="textarea"
+            :rows="5"
+            maxlength="200"
+            :disabled="!hasRegisterDevice || isReadOnly"
+          />
           <div class="w-full mt-1 text-xs text-right text-gray-400">
             {{ getByteLength(form.desc) }}/200
           </div>
@@ -104,7 +159,7 @@
 
 <script setup>
   import { CALL_TYPE_MAP } from '@/enums'
-  import { buildThingModel } from '../adapters/build-thing'
+  import { buildThingModel, parseThingModel } from '../adapters'
   import {
     validateIdentifier,
     validateNameLength,
@@ -126,6 +181,9 @@
       default: ''
     }
   })
+
+  const isReadOnly = inject('isReadOnly')
+  const hasRegisterDevice = inject('hasRegisterDevice')
 
   const formRef = useTemplateRef('formRef')
   const form = reactive({
@@ -198,6 +256,14 @@
     return buildThingModel(form, 'service')
   }
 
+  const initForm = (json) => {
+    const data = parseThingModel(json)
+    console.log('解析后的数据', data)
+
+    if (data) {
+      Object.assign(form, data)
+    }
+  }
   const submit = async () => {
     const valid = await formRef.value?.validate()
     if (!valid) return null
@@ -208,7 +274,8 @@
     formRef,
     form,
     getThingJson,
-    submit
+    submit,
+    initForm
   })
 </script>
 <style lang="scss" scoped>

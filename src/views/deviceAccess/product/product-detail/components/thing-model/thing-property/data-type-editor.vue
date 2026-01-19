@@ -205,6 +205,8 @@
     }
   })
 
+  const hasRegisterDevice = inject('hasRegisterDevice')
+
   const isArray = computed(() => model.value.type === 'array')
   const isObject = computed(() => model.value.type === 'object')
   const isNumber = computed(() => ['int', 'float', 'double'].includes(model.value.type))

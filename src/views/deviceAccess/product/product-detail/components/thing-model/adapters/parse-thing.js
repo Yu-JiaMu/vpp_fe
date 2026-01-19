@@ -1,57 +1,142 @@
 // thingJson → UI
+const NUMBER_SPEC_KEYS = ['max', 'min', 'step', 'length', 'maxItemsCount']
+
+// 数据类型转换
+function normalizeSpecsToNumber(specs = {}) {
+  const result = { ...specs }
+
+  NUMBER_SPEC_KEYS.forEach((key) => {
+    if (result[key] !== undefined && result[key] !== null) {
+      const num = Number(result[key])
+      result[key] = Number.isNaN(num) ? result[key] : num
+    }
+  })
+
+  return result
+}
+
 export function parseDataType(dataType) {
   if (!dataType) return null
 
+  const { type, specs } = dataType
+
   // array
-  if (dataType.type === 'array') {
+  if (type === 'array') {
     return {
       type: 'array',
       config: {
-        maxItemsCount: dataType.specs.maxItemsCount
+        maxItemsCount: specs?.maxItemsCount
       },
       element: {
-        type: dataType.specs.type,
-        config: { ...dataType.specs.specs }
+        type: specs?.type,
+        ...parseDataType({
+          type: specs?.type,
+          specs: specs?.specs
+        })
       }
     }
   }
 
   // object
-  if (dataType.type === 'object') {
-    const specsArray = dataType.specs?.specsArray || []
-
+  if (type === 'object') {
     return {
       type: 'object',
-      children: specsArray.map((item) => ({
-        identifier: item.identifier,
-        name: item.name,
-        dataType: parseDataType(item.dataType),
-        desc: item.desc
-      }))
+      children:
+        specs?.specsArray?.map((item) => ({
+          identifier: item.identifier,
+          name: item.name,
+          desc: item.desc,
+          dataType: parseDataType(item.dataType)
+        })) || []
     }
   }
 
   // enum
-  if (dataType.type === 'enum') {
+  if (type === 'enum') {
     return {
       type: 'enum',
       config: {
-        list: Object.entries(dataType.specs || {}).map(([value, label]) => ({ value, label }))
+        list: Object.entries(specs || {}).map(([value, label]) => ({
+          value,
+          label
+        }))
       }
     }
   }
 
   // boolean
-  if (dataType.type === 'boolean') {
+  if (type === 'boolean') {
     return {
       type: 'boolean',
-      config: { ...dataType.specs }
+      config: {
+        true: specs?.true,
+        false: specs?.false
+      }
     }
   }
 
-  // primitive
+  // primitive: int / float / text / date / double ...
   return {
-    type: dataType.type,
-    config: { ...dataType.specs }
+    type,
+    config: normalizeSpecsToNumber(specs || {})
+  }
+}
+
+// thingJson → UI Form
+export function parseThingModel(json) {
+  if (!json) return null
+
+  const base = {
+    identifier: json.identifier,
+    name: json.name,
+    desc: json.desc
+  }
+
+  switch (json.functionMode) {
+    case 'property':
+      return {
+        ...base,
+        accessMode: json.accessMode,
+        dataType: parseDataType(json.dataType)
+      }
+
+    case 'service':
+      return {
+        ...base,
+        callType: json.callType,
+        input:
+          json.input?.map((i) => ({
+            identifier: i.identifier,
+            name: i.name,
+            required: i.required,
+            dataType: parseDataType(i.dataType)
+          })) || [],
+        output:
+          json.output?.map((o) => ({
+            identifier: o.identifier,
+            name: o.name,
+            required: o.required,
+            dataType: parseDataType(o.dataType)
+          })) || []
+      }
+
+    case 'event':
+      return {
+        ...base,
+        eventType: json.eventType,
+        output:
+          json.outputData?.map((o) => ({
+            identifier: o.identifier,
+            name: o.name,
+            required: o.required,
+            dataType: parseDataType(o.dataType)
+          })) || []
+      }
+
+    default:
+      return {
+        ...base,
+        dataType: parseDataType(json.dataType)
+      }
   }
 }
