@@ -126,9 +126,9 @@
     if (row) {
       ref.initForm(row.originData)
     } else {
-      ref.formRef.clearValidate()
       ref.formRef.resetFields()
     }
+    ref.formRef.clearValidate()
   }
 
   defineExpose({ open })

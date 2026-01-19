@@ -2,7 +2,12 @@
   <div>
     <!-- 数据类型 -->
     <el-form-item :label="parentType === 'array' ? '元素类型' : '数据类型'" prop="dataType.type">
-      <el-select v-model="model.type" class="w-full" @change="onTypeChange">
+      <el-select
+        v-model="model.type"
+        class="w-full"
+        :disabled="isReadOnly || hasRegisterDevice"
+        @change="onTypeChange"
+      >
         <el-option
           v-for="item in dataTypeList"
           :key="item.value"
@@ -24,6 +29,7 @@
           class="flex-1"
           align="left"
           :controls="false"
+          :disabled="isReadOnly || hasRegisterDevice"
         >
           <template #suffix>
             <div class="pl-3 border-l-1 border-[#dcdfe6] text-g-505658">字节</div>
@@ -44,6 +50,7 @@
           class="flex-1"
           align="left"
           :controls="false"
+          :disabled="isReadOnly || hasRegisterDevice"
         >
           <template #suffix>
             <div class="pl-3 border-l-1 border-[#dcdfe6] text-g-505658">字节</div>
@@ -69,6 +76,7 @@
         <div class="flex items-center w-full gap-2">
           <el-form-item :prop="`${propPath}.config.min`" :rules="minRules" class="flex-1">
             <el-input-number
+              :disabled="isReadOnly || hasRegisterDevice"
               v-model="model.config.min"
               placeholder="最小值"
               :precision="precision"
@@ -81,6 +89,7 @@
           <span class="self-start text-gray-400 h-9">—</span>
           <el-form-item :prop="`${propPath}.config.max`" :rules="maxRules" class="flex-1">
             <el-input-number
+              :disabled="isReadOnly || hasRegisterDevice"
               v-model="model.config.max"
               :precision="precision"
               class="flex-1"
@@ -95,6 +104,7 @@
       <!-- 步长 -->
       <el-form-item label="步长">
         <el-input-number
+          :disabled="isReadOnly || hasRegisterDevice"
           v-model="model.config.step"
           :precision="precision"
           class="flex-1"
@@ -105,7 +115,11 @@
 
       <!-- 单位 -->
       <el-form-item label="单位">
-        <el-select v-model="model.config.unit" class="w-full">
+        <el-select
+          v-model="model.config.unit"
+          class="w-full"
+          :disabled="isReadOnly || hasRegisterDevice"
+        >
           <el-option label="百分比（%）" value="%" />
           <el-option label="秒（s）" value="s" />
           <el-option label="毫秒（ms）" value="ms" />
@@ -123,14 +137,22 @@
           <el-form-item prop="dataType.config.true">
             <div class="flex items-center w-full gap-2">
               <span class="w-14 text-g-505658">True &nbsp;-</span>
-              <el-input v-model="model.config.true" placeholder="请输入" />
+              <el-input
+                v-model="model.config.true"
+                placeholder="请输入"
+                :disabled="isReadOnly || hasRegisterDevice"
+              />
             </div>
           </el-form-item>
 
           <el-form-item prop="dataType.config.false">
             <div class="flex items-center w-full gap-2">
               <span class="w-14 text-g-505658">False&nbsp;-</span>
-              <el-input v-model="model.config.false" placeholder="请输入" />
+              <el-input
+                v-model="model.config.false"
+                placeholder="请输入"
+                :disabled="isReadOnly || hasRegisterDevice"
+              />
             </div>
           </el-form-item>
         </div>
@@ -156,6 +178,7 @@
           :controls="false"
           align="left"
           style="width: 100%"
+          :disabled="isReadOnly || hasRegisterDevice"
         />
       </el-form-item>
       <DataTypeEditor
@@ -205,6 +228,7 @@
     }
   })
 
+  const isReadOnly = inject('isReadOnly', false)
   const hasRegisterDevice = inject('hasRegisterDevice', false)
 
   const isArray = computed(() => model.value.type === 'array')

@@ -161,9 +161,9 @@
 
   const isEdit = ref(false)
   const hasRegisterDevice = ref(false)
-  const isEditAndHasRegisterDevice = computed(() => isEdit.value && hasRegisterDevice.value)
+  // const isEditAndHasRegisterDevice = computed(() => isEdit.value && hasRegisterDevice.value)
 
-  provide('hasRegisterDevice', isEditAndHasRegisterDevice)
+  provide('hasRegisterDevice', hasRegisterDevice)
 
   const isReadOnly = ref(false)
 

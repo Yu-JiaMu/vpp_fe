@@ -26,13 +26,19 @@
                 placeholder="请输入参数值(整数)"
                 align="left"
                 style="width: 100%"
+                :disabled="isReadOnly || hasRegisterDevice"
               />
             </el-form-item>
           </div>
 
           <div class="flex-1">
             <el-form-item :prop="`dataType.config.list.${index}.label`" :rules="labelRules">
-              <el-input v-model="item.label" placeholder="请输入参数名称" class="w-full" />
+              <el-input
+                v-model="item.label"
+                placeholder="请输入参数名称"
+                class="w-full"
+                :disabled="isReadOnly || hasRegisterDevice"
+              />
             </el-form-item>
           </div>
 

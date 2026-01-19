@@ -1,26 +1,23 @@
 <template>
   <div class="thing-property">
     <el-scrollbar max-height="650">
-      <el-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        :disabled="isReadOnly || hasRegisterDevice"
-        label-width="90px"
-        class="pr-8"
-      >
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="90px" class="pr-8">
         <!-- 功能名称 -->
         <el-form-item :label="labelName" prop="name">
           <el-input
             v-model="form.name"
             :placeholder="`请输入${labelName}`"
-            :disabled="!hasRegisterDevice || isReadOnly"
+            :disabled="isReadOnly"
           />
         </el-form-item>
 
         <!-- 标识符 -->
         <el-form-item label="标识符" prop="identifier">
-          <el-input v-model="form.identifier" placeholder="请输入标识符" />
+          <el-input
+            v-model="form.identifier"
+            placeholder="请输入标识符"
+            :disabled="isReadOnly || hasRegisterDevice"
+          />
           <!--  <div class="flex items-center gap-1 mt-1 text-xs text-[#298AF9]">
           <ArtSvgIcon icon="ri:error-warning-line" class="text-sm" />
           标识符唯一性
@@ -28,7 +25,11 @@
         </el-form-item>
 
         <el-form-item v-if="fromFunction" label="填写约束" prop="required" required>
-          <el-select v-model="form.required" class="w-full">
+          <el-select
+            v-model="form.required"
+            class="w-full"
+            :disabled="isReadOnly || hasRegisterDevice"
+          >
             <el-option
               v-for="item in REQUIRED_MAP.options"
               :key="item.value"
@@ -40,7 +41,7 @@
 
         <!-- 读写类型 -->
         <el-form-item v-if="!isAddStruct && !fromFunction" label="读写类型" prop="accessMode">
-          <el-radio-group v-model="form.accessMode">
+          <el-radio-group v-model="form.accessMode" :disabled="isReadOnly || hasRegisterDevice">
             <el-radio v-for="item in ACCESS_MODE_MAP.options" :value="item.value">{{
               item.label
             }}</el-radio>
@@ -61,7 +62,7 @@
             type="textarea"
             :rows="5"
             maxlength="200"
-            :disabled="!hasRegisterDevice || isReadOnly"
+            :disabled="isReadOnly"
           />
           <div class="w-full mt-1 text-xs text-right text-gray-400">
             {{ getByteLength(form.desc) }}/200
