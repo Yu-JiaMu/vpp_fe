@@ -1,28 +1,21 @@
 <template>
   <div class="thing-property">
     <el-scrollbar max-height="650">
-      <el-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        :disabled="isReadOnly || hasRegisterDevice"
-        label-width="90px"
-        class="pr-8"
-      >
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="90px" class="pr-8">
         <el-form-item label="功能名称" prop="name">
-          <el-input
-            v-model="form.name"
-            placeholder="请输入功能名称"
-            :disabled="!hasRegisterDevice || isReadOnly"
-          />
+          <el-input v-model="form.name" placeholder="请输入功能名称" :disabled="isReadOnly" />
         </el-form-item>
 
         <el-form-item label="标识符" prop="identifier">
-          <el-input v-model="form.identifier" placeholder="请输入标识符" />
+          <el-input
+            v-model="form.identifier"
+            placeholder="请输入标识符"
+            :disabled="isReadOnly || hasRegisterDevice"
+          />
         </el-form-item>
 
         <el-form-item label="事件级别" prop="eventType">
-          <el-select v-model="form.eventType" class="w-full">
+          <el-select v-model="form.eventType" class="w-full" :disabled="isReadOnly">
             <el-option
               v-for="item in EVENT_TYPE_MAP.options"
               :key="item.value"
@@ -89,7 +82,7 @@
             type="textarea"
             :rows="5"
             maxlength="200"
-            :disabled="!hasRegisterDevice || isReadOnly"
+            :disabled="isReadOnly"
           />
           <div class="w-full mt-1 text-xs text-right text-gray-400">
             {{ getByteLength(form.desc) }}/200
@@ -188,6 +181,8 @@
   }
 
   const getThingJson = () => {
+    console.log('form', form)
+
     return buildThingModel(form, 'service')
   }
   const initForm = (json) => {
