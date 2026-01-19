@@ -71,8 +71,8 @@
   import { validateParamDesc, createUniqueValidator } from '@/utils'
   const modelValue = defineModel()
 
-  const isReadOnly = inject('isReadOnly')
-  const hasRegisterDevice = inject('hasRegisterDevice')
+  const isReadOnly = inject('isReadOnly', false)
+  const hasRegisterDevice = inject('hasRegisterDevice', false)
 
   const createUniqueValueValidator = (index) => {
     return (rule, value, callback) => {

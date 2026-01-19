@@ -205,7 +205,7 @@
     }
   })
 
-  const hasRegisterDevice = inject('hasRegisterDevice')
+  const hasRegisterDevice = inject('hasRegisterDevice', false)
 
   const isArray = computed(() => model.value.type === 'array')
   const isObject = computed(() => model.value.type === 'object')

@@ -42,14 +42,22 @@
 
     <!-- 物模型 -->
     <ThingModel v-if="activeTab === 'model'" :product="product" @refresh="getDetail"></ThingModel>
+
+    <!-- 拓展字段 -->
+    <ExtendedField
+      v-if="activeTab === 'extend'"
+      :product="product"
+      @refresh="getDetail"
+    ></ExtendedField>
   </div>
 </template>
 
 <script setup>
   import BaseInfo from './components/base-info.vue'
   import ThingModel from './components/thing-model/index.vue'
+  import ExtendedField from './components/extended-field/index.vue'
 
-  const activeTab = ref('model')
+  const activeTab = ref('extend')
 
   const product = ref({
     id: '1955073219080001',
@@ -78,13 +86,13 @@
       label: '物模型',
       value: 'model'
     },
-    {
+    /*    {
       label: 'Topic管理',
       value: 'topic'
-    },
+    }, */
     {
       label: '拓展字段',
-      value: 'ext'
+      value: 'extend'
     }
   ]
 

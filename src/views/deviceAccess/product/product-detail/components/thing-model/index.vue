@@ -159,10 +159,14 @@
     DATA_TYPE_MAP
   } from '@/enums'
 
+  const isEdit = ref(false)
   const hasRegisterDevice = ref(false)
-  provide('hasRegisterDevice', hasRegisterDevice)
+  const isEditAndHasRegisterDevice = computed(() => isEdit.value && hasRegisterDevice.value)
+
+  provide('hasRegisterDevice', isEditAndHasRegisterDevice)
 
   const isReadOnly = ref(false)
+
   provide('isReadOnly', isReadOnly)
 
   const isSettingModel = ref(true)
@@ -230,6 +234,7 @@
   const openCustomFunctionDialog = (row, index, type) => {
     console.log(row, index, type)
     isReadOnly.value = type === 'look'
+    isEdit.value = type === 'edit'
     addCustomFunctionPointDialogRef.value.open(row, index, type)
   }
 
