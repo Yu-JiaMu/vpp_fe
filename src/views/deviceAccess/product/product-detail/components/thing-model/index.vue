@@ -1,13 +1,7 @@
 <template>
   <div class="bg-white rounded-md thing-model">
     <!-- 顶部搜索区 -->
-    <div
-      class="flex p-5"
-      :class="{
-        'items-center justify-between': !isSettingModel,
-        'flex-col': isSettingModel
-      }"
-    >
+    <div class="flex items-center justify-between p-5 search-con">
       <div class="flex items-center gap-2.5">
         <el-input
           v-model="form.name"
@@ -40,7 +34,7 @@
         <ArtResetBtn class="!ml-0" @click="handleReset" />
       </div>
 
-      <div v-if="!isSettingModel" class="flex items-center">
+      <div v-if="!isSettingModel" class="flex items-center op-con">
         <el-button text class="!text-g-303537" @click="handleExportModel">
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-export-eye.png" alt="" />
           导出物模型
@@ -51,8 +45,8 @@
         </el-button>
       </div>
 
-      <div v-else class="flex items-center justify-end mt-1">
-        <el-button text class="!text-g-303537" @click="handleExportModel">
+      <div v-else class="flex items-center op-con">
+        <el-button text class="!text-g-303537" @click="openCustomFunctionDialog()">
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-001.png" alt="" />
           添加自定义功能点
         </el-button>
@@ -67,7 +61,12 @@
           导入物模型
         </el-button>
         <div class="dividing-line"></div>
-        <el-button text class="!text-g-303537 !ml-0" @click="handleSetModel">
+        <el-button
+          :disabled="hasRegisterDevice"
+          text
+          class="!text-g-303537 !ml-0"
+          @click="handleSetModel"
+        >
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-004.png" alt="" />
           删除
         </el-button>
@@ -76,7 +75,7 @@
           <el-button color="#ffffff" class="btn-setting-back" @click="handleCancelSetting">
             返回
           </el-button>
-          <el-button @click="handleSearch"> 保存 </el-button>
+          <el-button @click="handleSubmit"> 保存 </el-button>
         </div>
       </div>
     </div>
@@ -92,67 +91,7 @@
       <!-- 数据定义 -->
       <el-table-column label="数据定义" min-width="260">
         <template #default="{ row }">
-          <!-- 属性 -->
-          <template v-if="row.functionMode === FUNCTION_MODE_MAP.values.PROPERTY">
-            <!-- int,float,double -->
-            <div v-if="['int', 'float', 'double'].includes(row.define.type)">
-              取值范围：{{ row.define.specs.min }} ~ {{ row.define.specs.max }}；
-              <br />
-              步长：{{ row.define.specs.step }}；
-              <!-- <br />
-            单位：{{ row.define.unit }} -->
-            </div>
-
-            <!-- text -->
-            <div v-if="row.define.type === 'text'"> 数据长度：{{ row.define.specs.length }} </div>
-
-            <!-- date -->
-            <div v-if="row.define.type === 'date'"> 整数类型Int64的UTC时间戳(毫秒) </div>
-
-            <!-- boolean/enum -->
-            <div v-if="['boolean', 'enum'].includes(row.define.type)" class="gap-2 flex-c">
-              <el-tag
-                class="enum-tag"
-                v-for="(value, label) in row.define.specs"
-                :key="value"
-                size="small"
-                type="primary"
-              >
-                {{ label }}-{{ value }}
-              </el-tag>
-            </div>
-
-            <!-- array -->
-            <div v-if="row.define.type === 'array'">
-              数组个数：{{ row.define.specs.maxItemsCount }}
-            </div>
-
-            <!-- object -->
-            <div v-if="row.define.type === 'object'"> - </div>
-
-            <!-- password -->
-            <div v-if="row.define.type === 'password'">
-              最大长度：{{ row.define.specs.length }}
-            </div>
-
-            <!-- geo_point -->
-            <div v-if="row.define.type === 'geo_point'"> 地址位置数据，以经纬度显示 </div>
-          </template>
-
-          <!-- 事件 -->
-          <template v-if="row.functionMode === FUNCTION_MODE_MAP.values.EVENT">
-            <div class="flex-c">
-              事件级别：
-              <el-tag :type="levelTagType(row.originData.eventType)" size="small">
-                {{ EVENT_TYPE_MAP.getLabel(row.originData.eventType) }}
-              </el-tag>
-            </div>
-          </template>
-
-          <!-- 功能 -->
-          <template v-if="row.functionMode === FUNCTION_MODE_MAP.values.SERVICE">
-            调用方式：{{ CALL_TYPE_MAP.getLabel(row.originData.callType) }}
-          </template>
+          <FunctionDefinePreview :row="row" />
         </template>
       </el-table-column>
 
@@ -160,11 +99,22 @@
 
       <!-- 操作 -->
       <el-table-column label="操作" :width="isSettingModel ? 160 : 80" fixed="right">
-        <template #default>
-          <el-button type="primary" link> 详情 </el-button>
+        <template #default="{ row, $index }">
+          <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'look')">
+            详情
+          </el-button>
           <template v-if="isSettingModel">
-            <el-button type="primary" link> 编辑 </el-button>
-            <el-button type="danger" link> 删除 </el-button>
+            <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'edit')">
+              编辑
+            </el-button>
+            <el-button
+              :disabled="hasRegisterDevice"
+              type="danger"
+              link
+              @click="handleRemove($index)"
+            >
+              删除
+            </el-button>
           </template>
         </template>
       </el-table-column>
@@ -181,6 +131,13 @@
       ref="addSystemFunctionPointsDialogRef"
       @addFunctionPoint="addFunctionPoint"
     />
+
+    <!-- 添加自定义功能点 -->
+    <AddCustomFunctionPointDialog
+      ref="addCustomFunctionPointDialogRef"
+      :tableData="tableData"
+      @addFunctionPoint="addCustomPoint"
+    />
   </div>
 </template>
 
@@ -188,6 +145,8 @@
   import ExportModelDialog from './export-model-dialog/index.vue'
   import ImportModelDialog from './import-model-dialog/index.vue'
   import AddSystemFunctionPointsDialog from './add-system-function-points-dialog/index.vue'
+  import AddCustomFunctionPointDialog from './add-custom-function-point-dialog/index.vue'
+  import FunctionDefinePreview from './function-define-preview/index.vue'
   import { ref } from 'vue'
   import thingJson from './thing.json'
   import { transformThingJsonToTable } from '@/utils'
@@ -199,6 +158,12 @@
     EVENT_TYPE_MAP,
     DATA_TYPE_MAP
   } from '@/enums'
+
+  const hasRegisterDevice = ref(false)
+  provide('hasRegisterDevice', hasRegisterDevice)
+
+  const isReadOnly = ref(false)
+  provide('isReadOnly', isReadOnly)
 
   const isSettingModel = ref(true)
   const handleSetModel = () => {
@@ -261,8 +226,20 @@
     addSystemFunctionPointsDialogRef.value.open()
   }
 
+  const addCustomFunctionPointDialogRef = useTemplateRef('addCustomFunctionPointDialogRef')
+  const openCustomFunctionDialog = (row, index, type) => {
+    console.log(row, index, type)
+    isReadOnly.value = type === 'look'
+    addCustomFunctionPointDialogRef.value.open(row, index, type)
+  }
+
+  const handleRemove = (index) => {}
+
+  const isChange = ref(false) // 已修改未保存
+
   const addFunctionPoint = (data) => {
     console.log(data)
+    isChange.value = true
     const model = thingJson.modules[0]
 
     data.forEach((item) => {
@@ -279,6 +256,19 @@
 
     originTableData.value = transformThingJsonToTable(thingJson)
     handleSearch()
+  }
+
+  const addCustomPoint = ({ data, functionMode }) => {
+    isChange.value = true
+    const model = thingJson.modules[0]
+    let key = FUNCTION_MODE_MAP.getItem(functionMode).pKey
+    model[key].push(data)
+    originTableData.value = transformThingJsonToTable(thingJson)
+    handleSearch()
+  }
+
+  const handleSubmit = () => {
+    isChange.value = false
   }
   onMounted(() => {
     tableData.value = [...originTableData.value]
@@ -306,6 +296,17 @@
       &:hover {
         color: var(--art-gray-4);
         border: 1px solid var(--art-gray-4);
+      }
+    }
+
+    @media screen and (max-width: 1600px) {
+      .search-con {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .op-con {
+        margin-top: 4px;
+        align-self: flex-end;
       }
     }
   }

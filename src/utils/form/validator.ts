@@ -376,3 +376,203 @@ export function validateDeviceId(rule: any, value: any, callback: any) {
     callback() // 验证通过
   }
 }
+
+// 标识符校验
+export function validateIdentifier(rule: any, value: any, callback: any) {
+  if (!value) {
+    return callback(new Error('请输入标识符'))
+  }
+
+  // 长度校验
+  if (getByteLength(value) > 20) {
+    return callback(new Error('长度不能超过20个字符'))
+  }
+
+  // 格式校验：首字母 + 字母/数字/下划线
+  const identifierReg = /^[A-Za-z][A-Za-z0-9_]*$/
+
+  if (!identifierReg.test(value)) {
+    return callback(new Error('仅支持英文字母、数字、下划线，且首字符必须为英文字母'))
+  }
+
+  callback()
+}
+
+/**
+ * 唯一性校验（数组对象）
+ * @param list - 数据源数组（对象数组）
+ * @param field - 唯一字段名，如 'identifier'
+ * @param index - 当前编辑项索引（新增时传 -1）
+ * @param options - 可选配置
+ */
+type MaybeGetter<T> = T | (() => T)
+export function createUniqueValidator<T extends Record<string, any>>(
+  list: T[],
+  field: keyof T,
+  index: MaybeGetter<any> = -1,
+  options?: {
+    /** 是否忽略大小写 */
+    ignoreCase?: boolean
+    /** 自定义错误提示 */
+    message?: string
+  }
+) {
+  const { ignoreCase = false, message = '标识符已存在，请更换' } = options || {}
+
+  return function validateUnique(_: any, value: any, callback: any) {
+    index = typeof index === 'function' ? index() : index
+    // console.log(value, index, list)
+
+    // 空值交给 required 处理
+    if (value === '' || value === null || value === undefined) {
+      return callback()
+    }
+
+    const normalize = (val: any) => {
+      if (ignoreCase && typeof val === 'string') {
+        return val.toLowerCase()
+      }
+      return val
+    }
+
+    const target = normalize(value)
+
+    const exists = list.some((item, i) => {
+      if (i === index) return false
+
+      const itemValue = normalize(item?.[field])
+      if (itemValue === undefined) return false
+
+      return itemValue === target
+    })
+
+    if (exists) {
+      return callback(new Error(message))
+    }
+
+    callback()
+  }
+}
+
+/**
+ * 异步唯一性校验
+ * @param checkFn - 校验接口函数，返回 Promise<boolean>
+ *                 true：已存在（不通过）
+ *                 false：不存在（通过）
+ * @param options - 配置项
+ */
+export function createAsyncUniqueValidator(
+  checkFn: (value: string) => Promise<boolean>,
+  options?: {
+    /** 编辑态原始值（相同则跳过校验） */
+    currentValue?: string
+    /** 自定义错误提示 */
+    message?: string
+    /** 防抖时间（ms） */
+    debounce?: number
+  }
+) {
+  const { currentValue, message = '该值已存在，请更换', debounce = 300 } = options || {}
+
+  let timer: number | null = null
+
+  return function validate(rule: any, value: string) {
+    if (!value) return Promise.resolve()
+
+    // 编辑态值未变化，直接通过
+    if (currentValue !== undefined && value === currentValue) {
+      return Promise.resolve()
+    }
+
+    // 防抖处理
+    if (timer) {
+      clearTimeout(timer)
+      timer = null
+    }
+
+    return new Promise<void>((resolve, reject) => {
+      timer = window.setTimeout(async () => {
+        try {
+          const exists = await checkFn(value)
+          exists ? reject(new Error(message)) : resolve()
+        } catch (err) {
+          // 接口异常，一般放行或给统一错误
+          resolve()
+        }
+      }, debounce)
+    })
+  }
+}
+
+/**
+ * 参数描述校验（仅支持中文、英文字母、数字、短划线、下划线、@，必须中文或英文开头，长度不超过20字符）
+ */
+export function validateParamDesc(rule: any, value: any, callback: any) {
+  if (!value) {
+    return callback()
+  }
+
+  // 长度检查
+  if (getByteLength(value) > 20) {
+    return callback(new Error('长度不能超过20个字符'))
+  }
+
+  // 首字符检查：必须是中文或英文开头
+  const firstChar = value[0]
+  const isValidStart = /^[a-zA-Z\u4e00-\u9fa5]/.test(firstChar)
+
+  if (!isValidStart) {
+    return callback(new Error('必须以中文或英文字母开头'))
+  }
+
+  // 全字符检查：仅支持中文、英文字母、数字、短划线、下划线、@
+  const pattern = /^[a-zA-Z\u4e00-\u9fa5][a-zA-Z0-9\u4e00-\u9fa5\-_@]*$/
+
+  if (!pattern.test(value)) {
+    return callback(new Error('仅支持中文、英文字母、数字、短划线（-）、下划线（_）、@'))
+  }
+
+  callback()
+}
+
+/**
+ * 布尔值描述校验（必填，仅支持中文、英文字母、数字、短划线、下划线、@，必须中文或英文开头，长度不超过20字符）
+ */
+export function validateBooleanDesc(rule: any, value: any, callback: any) {
+  if (!value) {
+    return callback(new Error('请输入描述'))
+  }
+
+  // 长度检查
+  if (getByteLength(value) > 20) {
+    return callback(new Error('长度不能超过20个字符'))
+  }
+
+  // 首字符检查：必须是中文或英文开头
+  const firstChar = value[0]
+  const isValidStart = /^[a-zA-Z\u4e00-\u9fa5]/.test(firstChar)
+
+  if (!isValidStart) {
+    return callback(new Error('必须以中文或英文字母开头'))
+  }
+
+  // 全字符检查
+  const pattern = /^[a-zA-Z\u4e00-\u9fa5][a-zA-Z0-9\u4e00-\u9fa5\-_@]*$/
+
+  if (!pattern.test(value)) {
+    return callback(new Error('仅支持中文、英文字母、数字、短划线（-）、下划线（_）、@'))
+  }
+
+  callback()
+}
+
+/**
+ * 验证枚举值必须有一项
+ */
+export function validateEnumList(rule: any, value: any, callback: any) {
+  if (!Array.isArray(value) || value.length === 0) {
+    return callback(new Error('枚举值必须至少有一项'))
+  }
+
+  callback()
+}

@@ -1,312 +1,315 @@
 {
-    "version": "1.0",
-    "identifier": "pid",
-    "name": "产品物模型",
-    "modules": [
+  "version": "1.0",
+  "identifier": "pid",
+  "name": "产品物模型",
+  "modules": [
+    {
+      "identifier": "default",
+      "name": "默认模块",
+      "properties": [
         {
-            "identifier": "default",
-            "name": "默认模块",
-            "properties": [
+          "identifier": "power",
+          "name": "电量",
+          "functionType": "st",
+          "accessMode": "rw",
+          "desc": "电量说明",
+          "dataType": {
+            "type": "int",
+            "specs": {
+              "max": "10000",
+              "min": "0",
+              "step": "2",
+              "unit": "千瓦时 / kWh"
+            }
+          },
+          "functionMode": "property"
+        },
+        {
+          "identifier": "CurrentTemperature",
+          "name": "当前温度",
+          "functionType": "st",
+          "accessMode": "r",
+          "desc": "温度说明",
+          "dataType": {
+            "type": "double",
+            "specs": {
+              "max": "200",
+              "min": "-200",
+              "step": "0.01",
+              "unit": "摄氏度 / ℃"
+            }
+          },
+          "functionMode": "property"
+        },
+        {
+          "identifier": "speed",
+          "name": "当前速度",
+          "functionType": "st",
+          "accessMode": "r",
+          "desc": "速度说明",
+          "dataType": {
+            "type": "float",
+            "specs": {
+              "max": 140,
+              "min": 0,
+              "step": 0.1,
+              "unit": "km/h"
+            }
+          },
+          "functionMode": "property"
+        },
+        {
+          "identifier": "desc",
+          "name": "描述",
+          "functionType": "st",
+          "accessMode": "rw",
+          "desc": "描述说明",
+          "dataType": {
+            "type": "text",
+            "specs": {
+              "length": 11
+            }
+          },
+          "functionMode": "property"
+        },
+        {
+          "identifier": "ts",
+          "name": "时间",
+          "functionType": "st",
+          "accessMode": "r",
+          "desc": "时间说明",
+          "dataType": {
+            "type": "date"
+          },
+          "functionMode": "property"
+        },
+        {
+          "identifier": "boolean",
+          "name": "布尔",
+          "functionType": "st",
+          "accessMode": "r",
+          "desc": "布尔说明",
+          "dataType": {
+            "type": "boolean",
+            "specs": {
+              "true": "对",
+              "false": "错"
+            }
+          },
+          "functionMode": "property"
+        },
+        {
+          "identifier": "enum",
+          "name": "枚举",
+          "functionType": "st",
+          "accessMode": "rw",
+          "desc": "枚举说明",
+          "dataType": {
+            "type": "enum",
+            "specs": {
+              "1": "枚举1",
+              "2": "枚举2"
+            }
+          },
+          "functionMode": "property"
+        },
+        {
+          "identifier": "array",
+          "name": "数组",
+          "functionType": "st",
+          "accessMode": "rw",
+          "desc": "数组说明",
+          "dataType": {
+            "type": "array",
+            "specs": {
+              "maxItemsCount": 100,
+              "type": "int",
+              "specs": {
+                "max": 140,
+                "min": 0,
+                "step": 1,
+                "unit": "s"
+              }
+            }
+          },
+          "functionMode": "property"
+        },
+        {
+          "identifier": "object",
+          "name": "结构体",
+          "functionType": "st",
+          "accessMode": "rw",
+          "desc": "结构体说明",
+          "dataType": {
+            "type": "object",
+            "specs": {
+              "specsArray": [
                 {
-                    "identifier": "power",
-                    "name": "电量",
-                    "functionType": "st",
-                    "accessMode": "rw",
-                    "desc": "电量说明",
-                    "dataType": {
-                        "type": "int",
-                        "specs": {
-                            "max": "10000",
-                            "min": "0",
-                            "step": "2",
-                            "unit": "千瓦时 / kWh"
-                        }
-                    },
-                    "functionMode": "property"
+                  "name": "经度",
+                  "identifier": "longitude",
+                  "desc": "经度说明",
+                  "dataType": {
+                    "type": "double",
+                    "specs": {
+                      "min": "-180",
+                      "max": "180",
+                      "unit": "度 / °",
+                      "step": "0.01"
+                    }
+                  }
                 },
                 {
-                    "identifier": "CurrentTemperature",
-                    "name": "当前温度",
-                    "functionType": "st",
-                    "accessMode": "r",
-                    "desc": "温度说明",
-                    "dataType": {
-                        "type": "double",
-                        "specs": {
-                            "max": "200",
-                            "min": "-200",
-                            "step": "0.01",
-                            "unit": "摄氏度 / ℃"
-                        }
-                    },
-                    "functionMode": "property"
+                  "name": "纬度",
+                  "identifier": "latitude",
+                  "desc": "纬度说明",
+                  "dataType": {
+                    "type": "double",
+                    "specs": {
+                      "min": "-90",
+                      "max": "90",
+                      "unit": "度 / °",
+                      "step": "0.01"
+                    }
+                  }
                 },
                 {
-                    "identifier": "speed",
-                    "name": "当前速度",
-                    "functionType": "st",
-                    "accessMode": "r",
-                    "desc": "速度说明",
-                    "dataType": {
-                        "type": "float",
-                        "specs": {
-                            "max": 140,
-                            "min": 0,
-                            "step": 0.1,
-                            "unit": "km/h"
-                        }
-                    },
-                    "functionMode": "property"
-                },
-                {
-                    "identifier": "desc",
-                    "name": "描述",
-                    "functionType": "st",
-                    "accessMode": "rw",
-                    "desc": "描述说明",
-                    "dataType": {
-                        "type": "text",
-                        "specs": {
-                            "length": 11
-                        }
-                    },
-                    "functionMode": "property"
-                },
-                {
-                    "identifier": "ts",
-                    "name": "时间",
-                    "functionType": "st",
-                    "accessMode": "r",
-                    "desc": "时间说明",
-                    "dataType": {
-                        "type": "date"
-                    },
-                    "functionMode": "property"
-                },
-                {
-                    "identifier": "boolean",
-                    "name": "布尔",
-                    "functionType": "st",
-                    "accessMode": "r",
-                    "desc": "布尔说明",
-                    "dataType": {
-                        "type": "boolean",
-                        "specs": {
-                            "true": "对",
-                            "false": "错"
-                        }
-                    },
-                    "functionMode": "property"
-                },
-                {
-                    "identifier": "enum",
-                    "name": "枚举",
-                    "functionType": "st",
-                    "accessMode": "rw",
-                    "desc": "枚举说明",
-                    "dataType": {
-                        "type": "enum",
-                        "specs": {
-                            "1": "枚举1",
-                            "2": "枚举2"
-                        }
-                    },
-                    "functionMode": "property"
-                },
-                {
-                    "identifier": "array",
-                    "name": "数组",
-                    "functionType": "st",
-                    "accessMode": "rw",
-                    "desc": "数组说明",
-                    "dataType": {
-                        "type": "array",
-                        "specs": {
-                            "maxItemsCount": 100,
-                            "type": "int",
-                            "specs": {
-                                "max": 140,
-                                "min": 0,
-                                "step": 1,
-                                "unit": "s"
-                            }
-                        }
-                    },
-                    "functionMode": "property"
-                },
-                {
-                    "identifier": "object",
-                    "name": "结构体",
-                    "functionType": "st",
-                    "accessMode": "rw",
-                    "desc": "结构体说明",
-                    "dataType": {
-                        "type": "object",
-                        "specs": {
-                            "specsArray": [
-                                {
-                                    "name": "经度",
-                                    "identifier": "longitude",
-                                    "dataType": {
-                                        "type": "double",
-                                        "specs": {
-                                            "min": "-180",
-                                            "max": "180",
-                                            "unit": "度 / °",
-                                            "step": "0.01"
-                                        }
-                                    }
-                                },
-                                {
-                                    "name": "纬度",
-                                    "identifier": "latitude",
-                                    "dataType": {
-                                        "type": "double",
-                                        "specs": {
-                                            "min": "-90",
-                                            "max": "90",
-                                            "unit": "度 / °",
-                                            "step": "0.01"
-                                        }
-                                    }
-                                },
-                                {
-                                    "name": "海拔",
-                                    "identifier": "altitude",
-                                    "dataType": {
-                                        "type": "double",
-                                        "specs": {
-                                            "min": "0",
-                                            "max": "10000",
-                                            "unit": "米 / m",
-                                            "step": "0.01"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "functionMode": "property"
-                },
-                {
-                    "identifier": "password",
-                    "name": "密码",
-                    "functionType": "st",
-                    "accessMode": "r",
-                    "desc": "密码说明",
-                    "dataType": {
-                        "type": "password",
-                        "specs": {
-                            "length": 11
-                        }
-                    },
-                    "functionMode": "property"
-                },
-                {
-                    "identifier": "geoPoint",
-                    "name": "经纬度",
-                    "functionType": "st",
-                    "accessMode": "r",
-                    "desc": "经纬度说明",
-                    "dataType": {
-                        "type": "geo_point",
-                        "specs": {
-                            "length": 11
-                        }
-                    },
-                    "functionMode": "property"
+                  "name": "海拔",
+                  "identifier": "altitude",
+                  "desc": "海拔说明",
+                  "dataType": {
+                    "type": "double",
+                    "specs": {
+                      "min": "0",
+                      "max": "10000",
+                      "unit": "米 / m",
+                      "step": "0.01"
+                    }
+                  }
                 }
-            ],
-            "events": [
-                {
-                    "identifier": "Error1",
-                    "name": "故障上报",
-                    "functionType": "st",
-                    "eventType": "error",
-                    "desc": "",
-                    "outputData": [
-                        {
-                            "identifier": "ErrorCode",
-                            "name": "故障代码",
-                            "dataType": {
-                                "type": "int",
-                                "specs": {
-                                    "max": "100",
-                                    "min": "0",
-                                    "step": "1",
-                                    "unit": ""
-                                }
-                            }
-                        }
-                    ],
-                    "functionMode": "event"
-                }
-            ],
-            "functions": [
-                {
-                    "identifier": "ReceiveEvents",
-                    "name": "事件触发",
-                    "functionType": "st",
-                    "desc": "",
-                    "callType": "async",
-                    "input": [
-                        {
-                            "identifier": "EventID",
-                            "name": "事件编号",
-                            "dataType": {
-                                "type": "text",
-                                "specs": {
-                                    "length": 255
-                                }
-                            }
-                        },
-                        {
-                            "identifier": "EventTime",
-                            "name": "事件发生时间",
-                            "dataType": {
-                                "type": "date",
-                                "specs": {}
-                            }
-                        },
-                        {
-                            "identifier": "EventCode",
-                            "name": "事件类型编号",
-                            "dataType": {
-                                "type": "text",
-                                "specs": {
-                                    "length": 255
-                                }
-                            }
-                        },
-                        {
-                            "identifier": "EventPos",
-                            "name": "事件位置编号",
-                            "dataType": {
-                                "type": "text",
-                                "specs": {
-                                    "length": 255
-                                }
-                            }
-                        }
-                    ],
-                    "output": [
-                        {
-                            "identifier": "ReturnCode",
-                            "name": "返回码",
-                            "dataType": {
-                                "type": "enum",
-                                "specs": {
-                                    "0": "执行成功",
-                                    "1": "执行失败",
-                                    "2": "预留"
-                                }
-                            }
-                        }
-                    ],
-                    "functionMode": "service"
-                }
-            ],
-            "combs": []
+              ]
+            }
+          },
+          "functionMode": "property"
+        },
+        {
+          "identifier": "password",
+          "name": "密码",
+          "functionType": "st",
+          "accessMode": "r",
+          "desc": "密码说明",
+          "dataType": {
+            "type": "password",
+            "specs": {
+              "length": 11
+            }
+          },
+          "functionMode": "property"
+        },
+        {
+          "identifier": "geoPoint",
+          "name": "经纬度",
+          "functionType": "st",
+          "accessMode": "r",
+          "desc": "经纬度说明",
+          "dataType": {
+            "type": "geo_point",
+            "specs": {
+              "length": 11
+            }
+          },
+          "functionMode": "property"
         }
-    ]
+      ],
+      "events": [
+        {
+          "identifier": "Error1",
+          "name": "故障上报",
+          "functionType": "st",
+          "eventType": "error",
+          "desc": "",
+          "outputData": [
+            {
+              "identifier": "ErrorCode",
+              "name": "故障代码",
+              "dataType": {
+                "type": "int",
+                "specs": {
+                  "max": "100",
+                  "min": "0",
+                  "step": "1",
+                  "unit": ""
+                }
+              }
+            }
+          ],
+          "functionMode": "event"
+        }
+      ],
+      "functions": [
+        {
+          "identifier": "ReceiveEvents",
+          "name": "事件触发",
+          "functionType": "st",
+          "desc": "",
+          "callType": "async",
+          "input": [
+            {
+              "identifier": "EventID",
+              "name": "事件编号",
+              "dataType": {
+                "type": "text",
+                "specs": {
+                  "length": 255
+                }
+              }
+            },
+            {
+              "identifier": "EventTime",
+              "name": "事件发生时间",
+              "dataType": {
+                "type": "date",
+                "specs": {}
+              }
+            },
+            {
+              "identifier": "EventCode",
+              "name": "事件类型编号",
+              "dataType": {
+                "type": "text",
+                "specs": {
+                  "length": 255
+                }
+              }
+            },
+            {
+              "identifier": "EventPos",
+              "name": "事件位置编号",
+              "dataType": {
+                "type": "text",
+                "specs": {
+                  "length": 255
+                }
+              }
+            }
+          ],
+          "output": [
+            {
+              "identifier": "ReturnCode",
+              "name": "返回码",
+              "dataType": {
+                "type": "enum",
+                "specs": {
+                  "0": "执行成功",
+                  "1": "执行失败",
+                  "2": "预留"
+                }
+              }
+            }
+          ],
+          "functionMode": "service"
+        }
+      ],
+      "combs": []
+    }
+  ]
 }

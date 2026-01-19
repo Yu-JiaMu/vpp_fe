@@ -48,8 +48,8 @@ export const CONNECTION_TYPES = createEnum({
 // 功能类型
 export const FUNCTION_MODE_MAP = createEnum({
   PROPERTY: { label: '属性', value: 'property', pKey: 'properties' },
-  EVENT: { label: '事件', value: 'event', pKey: 'events' },
-  SERVICE: { label: '功能', value: 'service', pKey: 'functions' }
+  SERVICE: { label: '功能', value: 'service', pKey: 'functions' },
+  EVENT: { label: '事件', value: 'event', pKey: 'events' }
 })
 
 // 物模型来源
@@ -61,7 +61,6 @@ export const THING_SOURCE_MAP = createEnum({
 // 读写类型
 export const ACCESS_MODE_MAP = createEnum({
   READ: { label: '只读', value: 'r' },
-  WRITE: { label: '只写', value: 'w' },
   READ_WRITE: { label: '读写', value: 'rw' }
 })
 
@@ -91,4 +90,10 @@ export const DATA_TYPE_MAP = createEnum({
   OBJECT: { label: '结构体', value: 'object' },
   PASSWORD: { label: '密码', value: 'password' },
   GEO_POINT: { label: '坐标', value: 'geo_point' }
+})
+
+// 是否必填
+export const REQUIRED_MAP = createEnum({
+  TRUE: { label: '必填', value: true },
+  FALSE: { label: '非必填', value: false }
 })
