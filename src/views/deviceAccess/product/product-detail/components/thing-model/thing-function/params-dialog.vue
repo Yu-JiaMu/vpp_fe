@@ -10,7 +10,7 @@
       ref="refForm"
       fromFunction
       :tableData="modelValue"
-      :key="`editIndex-${editIndex}`"
+      :key="`editIndex-${editIndex}-${paramsType}`"
       :currentIndex="editIndex"
     />
     <template #footer>
@@ -27,7 +27,12 @@
 <script setup>
   import ThingProperty from '../thing-property/index.vue'
 
-  const props = defineProps({})
+  const props = defineProps({
+    paramsType: {
+      type: String,
+      default: 'input'
+    }
+  })
   const visible = ref(false)
   const modelValue = defineModel()
   const refForm = ref()

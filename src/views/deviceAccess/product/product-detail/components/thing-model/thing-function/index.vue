@@ -142,7 +142,7 @@
       </el-form>
     </el-scrollbar>
 
-    <ParamsDialog ref="dialogRef" v-model="form[paramsType]" />
+    <ParamsDialog ref="dialogRef" v-model="form[paramsType]" :paramsType="paramsType" />
   </div>
 </template>
 
