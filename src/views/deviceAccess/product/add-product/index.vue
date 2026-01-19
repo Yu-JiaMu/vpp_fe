@@ -192,7 +192,6 @@
 </template>
 
 <script setup>
-  import { ArrowLeft, ArrowDown, Picture, Cloudy, CircleClose } from '@element-plus/icons-vue'
   import {
     validateNameLength,
     validateCommon,

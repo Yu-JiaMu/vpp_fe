@@ -11,6 +11,9 @@ import { setupErrorHandle } from './utils/sys/error-handle'
 import '@/assets/styles/hu-common.scss'
 import '@/assets/styles/common.scss'
 import '@/assets/styles/core/font.css'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+
+
 document.addEventListener(
   'touchstart',
   function () {},
@@ -18,6 +21,9 @@ document.addEventListener(
 )
 
 const app = createApp(App)
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component)
+}
 initStore(app)
 initRouter(app)
 setupGlobDirectives(app)

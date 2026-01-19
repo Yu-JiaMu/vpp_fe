@@ -363,6 +363,19 @@ export function validateDescLength(rule: any, value: any, callback: any) {
     callback()
   }
 }
+//设备id校验
+export function validateDeviceId(rule: any, value: any, callback: any) {
+  const maxLength = 18
+  const regex = /^[a-zA-Z0-9]*$/
+
+  if (value.length > maxLength) {
+    callback(new Error(`不能超过${maxLength}个字符`))
+  } else if (!regex.test(value)) {
+    callback(new Error('只能包含字母和数字'))
+  } else {
+    callback() // 验证通过
+  }
+}
 
 // 标识符校验
 export function validateIdentifier(rule: any, value: any, callback: any) {
