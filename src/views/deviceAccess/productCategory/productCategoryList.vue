@@ -227,13 +227,12 @@
       throw error
     }
   }
-
+  // 分页数据
   const currentPage = ref(1)
   const pageSize = ref(10)
   const tableRef = ref()
   const selectedRows = ref([])
 
-  // 分页数据
   const pagination = reactive({
     size: 10,
     current: 1,

@@ -66,6 +66,36 @@ export const energyIot: AppRouteRecord = {
             isHide: true,
             activePath: '/energyIot/deviceAccess/product'
           }
+        },
+        // 设备列表
+        {
+          path: 'device',
+          name: 'Device',
+          component: '/deviceAccess/device/index',
+          meta: {
+            title: '设备',
+            keepAlive: true
+          }
+        },
+        {
+          path: 'device-register',
+          name: 'DeviceRegister',
+          component: '/deviceAccess/device/device-register/index',
+          meta: {
+            title: '设备注册',
+            isHide: true,
+            activePath: '/energyIot/deviceAccess/device'
+          }
+        },
+        {
+          path: 'device-detail',
+          name: 'DeviceDetail',
+          component: '/deviceAccess/device/device-detail/index',
+          meta: {
+            title: '设备详情',
+            isHide: true,
+            activePath: '/energyIot/deviceAccess/device'
+          }
         }
       ]
     }
