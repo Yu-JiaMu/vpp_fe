@@ -30,7 +30,7 @@ type ThingJson = {
   modules?: Module[]
   [k: string]: any
 }
-function handleDataType(item: ThingItem): string {
+export function handleDataType(item: ThingItem): string {
   const t = item.dataType?.type
   if (t) {
     const label = DATA_TYPE_MAP.getLabel?.(t) ?? ''
@@ -94,6 +94,72 @@ export const transformThingJsonToTable = (thingJson: ThingJson): Record<string, 
       })
     })
   })
+
+  return result
+}
+
+/**
+ * table 列表 → 物模型 ThingJson
+ */
+export function transformTableToThingJson(
+  tableList: Record<string, any>[],
+  thingJson: ThingJson
+): ThingJson {
+  if (!Array.isArray(tableList)) {
+    return { modules: [] }
+  }
+
+  // 这里默认只有一个 module（与当前 transform 逻辑一致）
+  const module: Module = {
+    properties: [],
+    functions: [],
+    events: []
+  }
+
+  tableList.forEach((row) => {
+    const origin: ThingItem | undefined = row.originData
+    if (!origin) return
+
+    switch (origin.functionMode) {
+      case FUNCTION_MODE_MAP.values.PROPERTY:
+        module.properties!.push(cloneThingItem(origin))
+        break
+
+      case FUNCTION_MODE_MAP.values.SERVICE:
+        module.functions!.push(cloneThingItem(origin))
+        break
+
+      case FUNCTION_MODE_MAP.values.EVENT:
+        module.events!.push(cloneThingItem(origin))
+        break
+
+      default:
+        break
+    }
+  })
+
+  return {
+    ...thingJson,
+    modules: [cleanEmptyModule(module)]
+  }
+}
+
+/**
+ * 深拷贝 ThingItem，避免污染 table 中的 originData
+ */
+function cloneThingItem(item: ThingItem): ThingItem {
+  return JSON.parse(JSON.stringify(item))
+}
+
+/**
+ * 清理空数组字段（更符合后端期望）
+ */
+function cleanEmptyModule(module: Module): Module {
+  const result: Module = {}
+
+  if (module.properties?.length) result.properties = module.properties
+  if (module.functions?.length) result.functions = module.functions
+  if (module.events?.length) result.events = module.events
 
   return result
 }

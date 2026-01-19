@@ -149,7 +149,7 @@
   import FunctionDefinePreview from './function-define-preview/index.vue'
   import { ref } from 'vue'
   import thingJson from './thing.json'
-  import { transformThingJsonToTable } from '@/utils'
+  import { transformThingJsonToTable, transformTableToThingJson } from '@/utils'
   import {
     FUNCTION_MODE_MAP,
     THING_SOURCE_MAP,
@@ -274,9 +274,12 @@
 
   const handleSubmit = () => {
     isChange.value = false
+    const newThingJson = transformTableToThingJson(originTableData.value, thingJson)
+    console.log('转换后的物模型', newThingJson)
   }
   onMounted(() => {
     tableData.value = [...originTableData.value]
+    handleSubmit()
   })
 </script>
 

@@ -136,6 +136,7 @@ export function parseThingModel(json) {
     default:
       return {
         ...base,
+        required: json.required,
         dataType: parseDataType(json.dataType)
       }
   }

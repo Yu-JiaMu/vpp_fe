@@ -111,6 +111,11 @@ export function buildThingModel(form, type) {
         }))
       }
     default:
+      return {
+        ...base,
+        required: form.required,
+        dataType: buildDataType(form.dataType)
+      }
       break
   }
 

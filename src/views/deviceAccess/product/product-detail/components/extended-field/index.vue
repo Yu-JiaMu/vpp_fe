@@ -37,14 +37,22 @@
     <el-table :data="tableData" border stripe class="w-full">
       <el-table-column prop="name" label="功能名称" width="120" />
       <el-table-column prop="identifier" label="标识符" width="160" />
-      <el-table-column prop="dataType" label="数据类型" width="140" />
+      <el-table-column prop="dataType" label="数据类型" width="140">
+        <template #default="{ row }">
+          {{ handleDataType(row) }}
+        </template>
+      </el-table-column>
       <!-- 数据定义 -->
       <el-table-column label="数据定义" min-width="260">
         <template #default="{ row }">
-          <FunctionDefinePreview :row="row" />
+          <FunctionDefinePreview :row="row" functionMode="property" />
         </template>
       </el-table-column>
-      <el-table-column prop="required" label="是否必填项" width="100" />
+      <el-table-column prop="required" label="是否必填项" width="100">
+        <template #default="{ row }">
+          {{ REQUIRED_MAP.getLabel(row.required) }}
+        </template>
+      </el-table-column>
       <!-- 操作 -->
       <el-table-column label="操作" width="160" fixed="right">
         <template #default="{ row, $index }">
@@ -61,7 +69,7 @@
     </el-table>
 
     <!-- 添加功能点 -->
-    <ParamsDialog ref="dialogRef" v-model="form.input" />
+    <ParamsDialog ref="dialogRef" v-model="tableData" />
   </div>
 </template>
 
@@ -70,8 +78,9 @@
   import FunctionDefinePreview from '../thing-model/function-define-preview/index.vue'
   import { ref } from 'vue'
   import thingJson from '../thing-model/thing.json'
-  import { transformThingJsonToTable } from '@/utils'
-  import { FUNCTION_MODE_MAP } from '@/enums'
+  import { handleDataType } from '@/utils'
+  import { FUNCTION_MODE_MAP, REQUIRED_MAP } from '@/enums'
+  import { buildThingModel, parseThingModel } from '../thing-model/adapters'
 
   const isEdit = ref(false)
 
@@ -79,23 +88,64 @@
 
   provide('isReadOnly', isReadOnly)
 
-  const form = reactive({
+  const form = ref({
     identifier: '',
     input: []
   })
-
-  const originTableData = ref(transformThingJsonToTable(thingJson))
+  const expandInfo = [
+    {
+      name: '111',
+      identifier: 'identifier',
+      dataType: {
+        type: 'int',
+        specs: {
+          max: '10000',
+          min: '0',
+          step: '2',
+          unit: '千瓦时 / kWh'
+        }
+      },
+      required: true
+    },
+    {
+      name: '1222',
+      identifier: 'identifier2',
+      dataType: {
+        type: 'int',
+        specs: {
+          max: '10000',
+          min: '0',
+          step: '2',
+          unit: '千瓦时 / kWh'
+        }
+      },
+      required: true
+    },
+    {
+      name: '1233',
+      identifier: 'identifier2',
+      dataType: {
+        type: 'int',
+        specs: {
+          max: '10000',
+          min: '0',
+          step: '2',
+          unit: '千瓦时 / kWh'
+        }
+      },
+      required: true
+    }
+  ]
+  const originTableData = ref([])
   const tableData = ref([])
 
   const handleSearch = () => {
-    const { name, functionMode } = form.value
-    console.log(name, functionMode)
+    const { identifier } = form.value
 
     tableData.value = originTableData.value.filter((row) => {
-      const matchName = !name || row.name?.includes(name)
-      const matchMode = !functionMode || row.functionMode === functionMode
+      const matchId = !identifier || row.identifier?.includes(identifier)
 
-      return matchName && matchMode
+      return matchId
     })
   }
 
@@ -119,8 +169,26 @@
   }
 
   const handlePatchRemove = () => {}
+
+  const transformJsonToTable = () => {
+    expandInfo.forEach((item) => {
+      originTableData.value.push(parseThingModel(item))
+    })
+    console.log(originTableData.value)
+  }
+
+  const handleSubmit = () => {
+    let data = []
+    originTableData.value.forEach((item) => {
+      data.push(buildThingModel(item))
+    })
+    console.log('转换后的物模型', data)
+  }
+
   onMounted(() => {
-    tableData.value = [...originTableData.value]
+    transformJsonToTable()
+    handleSearch()
+    handleSubmit()
   })
 </script>
 
@@ -148,7 +216,7 @@
       }
     }
 
-    @media screen and (max-width: 1600px) {
+    @media screen and (max-width: 1200px) {
       .search-con {
         flex-direction: column;
         align-items: flex-start;
