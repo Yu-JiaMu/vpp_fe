@@ -62,8 +62,8 @@
     formRef: Object
   })
 
-  const isReadOnly = inject('isReadOnly')
-  const hasRegisterDevice = inject('hasRegisterDevice')
+  const isReadOnly = inject('isReadOnly', false)
+  const hasRegisterDevice = inject('hasRegisterDevice', false)
 
   const modelValue = defineModel()
   const dialogRef = ref()

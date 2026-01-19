@@ -182,8 +182,8 @@
     }
   })
 
-  const isReadOnly = inject('isReadOnly')
-  const hasRegisterDevice = inject('hasRegisterDevice')
+  const isReadOnly = inject('isReadOnly', false)
+  const hasRegisterDevice = inject('hasRegisterDevice', false)
 
   const formRef = useTemplateRef('formRef')
   const form = reactive({

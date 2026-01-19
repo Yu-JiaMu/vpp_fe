@@ -58,7 +58,7 @@
     }
   })
 
-  const isReadOnly = inject('isReadOnly')
+  const isReadOnly = inject('isReadOnly', false)
   const dialogVisible = ref(false)
   const activeTab = ref('property')
 
@@ -119,8 +119,7 @@
       currentIndex.value = index
     }
     dialogVisible.value = true
-    row && (activeTab.value = row.functionMode)
-
+    activeTab.value = row ? row.functionMode : 'property'
     await nextTick()
     const ref = refMap[activeTab.value]?.value
 

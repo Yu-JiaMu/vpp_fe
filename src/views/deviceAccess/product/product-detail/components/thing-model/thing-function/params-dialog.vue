@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    :title="isEdit ? '参数编辑' : '参数设置'"
+    :title="dialogTitle"
     width="565"
     align-center
     :close-on-click-modal="false"
@@ -32,7 +32,19 @@
   const modelValue = defineModel()
   const refForm = ref()
   const isEdit = ref(false)
+  const isLook = ref(false)
   const editIndex = ref(-1)
+
+  const dialogTitle = computed(() => {
+    if (isLook.value) {
+      return '参数查看'
+    }
+    if (isEdit.value) {
+      return '参数编辑'
+    } else {
+      return '参数设置'
+    }
+  })
 
   const emits = defineEmits(['submitSuccess'])
   const resetForm = () => {
@@ -56,8 +68,12 @@
     emits('submitSuccess')
   }
 
-  const open = (row, index) => {
+  const open = (row, index, type) => {
     // console.log(row, index)
+    if (type) {
+      isEdit.value = type === 'edit'
+      isLook.value = type === 'look'
+    }
 
     if (row && index !== undefined) {
       isEdit.value = true
