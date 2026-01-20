@@ -182,7 +182,7 @@
     originTableData.value.forEach((item) => {
       data.push(buildThingModel(item))
     })
-    console.log('转换后的物模型', data)
+    console.log('转换后的拓展字段', data)
   }
 
   onMounted(() => {

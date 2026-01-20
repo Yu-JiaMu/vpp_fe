@@ -29,20 +29,38 @@ import { createEnum } from '@/utils'
  * 节点类型定义：包含不同节点的标签和值。
  */
 export const NODE_TYPES = createEnum({
-  DIRECT: { label: '直连设备', value: 'direct' },
-  GATEWAY: { label: '网关设备', value: 'gateway' },
-  SUB_DEVICE: { label: '网关子设备', value: 'sub-device' }
+  DIRECT: { label: '直连设备', value: 'direct-connect-device' },
+  GATEWAY: { label: '网关设备', value: 'gateway-device' },
+  SUB_DEVICE: { label: '网关子设备', value: 'gateway-sub-device' }
 })
 
 /**
  * 常用联网方式选项
  */
 export const CONNECTION_TYPES = createEnum({
-  WIFI: { label: 'Wi-Fi', value: 'wifi' },
-  CELLULAR: { label: '蜂窝 (2G/3G/4G/5G)', value: 'cellular' },
-  ETHERNET: { label: '以太网', value: 'ethernet' },
-  LORAWAN: { label: 'LoRaWAN', value: 'lorawan' },
+  WIFI: { label: 'Wi-Fi', value: 'Wi-Fi' },
+  CELLULAR: { label: '蜂窝 (2G/3G/4G/5G)', value: 'mobile_network' },
+  ETHERNET: { label: '以太网', value: 'Ethernet' },
+  LORAWAN: { label: 'LoRaWAN', value: 'LoRaWAN' },
   OTHER: { label: '其他', value: 'other' }
+})
+
+// 协议类型
+export const PROTOCOL_TYPES_MAP = createEnum({
+  MQTT: { label: 'MQTT', value: 'MQTT' }
+  // HTTP: { label: 'HTTP', value: 'http' }
+})
+
+// 数据格式
+export const DATA_FORMAT_MAP = createEnum({
+  JSON: { label: 'JSON', value: 'JSON' }
+  // XML: { label: 'XML', value: 'xml' }
+})
+
+// 认证方式
+export const AUTH_MODE_MAP = createEnum({
+  SECRET: { label: '设备密钥', value: 'device_key' },
+  SN: { label: '设备序列号', value: 'device_serial_number' }
 })
 
 // 功能类型

@@ -52,7 +52,7 @@
 </template>
 
 <script setup>
-  const dialogVisible = ref(true)
+  const dialogVisible = ref(false)
 
   const data = reactive({ productId: '689d7b55d582f20018456cd6' })
 

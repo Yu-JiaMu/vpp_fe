@@ -55,6 +55,10 @@
     tableData: {
       type: Array,
       default: () => []
+    },
+    module: {
+      type: String,
+      default: ''
     }
   })
 
@@ -96,12 +100,12 @@
     console.log(ref)
 
     const { getThingJson } = ref
-    console.log('thingPropertyRef', getThingJson())
+    console.log('getThingJson', getThingJson())
 
     if (!ref?.submit) return
 
     const data = await ref.submit()
-    console.log(data)
+    // console.log(data)
 
     // if (!data) return
     return

@@ -181,9 +181,9 @@
   }
 
   const getThingJson = () => {
-    console.log('form', form)
+    // console.log('form', form)
 
-    return buildThingModel(form, 'service')
+    return buildThingModel(form, 'event')
   }
   const initForm = (json) => {
     const data = parseThingModel(json)

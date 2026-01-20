@@ -91,21 +91,34 @@
 
       <el-form-item label="协议类型" prop="protocolType">
         <el-select v-model="form.protocolType" placeholder="请选择协议类型" class="w-full">
-          <el-option label="MQTT" value="mqtt" />
-          <el-option label="HTTP" value="http" />
+          <el-option
+            v-for="item in PROTOCOL_TYPES_MAP.options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
         </el-select>
       </el-form-item>
 
       <el-form-item label="数据格式" prop="dataFormat">
         <el-select v-model="form.dataFormat" class="w-full">
-          <el-option label="JSON" value="JSON" />
+          <el-option
+            v-for="item in DATA_FORMAT_MAP.options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
         </el-select>
       </el-form-item>
 
       <el-form-item label="认证方式" prop="authType">
         <el-select v-model="form.authType" placeholder="请选择认证方式" class="w-full">
-          <el-option label="设备密钥" value="secret" />
-          <el-option label="产品序列号产品ID" value="sn_pid" />
+          <el-option
+            v-for="item in AUTH_MODE_MAP.options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
         </el-select>
       </el-form-item>
 
@@ -199,7 +212,13 @@
     getByteLength,
     validateProductId
   } from '@/utils'
-  import { NODE_TYPES, CONNECTION_TYPES } from '@/enums'
+  import {
+    NODE_TYPES,
+    CONNECTION_TYPES,
+    PROTOCOL_TYPES_MAP,
+    DATA_FORMAT_MAP,
+    AUTH_MODE_MAP
+  } from '@/enums'
   import SelectProductCategory from './components/select-product-category.vue'
   import ThingModelDetailDialog from './components/thing-model-detail-dialog.vue'
   import ProductCreateSuccessDialog from './components/product-create-success-dialog.vue'
@@ -262,6 +281,26 @@
 
     if (!valid) return
   }
+
+  const productCategoryList = ref([])
+  // 获取产品品类列表
+  const initProductCategoryList = async () => {
+    try {
+      const { rows } = await api.apiGetProductCategoryList({ pageNum: 1, pageSize: 1000 })
+      if (rows && Array.isArray(rows)) {
+        productCategoryList.value = rows.map((item) => ({
+          label: item.name || item.label,
+          value: item.id || item.value
+        }))
+      }
+    } catch (error) {
+      console.error('获取产品品类列表失败:', error)
+    }
+  }
+
+  onMounted(() => {
+    initProductCategoryList()
+  })
 </script>
 
 <style scoped lang="scss">
