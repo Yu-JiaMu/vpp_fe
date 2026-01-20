@@ -74,13 +74,13 @@
 </template>
 
 <script setup>
-  import ParamsDialog from '../thing-model/thing-function/params-dialog.vue'
-  import FunctionDefinePreview from '../thing-model/function-define-preview/index.vue'
+  import ParamsDialog from '@/components/iot/thing-model/thing-function/params-dialog.vue'
+  import FunctionDefinePreview from '@/components/iot/thing-model/function-define-preview/index.vue'
   import { ref } from 'vue'
-  import thingJson from '../thing-model/thing.json'
+  import thingJson from '@/components/iot/thing-model/thing.json'
   import { handleDataType } from '@/utils'
   import { FUNCTION_MODE_MAP, REQUIRED_MAP } from '@/enums'
-  import { buildThingModel, parseThingModel } from '../thing-model/adapters'
+  import { buildThingModel, parseThingModel } from '@/components/iot/thing-model/adapters'
 
   const isEdit = ref(false)
 

@@ -54,7 +54,6 @@
 
 <script setup>
   import BaseInfo from './components/base-info.vue'
-  import ThingModel from './components/thing-model/index.vue'
   import ExtendedField from './components/extended-field/index.vue'
 
   const activeTab = ref('extend')

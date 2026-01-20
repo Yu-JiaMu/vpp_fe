@@ -1,5 +1,5 @@
 <template>
-  <div class="add-product pt-5">
+  <div class="pt-5 add-product">
     <ArtButtonBack class="mb-2.5"> 新增产品 </ArtButtonBack>
     <el-form
       ref="productFormRef"
@@ -8,7 +8,7 @@
       label-position="top"
       class="grid grid-cols-2 gap-x-12 gap-y-2"
     >
-      <el-form-item label="产品ID" prop="productId">
+      <el-form-item label="产品ID" prop="identifier">
         <template #label="{ label }">
           <div class="flex-c">
             <span> {{ label }} </span>
@@ -18,27 +18,28 @@
               content="若不填写，系统将自动生成唯一标识"
               placement="top"
             >
-              <ArtSvgIcon icon="ri:question-line" class="text-g-2 ml-2" />
+              <ArtSvgIcon icon="ri:question-line" class="ml-2 text-g-2" />
             </el-tooltip>
           </div>
         </template>
-        <el-input v-model="form.productId" placeholder="请输入产品ID" />
+        <el-input v-model="form.identifier" placeholder="请输入产品ID" />
       </el-form-item>
 
-      <el-form-item label="产品名称" prop="productName">
-        <el-input v-model="form.productName" placeholder="请输入产品名称" />
+      <el-form-item label="产品名称" prop="name">
+        <el-input v-model="form.name" placeholder="请输入产品名称" />
       </el-form-item>
 
-      <el-form-item class="relative" label="产品品类" prop="category" label-width="400px">
+      <el-form-item class="relative" label="产品品类" prop="categoryId" label-width="400px">
         <div
+          v-if="form.categoryId"
           class="absolute flex-c pl-1 cursor-pointer top-[-36px] right-0 open-box w-[68px] h-[32px] bg-white rounded-md text-g-3"
-          @click="thingModelRef.open(form, true)"
+          @click="handleOpenThingModel"
         >
           <img class="w-5 h-5 mr-1" src="@/assets/images/icon/icon-open-eye.png" alt="" />
           查看
         </div>
         <template #label="{ label }">
-          <div class="flex-c inline">
+          <div class="inline flex-c">
             <span> {{ label }} </span>
             <el-tooltip
               popper-class="max-w-[300px]"
@@ -46,19 +47,23 @@
               content="系统内置标准品类，并将根据所选择行业/场景/品类，自动匹配物模型"
               placement="top"
             >
-              <ArtSvgIcon icon="ri:question-line" class="text-g-2 ml-2" />
+              <ArtSvgIcon icon="ri:question-line" class="ml-2 text-g-2" />
             </el-tooltip>
           </div>
         </template>
         <div class="flex w-full gap-2">
           <el-select
-            v-model="form.category"
+            v-model="form.categoryId"
             placeholder="请选择品类"
             class="flex-1"
             @click="handleCategoryChange"
           >
-            <!-- <el-option label="智能家居" value="smart-home" />
-            <el-option label="工业互联" value="industrial" /> -->
+            <el-option
+              v-for="item in productCategoryList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
           </el-select>
         </div>
       </el-form-item>
@@ -89,8 +94,8 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="协议类型" prop="protocolType">
-        <el-select v-model="form.protocolType" placeholder="请选择协议类型" class="w-full">
+      <el-form-item label="协议类型" prop="applyLayerProtocol">
+        <el-select v-model="form.applyLayerProtocol" placeholder="请选择协议类型" class="w-full">
           <el-option
             v-for="item in PROTOCOL_TYPES_MAP.options"
             :key="item.value"
@@ -134,34 +139,34 @@
               class="ml-1 text-[18px]"
             />
           </div>
-          <div class="flex-grow border-t border-dashed border-gray-300"></div>
+          <div class="flex-grow border-t border-gray-300 border-dashed"></div>
         </div>
       </div>
 
       <template v-if="isShowMore">
         <div class="grid grid-cols-1 gap-y-2">
-          <el-form-item label="产品厂商" prop="manufacturer">
-            <el-input v-model="form.manufacturer" placeholder="请输入" />
+          <el-form-item label="产品厂商" prop="manufactory">
+            <el-input v-model="form.manufactory" placeholder="请输入" />
           </el-form-item>
 
-          <el-form-item label="产品型号" prop="model">
-            <el-input v-model="form.model" placeholder="请输入" />
+          <el-form-item label="产品型号" prop="productModel">
+            <el-input v-model="form.productModel" placeholder="请输入" />
           </el-form-item>
 
-          <div class="flex gap-4 items-end mt-4">
+          <div class="flex items-end gap-4 mt-4">
             <div
-              class="w-24 h-24 bg-gray-100 rounded border flex flex-col items-center justify-center text-gray-400 cursor-pointer overflow-hidden"
+              class="flex flex-col items-center justify-center w-24 h-24 overflow-hidden text-gray-400 bg-gray-100 border rounded cursor-pointer"
             >
-              <el-icon v-if="!form.logo" :size="30"><Picture /></el-icon>
-              <img v-else :src="form.logo" class="object-contain w-full h-full" />
+              <el-icon v-if="!form.imgUrl" :size="30"><Picture /></el-icon>
+              <img v-else :src="form.imgUrl" class="object-contain w-full h-full" />
             </div>
             <div class="flex flex-col gap-2">
               <el-upload action="#" :auto-upload="false" :show-file-list="false">
-                <el-button link type="primary" :icon="Cloudy">点击上传LOGO</el-button>
+                <el-button link type="primary">点击上传LOGO</el-button>
               </el-upload>
               <div
                 v-if="form.logoName"
-                class="flex items-center text-sm text-gray-500 bg-gray-50 px-2 py-1 rounded"
+                class="flex items-center px-2 py-1 text-sm text-gray-500 rounded bg-gray-50"
               >
                 <el-icon class="mr-1 text-blue-500"><Cloudy /></el-icon>
                 {{ form.logoName }}
@@ -171,16 +176,16 @@
           </div>
         </div>
 
-        <el-form-item label="产品描述" prop="description">
+        <el-form-item label="产品描述" prop="remark">
           <el-input
-            v-model="form.description"
+            v-model="form.remark"
             type="textarea"
             :rows="6"
             placeholder="请输入"
             maxlength="200"
           />
-          <div class="w-full text-right text-xs text-gray-400 mt-1">
-            {{ getByteLength(form.description) }}/200
+          <div class="w-full mt-1 text-xs text-right text-gray-400">
+            {{ getByteLength(form.remark) }}/200
           </div>
         </el-form-item>
       </template>
@@ -194,7 +199,11 @@
     </el-form>
 
     <!-- 选择产品品类 -->
-    <SelectProductCategory v-model="isProductSelectVisible" />
+    <SelectProductCategory
+      v-model="isProductSelectVisible"
+      :productCategoryList="productCategoryList"
+      @select="handleSelect"
+    />
 
     <!-- 查看物模型 -->
     <ThingModelDetailDialog ref="thingModel" />
@@ -222,6 +231,7 @@
   import SelectProductCategory from './components/select-product-category.vue'
   import ThingModelDetailDialog from './components/thing-model-detail-dialog.vue'
   import ProductCreateSuccessDialog from './components/product-create-success-dialog.vue'
+  import * as api from '@/api/iot'
 
   const productFormRef = ref(null)
   const thingModelRef = useTemplateRef('thingModel')
@@ -232,24 +242,24 @@
   const isShowMore = ref(false)
 
   const form = reactive({
-    productId: '',
-    productName: '',
-    category: '',
-    nodeType: 'direct',
-    networkWay: 'wifi',
-    protocolType: '',
+    identifier: '',
+    name: '',
+    categoryId: '',
+    nodeType: NODE_TYPES.values.DIRECT,
+    networkWay: '',
+    applyLayerProtocol: '',
     dataFormat: 'JSON',
     authType: '',
-    manufacturer: '',
-    model: '',
-    description: '',
-    logo: 'https://placeholder.com/150', // 示例logo
+    manufactory: '',
+    productModel: '',
+    remark: '',
+    imgUrl: 'https://placeholder.com/150', // 示例logo
     logoName: 'LOGO文件.JPG'
   })
 
   const rules = {
-    productId: [{ validator: validateProductId, trigger: 'blur' }],
-    productName: [
+    identifier: [{ validator: validateProductId, trigger: 'blur' }],
+    name: [
       {
         required: true,
         validator: validateNameLength,
@@ -257,12 +267,12 @@
       },
       { validator: validateCommon, trigger: 'blur' }
     ],
-    category: [{ required: true, message: '请选择产品品类', trigger: 'change' }],
+    categoryId: [{ required: true, message: '请选择产品品类', trigger: 'change' }],
     nodeType: [{ required: true, message: '请选择节点类型', trigger: 'change' }],
     networkWay: [{ required: true, message: '请选择联网方式', trigger: 'change' }],
-    protocolType: [{ required: true, message: '请选择协议类型', trigger: 'change' }],
+    applyLayerProtocol: [{ required: true, message: '请选择协议类型', trigger: 'change' }],
     authType: [{ required: true, message: '请选择认证方式', trigger: 'change' }],
-    description: [
+    remark: [
       { validator: validateCommon, trigger: 'blur' },
       { validator: validateDescLength, trigger: 'blur' }
     ]
@@ -272,14 +282,27 @@
     isProductSelectVisible.value = true // 模拟点击后弹出抽屉
   }
 
+  const handleSelect = (item) => {
+    // console.log('item', item)
+    form.categoryId = item.id
+  }
+
+  const handleOpenThingModel = () => {
+    const row = productCategoryList.value.find((item) => item.id === form.categoryId)
+    if (!row) return
+    thingModelRef.value.open(row, true)
+  }
+
   const submitForm = async () => {
-    // TODO: 测试创建成功弹窗
-    /*  productCreateSuccessRef.value.open()
-    return */
     if (!productFormRef.value) return
     const valid = await productFormRef.value.validate()
-
     if (!valid) return
+    try {
+      api.apiAddProduct(form)
+      productCreateSuccessRef.value.open()
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const productCategoryList = ref([])
@@ -289,6 +312,7 @@
       const { rows } = await api.apiGetProductCategoryList({ pageNum: 1, pageSize: 1000 })
       if (rows && Array.isArray(rows)) {
         productCategoryList.value = rows.map((item) => ({
+          ...item,
           label: item.name || item.label,
           value: item.id || item.value
         }))

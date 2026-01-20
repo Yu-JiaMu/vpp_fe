@@ -31,8 +31,9 @@ type ThingJson = {
   [k: string]: any
 }
 export function handleDataType(item: ThingItem): string {
-  const t = item.dataType?.type
+  let t = item.dataType?.type
   if (t) {
+    t = t.toLowerCase()
     const label = DATA_TYPE_MAP.getLabel?.(t) ?? ''
     return `${t}(${label})`
   }
