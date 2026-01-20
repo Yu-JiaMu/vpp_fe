@@ -55,8 +55,9 @@
 <script setup>
   import BaseInfo from './components/base-info.vue'
   import ExtendedField from './components/extended-field/index.vue'
+  const route = useRoute()
 
-  const activeTab = ref('extend')
+  const activeTab = ref('info')
 
   const product = ref({
     id: '1955073219080001',
@@ -100,6 +101,18 @@
   }
 
   const getDetail = () => {}
+
+  const init = () => {
+    if (route.query.id) {
+      getDetail()
+    }
+    if (route.query.tab) {
+      activeTab.value = route.query.tab
+    }
+  }
+  onMounted(() => {
+    init()
+  })
 </script>
 
 <style lang="scss" scoped>

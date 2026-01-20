@@ -307,3 +307,36 @@ export function generateThreeDigitRandomNumber(num: number) {
   let formattedNum = randomNum.toString().padStart(num, '0') // 确保是三位数，不足则补零
   return formattedNum
 }
+
+/**
+ * 过滤对象中的空字段
+ * @template T - 对象的类型
+ * @param obj - 需要过滤的对象
+ * @returns 过滤后的对象，键值对应的值为非空
+ */
+export function cleanEmptyValues<T extends Record<string, any>>(obj: T): Partial<T> {
+  const result: Partial<T> = {}
+
+  ;(Object.keys(obj) as Array<keyof T>).forEach((key) => {
+    const value = obj[key]
+
+    // 只过滤这三种
+    if (value === '' || value === null || value === undefined) return
+
+    result[key] = value
+  })
+
+  return result
+}
+
+/**
+ * 判断值是否是一个普通对象
+ * @param value - 需要判断的值
+ * @returns 如果 value 是一个普通对象，返回 true，否则返回 false
+ * @example
+ * isPlainObject({}) // true
+ * isPlainObject(new Map()) // false
+ */
+export function isPlainObject(value: unknown): value is Record<string, any> {
+  return Object.prototype.toString.call(value) === '[object Object]'
+}

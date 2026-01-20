@@ -26,6 +26,7 @@ import { HttpError, handleError, showError, showSuccess } from './error'
 import { $t } from '@/locales'
 import { BaseResponse } from '@/types'
 import { AxiosCanceler } from './helper/axiosCancel'
+import { cleanEmptyValues, isPlainObject } from '@/utils'
 
 /** 自定义请求扩展字段 */
 interface RequestExtraOptions {
@@ -36,6 +37,7 @@ interface RequestExtraOptions {
   loading?: boolean
   fullLoading?: boolean
   isSign?: boolean
+  skipClean?: boolean
 }
 
 /** 外部使用（request / api.get 等） */
@@ -78,6 +80,18 @@ class HttpRequest {
 
         // Token 注入
         if (accessToken) config.headers.set('Authorization', accessToken)
+
+        if (!config.skipClean) {
+          // query 参数去空处理
+          if (config.params && isPlainObject(config.params)) {
+            config.params = cleanEmptyValues(config.params)
+          }
+
+          // body 数据（仅普通对象）去空处理
+          if (config.data && isPlainObject(config.data) && !(config.data instanceof FormData)) {
+            config.data = cleanEmptyValues(config.data)
+          }
+        }
 
         // 数据序列化处理 (针对非 FormData 且未设置 Content-Type 的情况)
         if (config.data && !(config.data instanceof FormData) && !config.headers['Content-Type']) {

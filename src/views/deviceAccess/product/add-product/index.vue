@@ -298,8 +298,8 @@
     const valid = await productFormRef.value.validate()
     if (!valid) return
     try {
-      api.apiAddProduct(form)
-      productCreateSuccessRef.value.open()
+      const data = await api.apiAddProduct(form)
+      productCreateSuccessRef.value.open(data)
     } catch (error) {
       console.log(error)
     }
