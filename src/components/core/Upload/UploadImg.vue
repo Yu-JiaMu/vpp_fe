@@ -9,8 +9,6 @@
       :show-file-list="false"
       :http-request="handleHttpUpload"
       :before-upload="beforeUpload"
-      :on-success="uploadSuccess"
-      :on-error="uploadError"
       :drag="drag"
       :accept="fileType.join(',')"
     >
@@ -53,7 +51,7 @@
 
 <script setup lang="ts" name="UploadImg">
   import { generateUUID } from '@/utils'
-  import { ElNotification } from 'element-plus'
+  import { ElMessage } from 'element-plus'
   import type { UploadRequestOptions } from 'element-plus'
   import { useUploadCommon } from './composables/useUploadCommon'
   import { useUploadBefore } from './composables/useUploadBefore'
@@ -110,7 +108,7 @@
       validateForm()
       console.log('哈哈哈哈哈')
 
-      // notifySuccess("图片上传成功！");
+      notifySuccess('图片上传成功！')
     } catch {
       notifyError('图片上传失败，请您重新上传！')
     }
@@ -144,8 +142,7 @@
    * @description 图片上传成功
    * */
   const uploadSuccess = () => {
-    ElNotification({
-      title: '温馨提示',
+    ElMessage({
       message: '图片上传成功！',
       type: 'success'
     })
@@ -155,8 +152,7 @@
    * @description 图片上传错误
    * */
   const uploadError = () => {
-    ElNotification({
-      title: '温馨提示',
+    ElMessage({
       message: '图片上传失败，请您重新上传！',
       type: 'error'
     })

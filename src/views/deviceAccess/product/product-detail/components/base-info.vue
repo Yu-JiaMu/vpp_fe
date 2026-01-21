@@ -210,7 +210,6 @@
     submitLoading.value = true
 
     try {
-      // 👇 模拟接口请求（换成你真实 API）
       await api.apiEditProduct({ ...props.product, ...form, id: props.product.id })
 
       ElMessage.success('提交成功')

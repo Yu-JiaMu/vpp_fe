@@ -31,7 +31,9 @@ export function useUploadCommon(props: UseUploadCommonOptions) {
     formData.append('file', options.file)
 
     try {
-      const { data } = await api(formData)
+      const data = await api(formData)
+      console.log(data)
+
       return data
     } catch (error) {
       options.onError(error as any)
