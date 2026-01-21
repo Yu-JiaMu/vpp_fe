@@ -110,7 +110,7 @@
           </el-dropdown>
         </div>
       </div>
-      <el-table :data="tableData" border style="width: 100%">
+      <el-table :data="tableData" border style="width: 100%" ref="tableRef">
         <!-- 选择列 -->
         <el-table-column type="selection" width="55" />
 
@@ -118,28 +118,38 @@
         <el-table-column prop="name" label="设备名称" />
 
         <!-- 设备ID列 -->
-        <el-table-column prop="deviceId" label="设备ID" />
+        <el-table-column prop="id" label="设备ID" />
 
         <!-- 所属产品列 -->
-        <el-table-column prop="product" label="所属产品" />
+        <el-table-column prop="productName" label="所属产品" />
 
         <!-- 状态列 -->
-        <el-table-column prop="status" label="状态">
+        <el-table-column prop="devState" label="状态">
           <template #default="{ row }">
-            <el-tag :type="row.status === '在线' ? 'success' : 'danger'" size="small">
-              {{ row.status }}
+            <el-tag
+              :type="
+                row.devState === DEVICE_STATUS_TYPES.values.ONLINE
+                  ? 'success'
+                  : row.devState === DEVICE_STATUS_TYPES.values.OFFLINE
+                    ? 'danger'
+                    : 'warning'
+              "
+              size="small"
+            >
+              {{ DEVICE_STATUS_TYPES.getLabel(row.devState) }}
             </el-tag>
           </template>
         </el-table-column>
-
         <!-- 节点类型列 -->
-        <el-table-column prop="nodeType" label="节点类型" />
+        <el-table-column prop="nodeType" label="节点类型" min-width="100">
+          <template #default="{ row }"> {{ NODE_TYPES.getLabel(row.nodeType) }} </template>
+        </el-table-column>
 
         <!-- 上级设备列 -->
-        <el-table-column prop="parentDevice" label="上级设备" />
+        <el-table-column prop="parentId" label="上级节点设备" />
 
         <!-- 操作列（固定显示） -->
-        <el-table-column fixed="right" label="操作">
+        <el-table-column fixed="right" label="操作" :width="200">
           <template #header>
             <div class="flex flex-cz-center">
               <span class="mr15">操作</span>
@@ -165,24 +175,20 @@
           </template>
 
           <template #default="{ row }">
-            <div class="action-buttons">
-              <el-button link type="primary" @click="handleDetail(row)"> 详情 </el-button>
-              <el-button link type="primary" @click="handleSubDevice(row)"> 子设备 </el-button>
-              <el-button link type="danger" @click="handleDelete(row)"> 删除 </el-button>
-            </div>
+            <el-button link type="primary" @click="handleDetail(row)"> 详情 </el-button>
+            <el-button link type="primary" @click="handleSubDevice(row)"> 子设备 </el-button>
+            <el-button link type="danger" @click="handleDelete(row)"> 删除 </el-button>
           </template>
         </el-table-column>
       </el-table>
-      <ArtPagination
-        :pagination="pagination"
-        @size-change="onSizeChange"
-        @current-change="onPageChange"
-      />
+      <ArtPagination v-model="pagination" @change="getTableData" />
     </ElCard>
   </div>
 </template>
 
 <script setup>
+  import * as deviceApi from '@/api/iot'
+  import { NODE_TYPES, DEVICE_STATUS_TYPES } from '@/enums'
   const router = useRouter()
   // 这是一个静态展示组件，不需要响应式数据
   // 只包含图片中展示的卡片列表
@@ -190,76 +196,109 @@
   // 表单配置
   const formItems = computed(() => [
     {
-      label: '产品品类',
+      label: '设备名称',
       key: 'name',
       type: 'input',
       placeholder: '请输入产品品类',
       clearable: true
+    },
+    {
+      label: '设备ID',
+      key: 'id',
+      type: 'input',
+      placeholder: '请输入设备id',
+      clearable: true
+    },
+    {
+      label: '所属产品',
+      key: 'productId',
+      type: 'select',
+      props: {
+        placeholder: '请选择状态',
+        filterable: true,
+        clearable: true,
+        options: produceList.value
+      }
+    },
+    {
+      label: '状态',
+      key: 'devState',
+      type: 'select',
+      props: {
+        placeholder: '请选择状态',
+        filterable: true,
+        clearable: true,
+        options: DEVICE_STATUS_TYPES.options
+      }
+    },
+    {
+      label: '节点类型',
+      key: 'nodeType',
+      type: 'select',
+      props: {
+        placeholder: '请选择状态',
+        filterable: true,
+        clearable: true,
+        options: NODE_TYPES.options
+      }
     }
   ])
+  //获取产品列表
+  const produceList = ref([])
+  const getProduceList = async () => {
+    const response = await deviceApi.apiGetProductList({ pageSize: 999 })
+
+    produceList.value = response.rows.map((item) => {
+      return {
+        label: item.name,
+        value: item.id
+      }
+    })
+    console.log(produceList.value)
+  }
   const onReset = () => {
-    console.log('重置')
+    pagination.current = 1
+    tableRef.value?.clearSort()
+    getTableData()
   }
   const onSearch = () => {
-    console.log('搜索')
+    pagination.current = 1
+    tableRef.value?.clearSort()
+    getTableData()
   }
   // 表格数据
-  const tableData = ref([
-    {
-      name: 'AI中心-展厅-电表1',
-      deviceId: 'DEV001',
-      product: '标准电表',
-      status: '在线',
-      nodeType: '终端设备',
-      parentDevice: '网关-001'
-    },
-    {
-      name: '易电桥边缘网关',
-      deviceId: 'GW001',
-      product: '边缘网关',
-      status: '离线',
-      nodeType: '网关设备',
-      parentDevice: '-'
-    },
-    {
-      name: '温度传感器1',
-      deviceId: 'SENSOR001',
-      product: '温度传感器',
-      status: '在线',
-      nodeType: '子设备',
-      parentDevice: '易电桥边缘网关'
-    },
-    {
-      name: '智能照明控制器',
-      deviceId: 'LIGHT001',
-      product: '照明控制器',
-      status: '离线',
-      nodeType: '终端设备',
-      parentDevice: '网关-002'
-    }
-  ])
-
+  const tableData = ref([])
   // 分页数据
-  const currentPage = ref(1)
-  const pageSize = ref(10)
-  const tableRef = ref()
-  const selectedRows = ref([])
+  const tableRef = ref(null)
   const pagination = reactive({
     size: 10,
     current: 1,
-    total: 0
+    total: 10
   })
-  function onSizeChange(size) {
-    pageSize.value = size
-    currentPage.value = 1
-    // fetchTableData()
+  const getTableData = async () => {
+    // deviceApi
+    try {
+      const queryParams = {
+        pageNum: pagination.current,
+        pageSize: pagination.size,
+        ...Object.keys(form).reduce((acc, key) => {
+          if (form[key] !== '' && form[key] !== undefined && form[key] !== null) {
+            acc[key] = form[key]
+          }
+          return acc
+        }, {})
+      }
+      const response = await deviceApi.apiGetDeviceList(queryParams)
+      if (response) {
+        tableData.value = response.rows
+        pagination.total = response.total || 0
+      }
+    } catch (error) {
+      console.error('列表失败:', error)
+      ElMessage.error('设备列表失败')
+    }
   }
 
-  function onPageChange(page) {
-    console.log(page)
-    currentPage.value = page
-    // fetchTableData()
-  }
   // 操作按钮处理函数
   const handleDetail = (row) => {
     console.log('查看详情:', row)
@@ -280,6 +319,11 @@
   const goDeviceRegister = (type) => {
     router.push({ name: 'DeviceRegister', query: { registerType: type } })
   }
+
+  onMounted(() => {
+    getProduceList()
+    getTableData()
+  })
 </script>
 
 <style lang="scss" scoped>

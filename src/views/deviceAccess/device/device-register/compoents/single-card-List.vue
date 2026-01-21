@@ -65,7 +65,7 @@
       </div>
     </div>
     <ArtPagination
-      :pagination="pagination"
+      v-model="pagination"
       @size-change="onSizeChange"
       @current-change="onPageChange"
     />

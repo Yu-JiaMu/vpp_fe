@@ -115,3 +115,9 @@ export const REQUIRED_MAP = createEnum({
   TRUE: { label: '必填', value: true },
   FALSE: { label: '非必填', value: false }
 })
+
+export const DEVICE_STATUS_TYPES = createEnum({
+  UNACTIVATED: { label: '未激活', value: 'unactivation' },
+  OFFLINE: { label: '离线', value: 'offLine' },
+  ONLINE: { label: '在线', value: 'onLine' }
+})

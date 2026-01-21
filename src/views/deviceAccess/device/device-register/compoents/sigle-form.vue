@@ -27,8 +27,8 @@
       <el-form-item label="设备名称" prop="deviceName">
         <el-input v-model="form.deviceName" placeholder="请输入设备名称" />
       </el-form-item>
-      <el-form-item label="所属分组" prop="groupAffiliation">
-        <el-select v-model="form.groupAffiliation" placeholder="请选择所属分组" multiple>
+      <el-form-item label="所属分组" prop="deviceGroup">
+        <el-select v-model="form.deviceGroup" placeholder="请选择所属分组" multiple>
           <el-option
             v-for="item in groupList"
             :key="item.value"
@@ -146,14 +146,29 @@
             /></el-icon>
           </div>
         </el-form-item>
-        <el-form-item label="位置信息" class="col-span-2">
+        <el-form-item label="位置信息" class="col-span-2 relative">
           <template #label="{ label }">
             <div>
               <span class="mr10">{{ label }}</span>
               <span class="map-trip">*请点击地图确定位置</span>
             </div>
           </template>
-          <div class="map-box">绝地反击地方京东方</div>
+          <div class="map-box">
+            <span v-if="form.address"
+              >{{ form.address }}---经度:{{ form.lng }}----纬度:{{ form.lat }}</span
+            >
+          </div>
+          <div class="mt10" id="sigle-map" style="height: 380px; width: 100%"></div>
+          <div class="absolute top-[60px] left-[30px]">
+            <el-input
+              v-model="input"
+              id="tipinput"
+              style="width: 387px"
+              placeholder="请输入搜索地址"
+              :suffix-icon="Search"
+              clearable
+            />
+          </div>
         </el-form-item>
       </template>
       <div class="col-span-2 flex justify-center gap-5 mt-[120px] rounded-t-md">
@@ -174,15 +189,20 @@
     getByteLength,
     validateDescLength
   } from '@/utils'
+  import newMap from '@/utils/map'
+  import { Search } from '@element-plus/icons-vue'
   const form = reactive({
     deviceId: '',
     deviceName: '',
-    groupAffiliation: [],
+    deviceGroup: [],
     status: 'enabled',
     //通用配置信息
     deviceAddress: '',
     //结束
-    description: ''
+    description: '',
+    address: '',
+    lng: '',
+    lat: ''
   })
   const rules = reactive({
     deviceId: [{ validator: validateProductId, trigger: 'blur' }],
@@ -195,9 +215,7 @@
       },
       { validator: validateCommon, trigger: 'blur' }
     ],
-    groupAffiliation: [
-      { type: 'array', required: false, message: '请选择所属分组', trigger: 'change' }
-    ],
+    deviceGroup: [{ type: 'array', required: false, message: '请选择所属分组', trigger: 'change' }],
     status: [
       {
         required: true,
@@ -258,6 +276,42 @@
 
     if (!valid) return
   }
+
+  //地图
+  // 创建地图
+  const input = ref('')
+  const map = ref('')
+  const createMap = async () => {
+    map.value = new newMap()
+    map.value.createMap('sigle-map')
+  }
+  const getAddress = async () => {
+    const res = await map.value.getSearchAddressList('tipinput')
+    console.log('res------address', res)
+    form.address = res.poi.district + res.poi.name
+    const { lng, lat } = res.poi.location
+    form.lng = lng
+    form.lat = lat
+    console.log(form, lng, lat)
+  }
+  const ClearTime = ref(null)
+  watch(
+    () => map.value,
+    (newValue) => {
+      if (newValue) {
+        ClearTime.value = setTimeout(() => {
+          getAddress()
+        }, 2000)
+      }
+    }
+  )
+  onMounted(() => {
+    createMap()
+  })
+  onUnmounted(() => {
+    map.value.destroy()
+    clearTimeout(ClearTime.value)
+  })
 </script>
 
 <style lang="scss" scoped>
@@ -310,6 +364,7 @@
     border: 1px solid #ebecf1;
     border-radius: 6px;
     width: 100%;
+    height: 36px;
     padding: 0 10px;
   }
 </style>

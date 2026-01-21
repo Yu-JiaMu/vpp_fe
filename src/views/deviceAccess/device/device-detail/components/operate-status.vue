@@ -1,0 +1,445 @@
+<template>
+  <div class="operate-status bg-white">
+    <div class="flex gap-2 cursor-pointer mb20">
+      <div
+        class="tag"
+        :class="{ 'active-tag': activeTag === tag.value }"
+        v-for="(tag, index) in tagList"
+        :key="index"
+        @click="handleTagClick(tag)"
+        >{{ tag.label }}</div
+      >
+    </div>
+    <!-- 属性 -->
+    <template v-if="activeTag === 'attributeData'">
+      <div class="flex gap-2.5">
+        <el-input
+          v-model="form.name"
+          placeholder="请输入属性名称"
+          :prefix-icon="Search"
+          style="width: 248px"
+        />
+        <el-button @click="handleSearch"> 搜索 </el-button>
+        <ArtResetBtn class="!ml-0" @click="handleReset" />
+      </div>
+      <div class="search-box flex justify-end items-center gap-8">
+        <el-switch v-model="form.refresh" active-text="实时刷新" />
+        <div class="flex items-center icon-box">
+          <div
+            class="icon-item cursor-pointer"
+            v-for="(icon, index) in iconList"
+            :key="index"
+            @click="hanldeIconClick(icon)"
+          >
+            <img
+              v-if="index === 0"
+              :src="activeIcon === 'table' ? icon.activeImgUrl : icon.imgUrl"
+              alt=""
+            />
+            <img
+              v-if="index === 1"
+              :src="activeIcon === 'card' ? icon.activeImgUrl : icon.imgUrl"
+              alt=""
+            />
+          </div>
+        </div>
+      </div>
+      <template v-if="activeIcon === 'table'">
+        <el-table :data="tableData" border style="width: 100%">
+          <el-table-column prop="name" label="属性名称" width="400" />
+          <el-table-column prop="content" label="值" width="400" />
+          <el-table-column prop="updateTime" label="更新时间" width="400" />
+          <el-table-column label="操作">
+            <template #default="{ row, $index }">
+              <el-button type="primary" link> 详情 </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </template>
+      <template v-if="activeIcon === 'card'">
+        <div class="card-container mt20">
+          <!-- 卡片1：电压 -->
+          <div class="card" v-for="item in 20">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="kuai"></div>
+                <span class="text-[15px]">电压</span>
+              </div>
+              <img src="@/assets/images/deviceAccess/13.png" alt="" class="w-[14px] h-[16px]" />
+            </div>
+            <div class="content-font mt-[4px] mb-[15px] flex items-end">
+              <div class="flex items-center gap-2 mr-[4px]">
+                <div class="kuai" style="opacity: 0"></div>
+                <span class="text-5xl">220</span>
+              </div>
+              <span class="text-[22px]">KWH</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="kuai"></div>
+              <span class="text-[15px]">更新时间</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="kuai" style="opacity: 0"></div>
+              <span class="text-[15px]">2025-09-23</span>
+            </div>
+          </div>
+        </div>
+      </template>
+      <ArtPagination v-model="pagination" @change="pageChange" />
+    </template>
+    <!-- 查看详情弹窗 -->
+    <el-dialog
+      v-model="dialogVisible"
+      align-center
+      title="详情"
+      :show-close="false"
+      width="742"
+      :close-on-click-modal="false"
+    >
+      <div class="flex items-center justify-between">
+        <el-radio-group v-model="timeDateType" text-color="#fff" fill="#38ECF2">
+          <el-radio-button label="今日" value="today" />
+          <el-radio-button label="最近一周" value="week" />
+          <el-radio-button label="最近一个月" value="month" />
+        </el-radio-group>
+        <div style="width: 300px">
+          <el-date-picker
+            v-model="datetime"
+            type="datetimerange"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            clearable
+            style="width: 100%"
+            @change="dateTimeChange"
+          />
+          <!--  :default-time="['00:00:00', '23:59:59']" -->
+        </div>
+      </div>
+      <el-tabs v-model="tabsActive" class="mt20" @tab-click="handleTabsClick">
+        <el-tab-pane label="列表" name="first">
+          <el-table :data="tabsTableData" border style="width: 100%">
+            <el-table-column prop="time" label="时间" width="400" />
+            <el-table-column prop="time" label="值" />
+          </el-table>
+          <ArtPagination
+            v-model="pagination"
+            @change="pageChange"
+            layout="prev, pager, next, jumper"
+          />
+        </el-tab-pane>
+        <el-tab-pane label="图表" name="second">
+          <div class="w-[300px]">
+            <ArtSelectPrepend>
+              <template #label> 统计周期 </template>
+              <el-select v-model="TJZQ" placeholder="请选择" style="width: 300px" clearable>
+                <el-option
+                  v-for="item in ZQlist"
+                  :label="item.label"
+                  :value="item.value"
+                  :key="item.value"
+                />
+              </el-select>
+            </ArtSelectPrepend>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
+      <!-- 底部按钮 -->
+      <template #footer>
+        <div class="flex justify-center gap-[6px]">
+          <el-button
+            size="large"
+            type="info"
+            class="w-[177px]"
+            v-ripple
+            @click="dialogVisible = false"
+            >取消</el-button
+          >
+          <el-button type="primary" class="w-[177px]" v-ripple @click="dialogVisible = false">
+            确认
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+    <!-- 事件 -->
+    <template v-if="activeTag === 'eventManage'">
+      <el-table :data="eventTableData" border style="width: 100%">
+        <el-table-column prop="name" label="事件名称" width="300" />
+        <el-table-column prop="name" label="事件级别" width="300" />
+        <el-table-column prop="name" label="更新事件" width="400" />
+        <el-table-column prop="name" label="输出参数" />
+      </el-table>
+    </template>
+  </div>
+</template>
+
+<script setup>
+  import { Search } from '@element-plus/icons-vue'
+  import img1 from '@/assets/images/deviceAccess/9.png'
+  import img2 from '@/assets/images/deviceAccess/10.png'
+  import img3 from '@/assets/images/deviceAccess/11.png'
+  import img4 from '@/assets/images/deviceAccess/12.png'
+  const tagList = ref([
+    {
+      label: '属性数据',
+      value: 'attributeData'
+    },
+    {
+      label: '事件管理',
+      value: 'eventManage'
+    }
+  ])
+  const activeTag = ref('attributeData')
+  const handleTagClick = (tag) => {
+    activeTag.value = tag.value
+    console.log(activeTag.value)
+  }
+
+  //属性数据
+  const form = reactive({
+    name: '',
+    refresh: true
+  })
+
+  const iconList = ref([
+    {
+      label: '表格',
+      value: 'table',
+      imgUrl: img1,
+      activeImgUrl: img2
+    },
+    {
+      label: '卡片',
+      value: 'card',
+      imgUrl: img3,
+      activeImgUrl: img4
+    }
+  ])
+  const activeIcon = ref('table')
+  const hanldeIconClick = (icon) => {
+    activeIcon.value = icon.value
+  }
+  const handleSearch = () => {
+    console.log('搜索')
+  }
+  const handleReset = () => {
+    console.log('重置')
+  }
+  const tableData = ref([
+    {
+      name: '大家的',
+      content: '100kv',
+      updateTime: '2025-08-12   15:34:51'
+    }
+  ])
+  //分页数据
+  const pagination = reactive({
+    size: 10,
+    current: 1,
+    total: 100
+  })
+  const pageChange = async (e) => {
+    console.log(e, 'current-page 或 page-size 更改时触发')
+  }
+  //弹窗数据
+  const dialogVisible = ref(true)
+  const timeDateType = ref('today')
+  const datetime = ref('')
+  const dateTimeChange = async (e) => {
+    console.log(datetime.value, e, 'current-page 或 page-size 更改时触发')
+  }
+  //弹窗列表
+  const tabsActive = ref('first')
+  const tabsTableData = ref([])
+  const handleTabsClick = async () => {}
+
+  //弹窗图表
+  const TJZQ = ref('')
+  const ZQlist = [
+    {
+      label: '实际值',
+      value: 'ss'
+    }
+  ]
+
+  //事件
+  const eventTableData = ref([
+    {
+      name: '几点几分'
+    }
+  ])
+</script>
+
+<style lang="scss" scoped>
+  .operate-status {
+    padding: 20px;
+    .tag {
+      padding: 6px 15px;
+      border: 1px solid #e5e6ec;
+      border-radius: 2px;
+      font-size: 13px;
+      font-family:
+        Source Han Sans SC,
+        Source Han Sans SC-Medium;
+      color: #303537;
+    }
+    .active-tag {
+      background: #eefeff !important;
+      border: 1px solid #38ecf2 !important;
+      font-weight: 500;
+    }
+    .search-box {
+      padding-right: 65px;
+      .icon-box {
+        // border: 1px solid #298af9;
+        .icon-item {
+          img {
+            width: 30px;
+            height: 25px;
+          }
+        }
+        .active-icon-border {
+          border: 1px solid #298af9;
+        }
+        .active-icon {
+          color: #298af9 !important;
+        }
+      }
+    }
+    /* 卡片容器样式 */
+    .card-container {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* 卡片基础样式 */
+    .card {
+      width: 288px;
+      background: #ffffff;
+      border: 1px solid #e4e7ed;
+      border-radius: 8px;
+      padding: 15px 30px 20px 20px;
+      color: #303537;
+      .kuai {
+        width: 5px;
+        height: 5px;
+        background: #ced1d9;
+      }
+      .content-font {
+        font-family: DIN, DIN-Light;
+        font-weight: 300;
+        color: #303537;
+      }
+    }
+
+    /* 卡片悬停效果 */
+    .card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+    }
+
+    /* 左侧内容区 */
+    .card-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* 标题样式 */
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #303133;
+      line-height: 1.4;
+      margin: 0;
+    }
+
+    /* 电压数值样式 */
+    .voltage-value {
+      font-size: 28px;
+      font-weight: 400;
+      color: #303133;
+      line-height: 1.2;
+      margin: 4px 0;
+    }
+
+    /* 单位样式 */
+    .voltage-unit {
+      font-size: 12px;
+      color: #606266;
+      font-weight: 400;
+      margin-left: 2px;
+    }
+
+    /* 更新时间标签 */
+    .update-label {
+      font-size: 12px;
+      color: #909399;
+      font-weight: 400;
+      margin: 0;
+    }
+
+    /* 更新时间值 */
+    .update-time {
+      font-size: 12px;
+      color: #606266;
+      font-weight: 500;
+      margin: 0;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.5px;
+    }
+
+    /* 右侧虚线框 */
+    .card-right-area {
+      width: 40px;
+      height: 40px;
+      border: 1px dashed #409eff; /* 蓝色虚线边框 */
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-left: auto;
+      align-self: flex-start;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    /* 虚线框悬停效果 */
+    .card-right-area:hover {
+      background: #f0f7ff;
+      border-color: #66b1ff;
+      border-style: solid;
+    }
+
+    /* 虚线框内的加号 */
+    .plus-icon {
+      color: #409eff;
+      font-size: 20px;
+      font-weight: 300;
+      line-height: 1;
+      transition: all 0.2s ease;
+    }
+
+    .card-right-area:hover .plus-icon {
+      color: #66b1ff;
+      transform: scale(1.1);
+    }
+
+    /* 底部浅蓝色下划线 */
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #38ecf2; /* 浅蓝色 */
+      border-radius: 0 0 8px 8px;
+      opacity: 0.7;
+    }
+  }
+</style>

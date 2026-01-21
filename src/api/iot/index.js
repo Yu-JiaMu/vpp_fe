@@ -8,3 +8,5 @@ export * from './productCategory'
 
 // 产品接口
 export * from './product'
+
+export * from './device'

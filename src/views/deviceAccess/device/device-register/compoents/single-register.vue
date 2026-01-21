@@ -10,7 +10,7 @@
 <script setup>
   import SingleCardList from './single-card-List.vue'
   import SingleForm from './sigle-form.vue'
-  const activeStep = ref(1)
+  const activeStep = ref(2)
   const nextStep = (e) => {
     console.log('进入第二步表单')
     activeStep.value = 2

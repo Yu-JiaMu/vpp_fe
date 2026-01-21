@@ -46,10 +46,24 @@
       </div>
     </div>
     <!-- 多个子组件 -->
+    <InstanceMessage v-if="activeTab === 'instanceMessage'"></InstanceMessage>
+    <OperateStatus v-if="activeTab === 'operateStatus'"></OperateStatus>
+    <DeviceFunction v-if="activeTab === 'deviceFunction'"></DeviceFunction>
+    <!-- <DeviceDiagnosis v-if="activeTab === 'deviceDiagnosis'"></DeviceDiagnosis>
+    <LogManagement v-if="activeTab === 'logManagement'"></LogManagement>
+    <SubDeviceManagement v-if="activeTab === 'subDeviceManagement'"></SubDeviceManagement>
+    <ExtensionField v-if="activeTab === 'extensionField'"></ExtensionField> -->
   </div>
 </template>
 
 <script setup>
+  import InstanceMessage from './components/instance-message.vue'
+  import OperateStatus from './components/operate-status.vue'
+  import DeviceFunction from './components/device-function.vue'
+  //   import DeviceDiagnosis from './components/device-diagnosis.vue'
+  //   import LogManagement from './components/log-management.vue'
+  //   import SubDeviceManagement from './components/sub-device-management.vue'
+  //   import ExtensionField from './components/extension-field.vue'
   const device = ref({
     id: '1955073219080001',
     name: '计量电表001',
@@ -58,7 +72,7 @@
     category: '能源电力 / 电表 / 表计',
     nodeType: '网关设备'
   })
-  const activeTab = ref('instanceMessage')
+  const activeTab = ref('operateStatus')
   const TABS = [
     {
       label: '实例信息',

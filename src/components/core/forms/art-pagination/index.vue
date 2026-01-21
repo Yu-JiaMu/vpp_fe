@@ -2,7 +2,7 @@
   <div class="flex justify-start pt-5">
     <el-pagination
       background
-      layout="prev, pager, next, jumper, ->, total, sizes"
+      :layout="props.layout"
       :page-sizes="[10, 20, 30, 50, 100]"
       :page-size="pagination?.size"
       :current-page="pagination?.current"
@@ -15,6 +15,12 @@
 </template>
 
 <script setup>
+  const props = defineProps({
+    layout: {
+      type: String,
+      default: 'prev, pager, next, jumper, ->, total, sizes'
+    }
+  })
   const pagination = defineModel()
 
   const emit = defineEmits(['size-change', 'current-change', 'change'])
