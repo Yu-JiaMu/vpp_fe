@@ -129,12 +129,7 @@
     </el-table>
 
     <!-- 导出物模型弹窗 -->
-    <ExportModelDialog
-      ref="exportModelDialogRef"
-      :info="info"
-      :thingJson="thingJson"
-      :module="module"
-    />
+    <ExportModelDialog ref="exportModelDialogRef" :info="info" :module="module" />
 
     <!-- 导入物模型弹窗 -->
     <ImportModelDialog
