@@ -80,6 +80,7 @@ export function createEnum<const T extends readonly EnumItem[]>(
   getLabel: (value: T[number]['value']) => string
   getItem: (value: T[number]['value']) => T[number] | undefined
 }
+
 /**
  * 枚举工厂函数
  * 自动产出 下拉列表数组、值枚举、Label 映射表 以及 安全查询函数。
@@ -105,8 +106,11 @@ export function createEnum(input: any) {
   )
 
   // 👈 修改点 5：查询时，先 String(value) 再查
-  const getLabel = (value: string | number | boolean) =>
-    kvMap[String(value)]?.label ?? String(value)
+  const getLabel = (value: string | number | boolean) => {
+    if (value === undefined) return undefined
+    return kvMap[String(value)]?.label ?? String(value)
+  }
+
   const getItem = (value: string | number | boolean) => kvMap[String(value)]
 
   const values = Object.fromEntries(Object.entries(map).map(([k, v]) => [k, v.value]))

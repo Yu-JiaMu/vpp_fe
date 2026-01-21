@@ -26,7 +26,7 @@
         </el-col>
       </el-row>
     </ElCard>
-    <div class="mt10 flex h-12 bg-white tab-con w-fit">
+    <div class="flex h-12 bg-white mt10 tab-con w-fit">
       <div
         v-for="item in TABS"
         :key="item.value"
@@ -38,13 +38,18 @@
       </div>
     </div>
     <!-- 物模型 -->
-    <ThingModel v-if="activeTab === 'model'" :product="product" @refresh="getDetail"></ThingModel>
+    <ThingModel
+      v-if="activeTab === 'model'"
+      module="productCategory"
+      :info="product"
+      :thingJson="productCategoryDetail.thingModel"
+      @refresh="getDetail"
+    ></ThingModel>
   </div>
 </template>
 
 <script setup>
   import * as productCategoryApi from '@/api/iot/productCategory.js'
-  import ThingModel from '@/views/deviceAccess/product/product-detail/components/thing-model/index.vue'
   const inputValue = ref('')
   const route = useRoute()
   const productCategoryId = route.query.id

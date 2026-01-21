@@ -259,22 +259,45 @@ export function formatTimestamp(timestamp: any, format = 'YYYY-MM-DD HH:mm:ss', 
 
 type BlobPart = BufferSource | Blob | string
 
+// 获取文件后缀方法
+function getExtensionByBlob(blob: Blob, defaultExt = 'xlsx') {
+  const mime = blob.type
+  return MIME_EXTENSION_MAP[mime] || defaultExt
+}
+
 /**
  * 下载文件的工具函数
  * @param result - 文件的二进制数据或 Blob 数据
  * @param fileName - 下载文件的名称，默认为 '导出数据'
  */
-export function downloadFile(result: Blob | ArrayBuffer | Uint8Array, fileName = '导出数据'): void {
+
+const MIME_EXTENSION_MAP: Record<string, string> = {
+  'application/vnd.ms-excel': 'xls',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+  'text/csv': 'csv',
+  'application/pdf': 'pdf',
+  'application/json': 'json',
+  'text/plain': 'txt',
+  'application/zip': 'zip'
+}
+
+export function downloadFile(
+  result: Blob | ArrayBuffer | Uint8Array,
+  fileName = '导出数据',
+  defaultExt = 'json'
+): void {
   const blob: Blob = result instanceof Blob ? result : new Blob([result as BlobPart])
+  // 👉 自动识别后缀
+  const ext = getExtensionByBlob(blob) || fileName.endsWith('.') ? defaultExt : ''
 
   const downloadElement = document.createElement('a')
   const href = URL.createObjectURL(blob)
 
   downloadElement.href = href
 
-  // ⚠️ Windows 不允许文件名包含 :
-  const safeTime = dayjs().format('YYYY-MM-DD_HH-mm-ss')
-  downloadElement.download = `${fileName}-${safeTime}.xlsx`
+  const finalName = ext ? `${fileName}.${ext}` : fileName
+
+  downloadElement.download = finalName
 
   document.body.appendChild(downloadElement)
   downloadElement.click()
@@ -306,4 +329,37 @@ export function generateThreeDigitRandomNumber(num: number) {
   let randomNum = Math.floor(Math.random() * 1000) // 生成0到999之间的随机数
   let formattedNum = randomNum.toString().padStart(num, '0') // 确保是三位数，不足则补零
   return formattedNum
+}
+
+/**
+ * 过滤对象中的空字段
+ * @template T - 对象的类型
+ * @param obj - 需要过滤的对象
+ * @returns 过滤后的对象，键值对应的值为非空
+ */
+export function cleanEmptyValues<T extends Record<string, any>>(obj: T): Partial<T> {
+  const result: Partial<T> = {}
+
+  ;(Object.keys(obj) as Array<keyof T>).forEach((key) => {
+    const value = obj[key]
+
+    // 只过滤这三种
+    if (value === '' || value === null || value === undefined) return
+
+    result[key] = value
+  })
+
+  return result
+}
+
+/**
+ * 判断值是否是一个普通对象
+ * @param value - 需要判断的值
+ * @returns 如果 value 是一个普通对象，返回 true，否则返回 false
+ * @example
+ * isPlainObject({}) // true
+ * isPlainObject(new Map()) // false
+ */
+export function isPlainObject(value: unknown): value is Record<string, any> {
+  return Object.prototype.toString.call(value) === '[object Object]'
 }

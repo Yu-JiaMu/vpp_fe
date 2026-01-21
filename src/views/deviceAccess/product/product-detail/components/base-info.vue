@@ -1,11 +1,11 @@
 <template>
-  <div class="base-info bg-white base-info-table">
-    <div class="flex justify-between items-center p-5">
+  <div class="bg-white base-info base-info-table">
+    <div class="flex items-center justify-between p-5">
       <div class="font-scBold text-g-131617 flex-c">
         <img src="@/assets/images/icon/icon-info.png" class="w-5 h-5 mr-2.5" alt="" />
         基本信息
       </div>
-      <div class="text-g-303537 flex-c cursor-pointer" @click="handleEdit">
+      <div class="cursor-pointer text-g-303537 flex-c" @click="handleEdit">
         <img src="@/assets/images/icon/icon-edit.png" class="w-5 h-5 mr-1" alt="" />
         编辑
       </div>
@@ -22,19 +22,19 @@
       </el-descriptions-item>
 
       <el-descriptions-item label="产品品类">
-        {{ product.category }}
+        {{ product.productCategoryName }}
       </el-descriptions-item>
 
       <el-descriptions-item label="节点类型">
-        {{ product.nodeType }}
+        {{ NODE_TYPES.getLabel(product.nodeType) }}
       </el-descriptions-item>
 
       <el-descriptions-item label="协议类型">
-        {{ product.protocol }}
+        {{ PROTOCOL_TYPES_MAP.getLabel(product.applyLayerProtocol) }}
       </el-descriptions-item>
 
       <el-descriptions-item label="联网方式">
-        {{ product.network }}
+        {{ CONNECTION_TYPES.getLabel(product.networkWay) }}
       </el-descriptions-item>
 
       <el-descriptions-item label="数据格式">
@@ -42,27 +42,23 @@
       </el-descriptions-item>
 
       <el-descriptions-item label="认证方式">
-        {{ product.authType }}
+        {{ AUTH_MODE_MAP.getLabel(product.authType) }}
       </el-descriptions-item>
 
       <el-descriptions-item label="产品厂商">
-        {{ product.vendor }}
+        {{ product.manufactory }}
       </el-descriptions-item>
 
       <el-descriptions-item label="产品类型">
-        {{ product.productType }}
+        {{ product.productModel }}
       </el-descriptions-item>
 
-      <el-descriptions-item label="创建时间">
-        {{ product.createdAt }}
-      </el-descriptions-item>
-
-      <el-descriptions-item label="更新时间">
-        {{ product.updatedAt }}
+      <el-descriptions-item label="产品标识符">
+        {{ product.identifier }}
       </el-descriptions-item>
 
       <el-descriptions-item label="产品描述" :span="2">
-        {{ product.desc }}
+        {{ product.remark }}
       </el-descriptions-item>
     </el-descriptions>
 
@@ -80,19 +76,19 @@
           <!-- 上传 -->
           <el-form-item label="上传">
             <div class="flex items-center gap-4">
-              <el-upload class="logo-uploader" action="#" :show-file-list="false">
-                <div
-                  class="w-20 h-20 border border-dashed border-gray-300 rounded flex items-center justify-center bg-gray-50 hover:border-primary cursor-pointer"
-                >
-                  <img
-                    v-if="form.logo"
-                    :src="form.logo"
-                    class="w-full h-full object-cover rounded"
-                  />
-                </div>
-              </el-upload>
-
-              <span class="text-primary cursor-pointer text-sm"> 点击上传 LOGO </span>
+              <UploadImg
+                v-model="form.imgUrl"
+                accept="image/*"
+                :fileSize="0.5"
+                width="80px"
+                height="80px"
+              >
+                <template #tip>
+                  <span class="text-xs text-g-505658"
+                    >支持500k以内的图片；支持jpg、png、jpeg；建议尺寸256x256。</span
+                  >
+                </template>
+              </UploadImg>
             </div>
           </el-form-item>
 
@@ -102,26 +98,26 @@
           </el-form-item>
 
           <!-- 产品厂商 -->
-          <el-form-item label="产品厂商" prop="vendor">
-            <el-input v-model="form.vendor" placeholder="请输入产品厂商" />
+          <el-form-item label="产品厂商" prop="manufactory">
+            <el-input v-model="form.manufactory" placeholder="请输入产品厂商" />
           </el-form-item>
 
           <!-- 产品型号 -->
-          <el-form-item label="产品型号" prop="model">
-            <el-input v-model="form.model" placeholder="请输入产品型号" />
+          <el-form-item label="产品型号" prop="productModel">
+            <el-input v-model="form.productModel" placeholder="请输入产品型号" />
           </el-form-item>
 
           <!-- 描述 -->
-          <el-form-item label="描述" prop="desc">
+          <el-form-item label="描述" prop="remark">
             <el-input
-              v-model="form.desc"
+              v-model="form.remark"
               type="textarea"
               placeholder="请输入产品说明"
               :rows="5"
               maxlength="200"
             />
-            <div class="w-full text-right text-xs text-gray-400 mt-1">
-              {{ getByteLength(form.desc) }}/200
+            <div class="w-full mt-1 text-xs text-right text-gray-400">
+              {{ getByteLength(form.remark) }}/200
             </div>
           </el-form-item>
         </el-form>
@@ -138,7 +134,13 @@
             @click="dialogVisible = false"
             >取消</el-button
           >
-          <el-button type="primary" class="w-[177px]" v-ripple @click="handleSubmit">
+          <el-button
+            :loading="submitLoading"
+            type="primary"
+            class="w-[177px]"
+            v-ripple
+            @click="handleSubmit"
+          >
             确认
           </el-button>
         </div>
@@ -149,7 +151,9 @@
 
 <script setup>
   import { validateNameLength, validateCommon, validateDescLength, getByteLength } from '@/utils'
+  import { NODE_TYPES, PROTOCOL_TYPES_MAP, CONNECTION_TYPES, AUTH_MODE_MAP } from '@/enums'
   import { pick } from 'lodash-es'
+  import * as api from '@/api/iot'
   const props = defineProps({
     product: {
       type: Object,
@@ -161,7 +165,10 @@
   const dialogVisible = ref(false)
 
   const handleEdit = () => {
-    Object.assign(form, pick(props.product, ['logo', 'name', 'vendor', 'model', 'desc']))
+    Object.assign(
+      form,
+      pick(props.product, ['imgUrl', 'name', 'manufactory', 'productModel', 'remark'])
+    )
     dialogVisible.value = true
   }
 
@@ -169,11 +176,11 @@
   const formRef = ref(null)
 
   const form = reactive({
-    logo: '',
+    imgUrl: '',
     name: '',
-    vendor: '',
-    model: '',
-    desc: ''
+    manufactory: '',
+    productModel: '',
+    remark: ''
   })
 
   const rules = {
@@ -185,15 +192,18 @@
       },
       { validator: validateCommon, trigger: 'blur' }
     ],
-    desc: [
+    remark: [
       { validator: validateCommon, trigger: 'blur' },
       { validator: validateDescLength, trigger: 'blur' }
     ]
   }
+
   const handleReset = () => {
     formRef.value?.resetFields()
-    form.logo = ''
+    form.imgUrl = ''
   }
+
+  const submitLoading = ref(false)
   const handleSubmit = async () => {
     const valid = await formRef.value.validate()
     if (!valid) return
@@ -201,13 +211,7 @@
 
     try {
       // 👇 模拟接口请求（换成你真实 API）
-      await fakeSubmitApi({
-        logo: form.logo,
-        name: form.name,
-        vendor: form.vendor,
-        model: form.model,
-        desc: form.desc
-      })
+      await api.apiEditProduct({ ...props.product, ...form, id: props.product.id })
 
       ElMessage.success('提交成功')
 

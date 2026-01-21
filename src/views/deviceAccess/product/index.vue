@@ -26,7 +26,7 @@
       >
         <el-table-column prop="name" label="产品名称" min-width="180">
           <template #default="{ row }">
-            <span class="text-theme cursor-pointer" @click.prevent="viewDetails(row)">
+            <span class="cursor-pointer text-theme" @click.prevent="viewDetails(row)">
               {{ row.name }}
             </span>
           </template>
@@ -106,12 +106,7 @@
       const queryParams = {
         pageNum: pagination.current,
         pageSize: pagination.size,
-        ...Object.keys(form).reduce((acc, key) => {
-          if (form[key] !== '' && form[key] !== undefined && form[key] !== null) {
-            acc[key] = form[key]
-          }
-          return acc
-        }, {})
+        ...form
       }
 
       const response = await api.apiGetProductList(queryParams)
@@ -258,9 +253,10 @@
       await api.apiEditProduct({ ...row, enabled: row.enabled })
       ElMessage.success('更新成功')
     } catch (error) {
+      if (error === 'cancel') return
       console.error('更新失败:', error)
       row.enabled = !row.enabled // 回滚状态
-      ElMessage.error('更新失败')
+      // ElMessage.error('更新失败')
     }
   }
 

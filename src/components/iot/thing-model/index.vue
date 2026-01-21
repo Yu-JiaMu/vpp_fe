@@ -62,10 +62,10 @@
         </el-button>
         <div class="dividing-line"></div>
         <el-button
-          :disabled="hasRegisterDevice"
+          :disabled="hasRegisterDevice || selectedItems.length === 0"
           text
           class="!text-g-303537 !ml-0"
-          @click="handleSetModel"
+          @click="handleBatchDelete"
         >
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-004.png" alt="" />
           删除
@@ -81,7 +81,15 @@
     </div>
 
     <!-- 表格 -->
-    <el-table :data="tableData" border stripe class="w-full">
+    <el-table
+      ref="tableRef"
+      :data="tableData"
+      border
+      stripe
+      class="w-full"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" />
       <el-table-column prop="type" label="功能类型" width="100" />
       <el-table-column prop="source" label="功能来源" width="100" />
       <el-table-column prop="name" label="功能名称" width="120" />
@@ -121,10 +129,15 @@
     </el-table>
 
     <!-- 导出物模型弹窗 -->
-    <ExportModelDialog ref="exportModelDialogRef" />
+    <ExportModelDialog ref="exportModelDialogRef" :info="info" :module="module" />
 
     <!-- 导入物模型弹窗 -->
-    <ImportModelDialog ref="importModelDialogRef" />
+    <ImportModelDialog
+      ref="importModelDialogRef"
+      :info="info"
+      :module="module"
+      @refresh="handleRefresh"
+    />
 
     <!-- 添加系统功能点 -->
     <AddSystemFunctionPointsDialog
@@ -142,22 +155,37 @@
 </template>
 
 <script setup>
+  import * as api from '@/api/iot'
   import ExportModelDialog from './export-model-dialog/index.vue'
   import ImportModelDialog from './import-model-dialog/index.vue'
   import AddSystemFunctionPointsDialog from './add-system-function-points-dialog/index.vue'
   import AddCustomFunctionPointDialog from './add-custom-function-point-dialog/index.vue'
   import FunctionDefinePreview from './function-define-preview/index.vue'
   import { ref } from 'vue'
-  import thingJson from './thing.json'
+  // import thingJson from './thing.json'
   import { transformThingJsonToTable, transformTableToThingJson } from '@/utils'
-  import {
-    FUNCTION_MODE_MAP,
-    THING_SOURCE_MAP,
-    ACCESS_MODE_MAP,
-    CALL_TYPE_MAP,
-    EVENT_TYPE_MAP,
-    DATA_TYPE_MAP
-  } from '@/enums'
+  import { FUNCTION_MODE_MAP } from '@/enums'
+  import { differenceBy } from 'lodash-es'
+
+  const props = defineProps({
+    info: {
+      type: Object,
+      default: () => {}
+    },
+    thingJson: {
+      type: [Object],
+      default: () => {}
+    },
+    module: {
+      type: String,
+      default: ''
+    }
+  })
+  const emits = defineEmits(['refresh'])
+
+  let thingJson = {}
+  const originTableData = ref([])
+  const tableData = ref([])
 
   const isEdit = ref(false)
   const hasRegisterDevice = ref(false)
@@ -182,12 +210,9 @@
     name: ''
   })
 
-  const originTableData = ref(transformThingJsonToTable(thingJson))
-  const tableData = ref([])
-
   const handleSearch = () => {
     const { name, functionMode } = form.value
-    console.log(name, functionMode)
+    // console.log(name, functionMode)
 
     tableData.value = originTableData.value.filter((row) => {
       const matchName = !name || row.name?.includes(name)
@@ -201,26 +226,20 @@
     form.value.name = ''
   }
 
-  const levelTagType = (level) => {
-    switch (level) {
-      case 'info':
-        return 'info'
-      case 'warn':
-        return 'warning'
-      case 'error':
-        return 'danger'
-      default:
-        return 'info'
-    }
-  }
-
   const exportModelDialogRef = useTemplateRef('exportModelDialogRef')
   const handleExportModel = () => {
-    exportModelDialogRef.value.open()
+    exportModelDialogRef.value.open(props.thingJson)
   }
 
   const importModelDialogRef = useTemplateRef('importModelDialogRef')
-  const handleImportModel = () => {
+  const handleImportModel = async () => {
+    if (isChange.value) {
+      await ElMessageBox.confirm(`还未保存当前物模型，导入会丢失，确定导入吗？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+    }
     importModelDialogRef.value.open()
   }
 
@@ -238,7 +257,64 @@
     addCustomFunctionPointDialogRef.value.open(row, index, type)
   }
 
-  const handleRemove = (index) => {}
+  const tableRef = useTemplateRef('tableRef')
+  const selectedItems = ref([])
+
+  const handleSelectionChange = (selection) => {
+    selectedItems.value = selection
+  }
+
+  const handleRemove = async (index) => {
+    console.log(index)
+    try {
+      await ElMessageBox.confirm('此操作将删除该物模型，是否继续？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+      isChange.value = true
+      originTableData.value.splice(index, 1)
+      handleSearch()
+      ElMessage.success('删除成功')
+    } catch (error) {
+      if (error.message !== 'cancel') {
+        console.log(error)
+      }
+    }
+  }
+
+  const handleBatchDelete = async () => {
+    if (selectedItems.value.length === 0) {
+      ElMessage.warning('请先选择要删除的项目')
+      return
+    }
+
+    try {
+      await ElMessageBox.confirm('此操作将删除该物模型，是否继续？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+
+      isChange.value = true
+      console.log(selectedItems.value)
+
+      // 删除选中的项目
+      originTableData.value = differenceBy(originTableData.value, selectedItems.value, 'id')
+
+      handleSearch()
+
+      // 清空选中状态
+      tableRef.value.clearSelection()
+      selectedItems.value = []
+
+      ElMessage.success('批量删除成功')
+    } catch (error) {
+      if (error.message !== 'cancel') {
+        console.log(error)
+      }
+    }
+  }
 
   const isChange = ref(false) // 已修改未保存
 
@@ -272,14 +348,57 @@
     handleSearch()
   }
 
-  const handleSubmit = () => {
-    isChange.value = false
+  const handleSubmit = async () => {
     const newThingJson = transformTableToThingJson(originTableData.value, thingJson)
     console.log('转换后的物模型', newThingJson)
+    try {
+      switch (props.module) {
+        case 'product':
+          await api.updateProductThingModel({ id: props.info.id, thingModel: newThingJson })
+          break
+        case 'productCategory':
+          await api.updateProductCategoryThingModel({ id: props.info.id, thingModel: newThingJson })
+          break
+        default:
+          break
+      }
+      ElMessage.success('更新成功')
+
+      isChange.value = false
+    } catch (error) {
+      console.log(error)
+    }
   }
+
+  const handleRefresh = () => {
+    isChange.value = false
+    emits('refresh')
+  }
+
+  function init() {
+    console.log('初始化')
+    originTableData.value = transformThingJsonToTable(thingJson)
+    console.log('table', originTableData.value)
+
+    handleSearch()
+  }
+
+  watch(
+    () => props.thingJson,
+    (val) => {
+      thingJson = val
+      console.log('thingJson', val)
+      init()
+    },
+    {
+      immediate: true
+    }
+  )
+
   onMounted(() => {
-    tableData.value = [...originTableData.value]
-    handleSubmit()
+    // tableData.value = [...originTableData.value]
+    // init()
+    // handleSubmit()
   })
 </script>
 

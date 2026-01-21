@@ -13,7 +13,7 @@
         </el-input>
         <el-button>搜索</el-button>
       </div>
-      <el-table :data="tableData" border max-height="566" style="width: 100%">
+      <el-table :data="productCategoryList" border max-height="566" style="width: 100%">
         <el-table-column prop="name" label="产品品类" min-width="140">
           <template #default="{ row }">
             <div class="flex-c">
@@ -27,8 +27,8 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="industry" label="所属行业" min-width="140" />
-        <el-table-column prop="scene" label="所属场景" min-width="140" />
+        <el-table-column prop="industryCode" label="所属行业" min-width="140" />
+        <el-table-column prop="sceneCode" label="所属场景" min-width="140" />
         <el-table-column label="操作" width="100">
           <template #default="{ row }">
             <el-button link type="primary" @click="selectRow(row)">选择</el-button>
@@ -47,6 +47,14 @@
 
   const isProductSelectVisible = defineModel({ type: Boolean, default: false })
 
+  const props = defineProps({
+    productCategoryList: {
+      type: Array,
+      default: () => []
+    }
+  })
+
+  const emits = defineEmits(['select'])
   const thingModelRef = useTemplateRef('thingModel')
 
   const form = reactive({
@@ -54,15 +62,10 @@
     key: ''
   })
 
-  const tableData = ref(
-    Array(100)
-      .fill()
-      .map((_, index) => ({
-        name: `水表 ${index + 1}`,
-        industry: '能源电力',
-        scene: '电力'
-      }))
-  )
+  const selectRow = (row) => {
+    isProductSelectVisible.value = false
+    emits('select', row)
+  }
 </script>
 
 <style lang="scss" scoped>

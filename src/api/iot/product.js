@@ -79,7 +79,12 @@ export function updateProductExpandInfo(params) {
 
 // 导入产品物模型
 export function importProductThingModel(params) {
-  return request.post(SERVICE_API + '/product/import/thingModel', params)
+  return request.get(SERVICE_API + '/product/copy/thingModel', params)
+}
+
+// 上传物模型文件导入
+export function importProductThingModelJson(params) {
+  return request.post(SERVICE_API + `/product/import/thingModel/${params.id}`, params.file)
 }
 
 // 导出产品物模型

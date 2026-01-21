@@ -8,14 +8,14 @@
       </div>
 
       <!-- 产品 ID -->
-      <div class="text-base text-g-505658 mb-5"> 产品ID为： {{ data.productId }} </div>
+      <div class="mb-5 text-base text-g-505658"> 产品ID为： {{ productId }} </div>
 
       <!-- 引导说明 -->
-      <div class="text-base text-g-505658 mb-5"> 接下来您可以： </div>
+      <div class="mb-5 text-base text-g-505658"> 接下来您可以： </div>
 
       <!-- 操作项 1 -->
       <div class="mb-7">
-        <div class="font-scMedium text-base text-g-303537 mb-1"> 1. 定义产品物模型 </div>
+        <div class="mb-1 text-base font-scMedium text-g-303537"> 1. 定义产品物模型 </div>
         <div class="text-sm text-g-505658 mb-2.5">
           您需自定义产品物模型，基于品类模板即可快速创建产品。
         </div>
@@ -24,7 +24,7 @@
 
       <!-- 操作项 2 -->
       <div>
-        <div class="font-scMedium text-base text-g-303537 mb-1"> 2. 注册设备并激活调试 </div>
+        <div class="mb-1 text-base font-scMedium text-g-303537"> 2. 注册设备并激活调试 </div>
         <div class="text-sm text-g-505658 mb-2.5">
           您可以添加产品下的某个设备，并通过“设备诊断”进行调试。
         </div>
@@ -52,12 +52,20 @@
 </template>
 
 <script setup>
+  const router = useRouter()
   const dialogVisible = ref(false)
 
-  const data = reactive({ productId: '689d7b55d582f20018456cd6' })
+  const productId = ref('')
 
   const handleDefineModel = () => {
     console.log('去定义物模型')
+    router.replace({
+      name: 'productDetail',
+      query: {
+        id: productId.value,
+        tab: 'model'
+      }
+    })
   }
 
   const handleRegisterDevice = () => {
@@ -66,9 +74,16 @@
 
   const handleViewDetail = () => {
     console.log('查看产品详情')
+    router.replace({
+      name: 'productDetail',
+      query: {
+        id: productId.value
+      }
+    })
   }
 
-  const open = (row) => {
+  const open = (data) => {
+    productId.value = data
     dialogVisible.value = true
   }
 
