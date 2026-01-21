@@ -13,7 +13,7 @@
       <div class="flex-1">
         <div class="flex items-center gap-2 mb-1.5">
           <span class="text-base text-gray-800 font-scMedium"> 产品名称：{{ product.name }} </span>
-          <el-switch v-model="product.enabled" size="small" />
+          <el-switch v-model="product.enabled" size="small" @change="toggleEnable(product)" />
         </div>
         <div class="text-sm text-g-505658">
           设备数量：
@@ -41,7 +41,13 @@
     <BaseInfo v-if="activeTab === 'info'" :product="product" @refresh="getDetail"></BaseInfo>
 
     <!-- 物模型 -->
-    <ThingModel v-if="activeTab === 'model'" :product="product" @refresh="getDetail"></ThingModel>
+    <ThingModel
+      v-if="activeTab === 'model'"
+      module="product"
+      :info="product"
+      :thingJson="product.thingModelJson"
+      @refresh="getDetail"
+    ></ThingModel>
 
     <!-- 拓展字段 -->
     <ExtendedField
@@ -53,6 +59,7 @@
 </template>
 
 <script setup>
+  import * as api from '@/api/iot'
   import BaseInfo from './components/base-info.vue'
   import ExtendedField from './components/extended-field/index.vue'
   const route = useRoute()
@@ -60,21 +67,23 @@
   const activeTab = ref('info')
 
   const product = ref({
-    id: '1955073219080001',
-    name: '计量电表001',
+    id: '',
+    name: '',
     enabled: true,
-    deviceCount: 41,
-    category: '能源电力 / 电表 / 表计',
-    nodeType: '网关设备',
-    protocol: 'MQTT',
-    network: 'WIFI',
-    dataFormat: 'JSON',
-    authType: '设备序列号',
-    vendor: '安科瑞',
-    productType: '104表计',
-    createdAt: '2025-08-31 12:00:00',
-    updatedAt: '2025-08-31 12:00:00',
-    desc: '用于MQTT协议相关产品'
+    deviceCount: 0,
+    categoryId: '',
+    nodeType: '',
+    applyLayerProtocol: '',
+    networkWay: '',
+    dataFormat: '',
+    authType: '',
+    manufactory: '',
+    productModel: '',
+    identifier: '',
+    imgUrl: '',
+    remark: '',
+    thingModelJson: {},
+    expandInfoList: []
   })
 
   const TABS = [
@@ -100,7 +109,36 @@
     console.log('查看设备列表')
   }
 
-  const getDetail = () => {}
+  const getDetail = async () => {
+    try {
+      const id = route.query.id
+      if (!id) return
+
+      const res = await api.apiGetProductDetail(id)
+      if (res) {
+        product.value = res
+      }
+    } catch (error) {
+      console.error('获取产品详情失败:', error)
+      ElMessage.error('获取产品详情失败')
+    }
+  }
+  async function toggleEnable(row) {
+    try {
+      await ElMessageBox.confirm(`请确认${!row.enabled ? '禁用' : '启用'}该产品吗？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+      await api.apiEditProduct({ ...row, enabled: row.enabled })
+      ElMessage.success('更新成功')
+    } catch (error) {
+      if (error === 'cancel') return
+      console.error('更新失败:', error)
+      row.enabled = !row.enabled // 回滚状态
+      // ElMessage.error('更新失败')
+    }
+  }
 
   const init = () => {
     if (route.query.id) {

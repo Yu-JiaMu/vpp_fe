@@ -12,7 +12,7 @@
       <el-form label-width="90px" label-position="top">
         <el-form-item label="导入方式" required>
           <el-select v-model="importType">
-            <el-option label="拷贝产品" value="product" />
+            <el-option v-if="module !== 'ProductCategory'" label="拷贝产品" value="product" />
             <el-option label="JSON导入" value="json" />
           </el-select>
         </el-form-item>
@@ -21,7 +21,7 @@
         <template v-if="importType === 'product'">
           <el-form-item label="选择产品" required>
             <el-select v-model="productId" @change="handleProductSelect">
-              <el-option v-for="item in productList" :label="item.name" :value="item.id" />
+              <el-option v-for="item in productList" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
 
@@ -42,8 +42,10 @@
               drag
               :limit="1"
               accept=".json"
+              show-file-list
               :auto-upload="false"
               :on-change="handleFileChange"
+              :before-upload="beforeUpload"
             >
               <img class="w-12 h-12 mx-auto" src="@/assets/images/icon/icon-005.png" alt="" />
               <div class="mt-2 text-sm text-gray-600">
@@ -59,7 +61,12 @@
 
           <div class="mt-5">
             <div class="mb-5 text-sm text-gray-600">下载模板</div>
-            <el-button class="w-[382px] !bg-[#f7f8fa] rounded-md" link type="primary">
+            <el-button
+              class="w-[382px] !bg-[#f7f8fa] rounded-md"
+              link
+              type="primary"
+              @click="downloadThingModelTemplate"
+            >
               <img class="w-9 h-9" src="@/assets/images/icon/icon-006.png" alt="" />
               物模型模板.json
             </el-button>
@@ -88,10 +95,30 @@
 </template>
 
 <script setup>
-  import { transformThingJsonToTable } from '@/utils'
+  import { transformThingJsonToTable, downloadFile } from '@/utils'
   import { InfoFilled, UploadFilled } from '@element-plus/icons-vue'
   import thingJson from '../thing.json'
   import { ElMessage, ElMessageBox } from 'element-plus'
+  import * as api from '@/api/iot'
+  import { useUploadBefore } from '@/components/core/Upload/composables/useUploadBefore'
+
+  const props = defineProps({
+    info: {
+      type: Object,
+      default: () => {}
+    },
+    module: {
+      type: String,
+      default: ''
+    }
+  })
+
+  const beforeUpload = useUploadBefore({
+    fileSize: 2,
+    fileType: '.json'
+  })
+
+  const emits = defineEmits(['refresh'])
 
   const dialogVisible = ref(false)
 
@@ -100,216 +127,109 @@
 
   /** 接入产品 */
   const productId = ref('')
-  const tableData = computed(() => {
-    if (!productId.value) return []
-    return transformThingJsonToTable(
-      productList.value.find((item) => item.id === productId.value).thingModel
-    )
-  })
+  const tableData = ref([])
 
-  const productList = ref([
-    {
-      createBy: 'test',
-      createTime: '2026-01-07 02:56:12',
-      updateBy: '0',
-      updateTime: '2026-01-08 09:36:25',
-      remark: 'string',
-      id: 2008734381946048512,
-      sceneCode: '家居安防',
-      industryCode: '智慧生活',
-      sortNum: null,
-      categoryLevel: null,
-      identifier: null,
-      deleteTag: 0,
-      name: '那夢',
-      thingModel: thingJson,
-      categoryType: 'inner'
-    },
-    {
-      createBy: 'test',
-      createTime: '2026-01-07 03:00:13',
-      updateBy: null,
-      updateTime: '2026-01-07 03:00:13',
-      remark: 'string',
-      id: 2008735392169332736,
-      sceneCode: '网关中控',
-      industryCode: '智慧生活',
-      sortNum: null,
-      categoryLevel: null,
-      identifier: null,
-      deleteTag: 0,
-      name: '啊啊',
-      thingModel: null,
-      categoryType: 'define'
-    },
-    {
-      createBy: 'test',
-      createTime: '2026-01-07 03:00:21',
-      updateBy: null,
-      updateTime: '2026-01-07 03:00:21',
-      remark: 'string',
-      id: 2008735426294190080,
-      sceneCode: '未定义',
-      industryCode: '智慧生活',
-      sortNum: null,
-      categoryLevel: null,
-      identifier: null,
-      deleteTag: 0,
-      name: '啊啊的',
-      thingModel: null,
-      categoryType: 'define'
-    },
-    {
-      createBy: 'test',
-      createTime: '2026-01-07 03:00:24',
-      updateBy: null,
-      updateTime: '2026-01-07 03:00:24',
-      remark: 'string',
-      id: 2008735440676458496,
-      sceneCode: '未定义',
-      industryCode: '智慧生活',
-      sortNum: null,
-      categoryLevel: null,
-      identifier: null,
-      deleteTag: 0,
-      name: '啊啊的发',
-      thingModel: null,
-      categoryType: 'define'
-    },
-    {
-      createBy: 'test',
-      createTime: '2026-01-07 03:00:30',
-      updateBy: null,
-      updateTime: '2026-01-07 03:00:30',
-      remark: 'string',
-      id: 2008735463946457088,
-      sceneCode: '纺织业',
-      industryCode: '智慧工业',
-      sortNum: null,
-      categoryLevel: null,
-      identifier: null,
-      deleteTag: 0,
-      name: '啊啊的发各个',
-      thingModel: null,
-      categoryType: 'define'
-    },
-    {
-      createBy: 'test',
-      createTime: '2026-01-07 03:00:34',
-      updateBy: null,
-      updateTime: '2026-01-07 03:00:34',
-      remark: 'string',
-      id: 2008735482908905472,
-      sceneCode: '气表制造',
-      industryCode: '智慧工业',
-      sortNum: null,
-      categoryLevel: null,
-      identifier: null,
-      deleteTag: 0,
-      name: '啊啊的发各个方式',
-      thingModel: null,
-      categoryType: 'define'
-    },
-    {
-      createBy: 'test',
-      createTime: '2026-01-07 03:00:41',
-      updateBy: null,
-      updateTime: '2026-01-07 03:00:41',
-      remark: 'string',
-      id: 2008735509731479552,
-      sceneCode: '智慧工业',
-      industryCode: '智慧工业',
-      sortNum: null,
-      categoryLevel: null,
-      identifier: null,
-      deleteTag: 0,
-      name: '啊啊的发各个方式士',
-      thingModel: null,
-      categoryType: 'define'
-    },
-    {
-      createBy: 'test',
-      createTime: '2026-01-07 03:00:44',
-      updateBy: null,
-      updateTime: '2026-01-07 03:00:44',
-      remark: 'string',
-      id: 2008735524365406208,
-      sceneCode: '未定义',
-      industryCode: '智慧工业',
-      sortNum: null,
-      categoryLevel: null,
-      identifier: null,
-      deleteTag: 0,
-      name: '啊啊的发各个方式士安抚',
-      thingModel: null,
-      categoryType: 'define'
-    },
-    {
-      createBy: 'test',
-      createTime: '2026-01-07 03:00:48',
-      updateBy: null,
-      updateTime: '2026-01-07 03:00:48',
-      remark: 'string',
-      id: 2008735541004210176,
-      sceneCode: '纺织业',
-      industryCode: '智慧工业',
-      sortNum: null,
-      categoryLevel: null,
-      identifier: null,
-      deleteTag: 0,
-      name: '啊啊的发各个方式士安抚阿萨',
-      thingModel: null,
-      categoryType: 'define'
-    },
-    {
-      createBy: 'test',
-      createTime: '2026-01-07 03:00:56',
-      updateBy: null,
-      updateTime: '2026-01-07 03:00:56',
-      remark: 'string',
-      id: 2008735573346488320,
-      sceneCode: '纺织业',
-      industryCode: '智慧工业',
-      sortNum: null,
-      categoryLevel: null,
-      identifier: null,
-      deleteTag: 0,
-      name: '啊啊的发各个方式士安抚阿萨安抚',
-      thingModel: null,
-      categoryType: 'define'
-    }
-  ])
-
-  const handleProductSelect = (value) => {
-    console.log(value)
-  }
+  const productList = ref([])
 
   /** JSON 导入 */
-  const fileName = ref('')
+  let pendingFile
 
   const handleFileChange = (file) => {
-    fileName.value = file.name
+    pendingFile = file
+    console.log('file', file)
   }
 
-  const handleConfirm = () => {
-    ElMessageBox.alert('导入失败，请检查导入内容后重新导入。', '温馨提示', {
-      // if you want to disable its autofocus
-      // autofocus: false,
-      confirmButtonText: '确认',
-      type: 'warning',
-      callback: (action) => {}
-    })
-
+  const handleConfirm = async () => {
     if (importType.value === 'product') {
       console.log('接入产品导入', productId.value)
+
+      switch (props.module) {
+        case 'product':
+          await api.importProductThingModel({ destId: props.info.id, srcId: productId.value })
+          break
+
+        default:
+          break
+      }
+      ElMessage.success('更新成功')
     } else {
-      console.log('JSON导入', fileName.value)
+      console.log('JSON导入')
+      const formData = new FormData()
+      formData.append('file', pendingFile.raw)
+      formData.append('name', pendingFile.name)
+
+      try {
+        switch (props.module) {
+          case 'product':
+            await api.importProductThingModelJson({ file: formData, id: props.info.id })
+            break
+          case 'productCategory':
+            await api.importProductCategoryThingModelJson({ file: formData, id: props.info.id })
+            break
+          default:
+            break
+        }
+        ElMessage.success('更新成功')
+      } catch (error) {
+        ElMessageBox.alert('导入失败，请检查导入内容后重新导入。', '温馨提示', {
+          confirmButtonText: '确认',
+          type: 'warning',
+          callback: (action) => {}
+        })
+        throw error
+      }
     }
+
+    emits('refresh')
+    dialogVisible.value = false
   }
 
   const open = (row) => {
     dialogVisible.value = true
   }
+
+  const downloadThingModelTemplate = async () => {
+    const result = await api.downloadThingModelTemplate()
+    downloadFile(result, `物模型模版`)
+  }
+
+  const getProductList = async () => {
+    const { rows } = await api.apiGetProductList({ pageNum: 1, pageSize: 1000 })
+    if (rows && Array.isArray(rows)) {
+      productList.value = rows
+        .map((item) => ({
+          label: item.name,
+          value: item.id
+        }))
+        .filter((item) => item.value !== props.info.id)
+    }
+  }
+
+  const getProductDetail = async () => {
+    try {
+      const id = productId.value
+      if (!id) return
+
+      const res = await api.apiGetProductDetail(id)
+      if (res) {
+        tableData.value = transformThingJsonToTable(res.thingModelJson)
+      }
+    } catch (error) {}
+  }
+
+  const handleProductSelect = () => {
+    getProductDetail()
+  }
+
+  const init = async () => {
+    if (props.module !== 'ProductCategory') {
+      getProductList()
+    }
+  }
+
+  onMounted(() => {
+    init()
+  })
 
   defineExpose({ open })
 </script>

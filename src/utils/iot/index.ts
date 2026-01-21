@@ -51,7 +51,12 @@ export function buildRow(
     identifier: item.identifier ?? '-', // 标识符
     id: item.identifier ?? '-', // 标识符别名
     dataType: handleDataType(item), // 数据类型
-    define: item.dataType || {}, // 数据定义
+    define: item.dataType
+      ? {
+          ...item.dataType,
+          type: item.dataType?.type?.toLowerCase()
+        }
+      : {}, // 数据定义
     accessMode: ACCESS_MODE_MAP.getLabel?.(item.accessMode) ?? '-', // 读写权限
     functionMode: item.functionMode,
     ...overrides

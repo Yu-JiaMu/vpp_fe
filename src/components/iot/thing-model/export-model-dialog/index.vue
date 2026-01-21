@@ -13,7 +13,7 @@
       </div>
 
       <!-- JSON 展示区域 -->
-      <MonacoEditor v-model="jsonContent" theme="vs" class="h-[378px]" lang="json" readOnly />
+      <MonacoEditor v-model="editorContent" theme="vs" class="h-[378px]" lang="json" readOnly />
     </div>
 
     <!-- 底部按钮 -->
@@ -36,60 +36,27 @@
 </template>
 
 <script setup>
-  const dialogVisible = ref(false)
-
-  const data = reactive({ productId: '689d7b55d582f20018456cd6' })
-
-  const testContent = `{
-  "schemaVersion": "1.0",  "categoryId": "324",
-  "productId": "5baNm7MNE",
-  "properties": [
-    {
-      "identifier": "AdsSwitch",
-      "name": "广告开关",
-      "functionType": "s",
-      "accessMode": "rw",
-      "desc": "",
-      "dataType": {
-        "type": "bool",
-        "specs": {
-          "true": "开",
-          "false": "关"
-        }
-      },
-      "functionMode": "property",
-      "required": false
+  const props = defineProps({
+    info: {
+      type: Object,
+      default: () => {}
     },
-    {
-      "identifier": "BtSwitch",
-      "name": "蓝牙开关",
-      "functionType": "s",
-      "accessMode": "rw",
-      "desc": "",
-      "dataType": {
-        "type": "bool",
-        "specs": {
-          "true": "开",
-          "false": "关"
-        }
-      }
+
+    module: {
+      type: String,
+      default: ''
     }
-  ]
-}`
+  })
 
-  const jsonContent = ref(testContent)
+  const editorContent = ref('')
 
-  /** 取消 */
-  const handleCancel = () => {
-    visible.value = false
-  }
+  const dialogVisible = ref(false)
 
   /** 导出 */
   const handleExport = () => {
-    const content =
-      typeof jsonContent.value === 'string'
-        ? jsonContent.value
-        : JSON.stringify(jsonContent.value, null, 2)
+    if (!editorContent.value) return
+
+    const content = JSON.stringify(editorContent.value, null, 2)
 
     const blob = new Blob([content], {
       type: 'application/json;charset=utf-8'
@@ -98,12 +65,19 @@
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'thing-model.json'
+    a.download = `${props.info.name}.json`
     a.click()
     URL.revokeObjectURL(url)
   }
 
-  const open = (row) => {
+  const handleEditContent = (thingJson) => {
+    if (typeof thingJson === 'string') {
+      editorContent.value = thingJson
+    }
+    editorContent.value = JSON.stringify(thingJson, null, 2)
+  }
+  const open = (thingJson) => {
+    handleEditContent(thingJson)
     dialogVisible.value = true
   }
 

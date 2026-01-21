@@ -154,25 +154,19 @@
           </el-form-item>
 
           <div class="flex items-end gap-4 mt-4">
-            <div
-              class="flex flex-col items-center justify-center w-24 h-24 overflow-hidden text-gray-400 bg-gray-100 border rounded cursor-pointer"
+            <UploadImg
+              v-model="form.imgUrl"
+              accept="image/*"
+              :fileSize="0.5"
+              width="80px"
+              height="80px"
             >
-              <el-icon v-if="!form.imgUrl" :size="30"><Picture /></el-icon>
-              <img v-else :src="form.imgUrl" class="object-contain w-full h-full" />
-            </div>
-            <div class="flex flex-col gap-2">
-              <el-upload action="#" :auto-upload="false" :show-file-list="false">
-                <el-button link type="primary">点击上传LOGO</el-button>
-              </el-upload>
-              <div
-                v-if="form.logoName"
-                class="flex items-center px-2 py-1 text-sm text-gray-500 rounded bg-gray-50"
-              >
-                <el-icon class="mr-1 text-blue-500"><Cloudy /></el-icon>
-                {{ form.logoName }}
-                <el-icon class="ml-2 text-red-400 cursor-pointer"><CircleClose /></el-icon>
-              </div>
-            </div>
+              <template #tip>
+                <span class="text-xs text-g-505658"
+                  >支持500k以内的图片；支持jpg、png、jpeg；建议尺寸256x256。</span
+                >
+              </template>
+            </UploadImg>
           </div>
         </div>
 
@@ -253,7 +247,7 @@
     manufactory: '',
     productModel: '',
     remark: '',
-    imgUrl: 'https://placeholder.com/150', // 示例logo
+    imgUrl: '', // 示例logo
     logoName: 'LOGO文件.JPG'
   })
 

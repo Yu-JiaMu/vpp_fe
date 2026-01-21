@@ -38,7 +38,13 @@
       </div>
     </div>
     <!-- 物模型 -->
-    <ThingModel v-if="activeTab === 'model'" :product="product" @refresh="getDetail"></ThingModel>
+    <ThingModel
+      v-if="activeTab === 'model'"
+      module="productCategory"
+      :info="product"
+      :thingJson="productCategoryDetail.thingModel"
+      @refresh="getDetail"
+    ></ThingModel>
   </div>
 </template>
 

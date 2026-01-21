@@ -36,3 +36,16 @@ export function apiProductCategoryDetail(id) {
 export function apiProductCategoryExport(id, params) {
   return request.get(`/stage-api/model/productCateory/export/thingModel/${id}`, params)
 }
+
+// 更新产品品类物模型
+export function updateProductCategoryThingModel(params) {
+  return request.post('/stage-api/model/productCateory/update/thingModel', params)
+}
+
+// 导入产品品类物模型文件
+export function importProductCategoryThingModelJson(params) {
+  return request.post(
+    `/stage-api/model//productCateory/import/thingModel/${params.id}`,
+    params.file
+  )
+}

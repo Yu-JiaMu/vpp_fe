@@ -49,9 +49,11 @@ import { Plus } from "@element-plus/icons-vue";
 import { uploadImg } from "@/api/modules/upload";
 import type { UploadProps, UploadFile, UploadUserFile, UploadRequestOptions } from "element-plus";
 import { ElNotification, formContextKey, formItemContextKey } from "element-plus";
+import { useUploadCommon } from "./composables/useUploadCommon";
+import { useUploadBefore } from "./composables/useUploadBefore";
 
 interface UploadFileProps {
-  fileList: UploadUserFile[];
+  // fileList: UploadUserFile[];
   api?: (params: any) => Promise<any>; // 上传图片的 api 方法，一般项目上传都是同一个 api 方法，在组件里直接引入即可 ==> 非必传
   drag?: boolean; // 是否支持拖拽上传 ==> 非必传（默认为 true）
   disabled?: boolean; // 是否禁用上传组件 ==> 非必传（默认为 false）
@@ -63,8 +65,12 @@ interface UploadFileProps {
   borderRadius?: string; // 组件边框圆角 ==> 非必传（默认为 8px）
 }
 
+const modelValue = defineModel<UploadUserFile[]>({
+  default: () => []
+});
+
 const props = withDefaults(defineProps<UploadFileProps>(), {
-  fileList: () => [],
+  // fileList: () => [],
   drag: true,
   disabled: false,
   limit: 5,
@@ -75,63 +81,47 @@ const props = withDefaults(defineProps<UploadFileProps>(), {
   borderRadius: "8px"
 });
 
-// 获取 el-form 组件上下文
-const formContext = inject(formContextKey, void 0);
-// 获取 el-form-item 组件上下文
-const formItemContext = inject(formItemContextKey, void 0);
-// 判断是否禁用上传和删除
-const self_disabled = computed(() => {
-  return props.disabled || formContext?.disabled;
-});
-
-const _fileList = ref<UploadUserFile[]>(props.fileList);
+const _fileList = ref<UploadUserFile[]>([]);
 
 // 监听 props.fileList 列表默认值改变
+// watch(
+//   () => modelValue.value,
+//   (n: UploadUserFile[]) => {
+//     _fileList.value = n;
+//   }
+// );
 watch(
-  () => props.fileList,
-  (n: UploadUserFile[]) => {
-    _fileList.value = n;
-  }
+  modelValue,
+  val => {
+    _fileList.value = [...val];
+  },
+  { immediate: true }
 );
+const { self_disabled, doUpload, validateForm, notifySuccess, notifyError } = useUploadCommon(props);
 
-/**
- * @description 文件上传之前判断
- * @param rawFile 选择的文件
- * */
-const beforeUpload: UploadProps["beforeUpload"] = rawFile => {
-  const imgSize = rawFile.size / 1024 / 1024 < props.fileSize;
-  const imgType = props.fileType.includes(rawFile.type as File.ImageMimeType);
-  if (!imgType)
-    ElNotification({
-      title: "温馨提示",
-      message: "上传图片不符合所需的格式！",
-      type: "warning"
-    });
-  if (!imgSize)
-    setTimeout(() => {
-      ElNotification({
-        title: "温馨提示",
-        message: `上传图片大小不能超过 ${props.fileSize}M！`,
-        type: "warning"
-      });
-    }, 0);
-  return imgType && imgSize;
+const beforeUpload = useUploadBefore({
+  fileSize: props.fileSize,
+  fileType: props.fileType
+});
+
+const handleHttpUpload = async (options: UploadRequestOptions) => {
+  try {
+    const data = await doUpload(options, "file");
+    options.onSuccess(data);
+  } catch {
+    notifyError("图片上传失败，请您重新上传！");
+  }
 };
 
-/**
- * @description 图片上传
- * @param options upload 所有配置项
- * */
-const handleHttpUpload = async (options: UploadRequestOptions) => {
-  let formData = new FormData();
-  formData.append("file", options.file);
-  try {
-    const api = props.api ?? uploadImg;
-    const { data } = await api(formData);
-    options.onSuccess(data);
-  } catch (error) {
-    options.onError(error as any);
-  }
+const uploadSuccess = (response, uploadFile) => {
+  console.log("res", response);
+
+  if (!response) return;
+  uploadFile.url = response.fileUrl;
+  // emit("update:fileList", _fileList.value);
+  modelValue.value = [..._fileList.value];
+  validateForm();
+  notifySuccess("图片上传成功！");
 };
 
 /**
@@ -142,18 +132,6 @@ const handleHttpUpload = async (options: UploadRequestOptions) => {
 const emit = defineEmits<{
   "update:fileList": [value: UploadUserFile[]];
 }>();
-const uploadSuccess = (response: { fileUrl: string } | undefined, uploadFile: UploadFile) => {
-  if (!response) return;
-  uploadFile.url = response.fileUrl;
-  emit("update:fileList", _fileList.value);
-  // 调用 el-form 内部的校验方法（可自动校验）
-  formItemContext?.prop && formContext?.validateField([formItemContext.prop as string]);
-  ElNotification({
-    title: "温馨提示",
-    message: "图片上传成功！",
-    type: "success"
-  });
-};
 
 /**
  * @description 删除图片
@@ -161,7 +139,8 @@ const uploadSuccess = (response: { fileUrl: string } | undefined, uploadFile: Up
  * */
 const handleRemove = (file: UploadFile) => {
   _fileList.value = _fileList.value.filter(item => item.url !== file.url || item.name !== file.name);
-  emit("update:fileList", _fileList.value);
+  // emit("update:fileList", _fileList.value);
+  modelValue.value = [..._fileList.value];
 };
 
 /**
