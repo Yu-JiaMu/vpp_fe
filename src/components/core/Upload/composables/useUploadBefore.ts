@@ -19,8 +19,13 @@ export function useUploadBefore(options: UseUploadBeforeOptions) {
         // 处理文件扩展名如 .jpg, .png
         return rawFile.name.toLowerCase().endsWith(type.toLowerCase())
       }
-      // 处理 MIME 类型如 image/jpeg
-      return rawFile.type === type || rawFile.type.startsWith(type)
+      // 处理通配符如 image/*
+      if (type.includes('*')) {
+        const pattern = type.replace('*', '')
+        return rawFile.type.startsWith(pattern)
+      }
+      // 处理精确 MIME 类型如 image/jpeg
+      return rawFile.type === type
     })
 
     if (!typeOk) {

@@ -41,6 +41,7 @@
     </div>
     <el-image-viewer
       v-if="imgViewVisible"
+      hide-on-click-modal
       :url-list="[viewImageUrl]"
       @close="imgViewVisible = false"
     />

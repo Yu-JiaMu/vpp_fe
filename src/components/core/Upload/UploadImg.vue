@@ -43,6 +43,7 @@
     </div>
     <el-image-viewer
       v-if="imgViewVisible"
+      hide-on-click-modal
       :url-list="[modelValue]"
       @close="imgViewVisible = false"
     />
@@ -106,8 +107,6 @@
       modelValue.value = data.url
       // emit("update:imageUrl", data.fileUrl);
       validateForm()
-      console.log('哈哈哈哈哈')
-
       notifySuccess('图片上传成功！')
     } catch {
       notifyError('图片上传失败，请您重新上传！')
