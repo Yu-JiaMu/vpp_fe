@@ -10,7 +10,7 @@
       :http-request="handleHttpUpload"
       :before-upload="beforeUpload"
       :drag="drag"
-      :accept="fileType.join(',')"
+      :accept="accept"
     >
       <template v-if="modelValue">
         <img :src="modelValue" class="upload-image" />
@@ -62,7 +62,7 @@
     drag?: boolean // 是否支持拖拽上传 ==> 非必传（默认为 true）
     disabled?: boolean // 是否禁用上传组件 ==> 非必传（默认为 false）
     fileSize?: number // 图片大小限制 ==> 非必传（默认为 5M）
-    fileType?: File.ImageMimeType[] // 图片类型限制 ==> 非必传（默认为 ["image/jpeg", "image/png", "image/gif"]）
+    accept?: string // 图片类型限制 ==> 非必传（默认为 "image/jpeg,image/png,image/gif"）
     height?: string // 组件高度 ==> 非必传（默认为 150px）
     width?: string // 组件宽度 ==> 非必传（默认为 150px）
     borderRadius?: string // 组件边框圆角 ==> 非必传（默认为 8px）
@@ -78,7 +78,7 @@
     drag: true,
     disabled: false,
     fileSize: 5,
-    fileType: () => ['image/jpeg', 'image/png', 'image/gif'],
+    accept: 'image/jpeg,image/png,image/gif',
     height: '150px',
     width: '150px',
     borderRadius: '8px'
@@ -95,7 +95,7 @@
 
   const beforeUpload = useUploadBefore({
     fileSize: props.fileSize,
-    fileType: props.fileType
+    accept: props.accept
   })
 
   const handleHttpUpload = async (options: UploadRequestOptions) => {

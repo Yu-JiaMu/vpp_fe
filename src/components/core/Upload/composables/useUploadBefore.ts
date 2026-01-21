@@ -3,13 +3,25 @@ import type { UploadProps } from 'element-plus'
 
 interface UseUploadBeforeOptions {
   fileSize: number
-  fileType: string[]
+  accept: string
 }
 
 export function useUploadBefore(options: UseUploadBeforeOptions) {
   const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
     const sizeOk = rawFile.size / 1024 / 1024 < options.fileSize
-    const typeOk = options.fileType.includes(rawFile.type)
+
+    // 将 accept 字符串拆分成允许的类型列表
+    const acceptTypes = options.accept.split(',').map((type) => type.trim())
+
+    // 检查文件类型
+    const typeOk = acceptTypes.some((type) => {
+      if (type.startsWith('.')) {
+        // 处理文件扩展名如 .jpg, .png
+        return rawFile.name.toLowerCase().endsWith(type.toLowerCase())
+      }
+      // 处理 MIME 类型如 image/jpeg
+      return rawFile.type === type || rawFile.type.startsWith(type)
+    })
 
     if (!typeOk) {
       ElMessage({

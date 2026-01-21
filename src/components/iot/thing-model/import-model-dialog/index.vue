@@ -115,7 +115,7 @@
 
   const beforeUpload = useUploadBefore({
     fileSize: 2,
-    fileType: '.json'
+    accept: '.json'
   })
 
   const emits = defineEmits(['refresh'])

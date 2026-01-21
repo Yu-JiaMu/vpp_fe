@@ -14,7 +14,7 @@
       :on-success="uploadSuccess"
       :on-error="uploadError"
       :drag="drag"
-      :accept="fileType.join(',')"
+      :accept="accept"
     >
       <div class="upload-empty">
         <slot name="empty">
@@ -61,7 +61,7 @@
     disabled?: boolean // 是否禁用上传组件 ==> 非必传（默认为 false）
     limit?: number // 最大图片上传数 ==> 非必传（默认为 5张）
     fileSize?: number // 图片大小限制 ==> 非必传（默认为 5M）
-    fileType?: File.ImageMimeType[] // 图片类型限制 ==> 非必传（默认为 ["image/jpeg", "image/png", "image/gif"]）
+    accept?: string // 图片类型限制 ==> 非必传（默认为 "image/jpeg,image/png,image/gif"）
     height?: string // 组件高度 ==> 非必传（默认为 150px）
     width?: string // 组件宽度 ==> 非必传（默认为 150px）
     borderRadius?: string // 组件边框圆角 ==> 非必传（默认为 8px）
@@ -77,7 +77,7 @@
     disabled: false,
     limit: 5,
     fileSize: 5,
-    fileType: () => ['image/jpeg', 'image/png', 'image/gif'],
+    accept: 'image/jpeg,image/png,image/gif',
     height: '150px',
     width: '150px',
     borderRadius: '8px'
@@ -104,7 +104,7 @@
 
   const beforeUpload = useUploadBefore({
     fileSize: props.fileSize,
-    fileType: props.fileType
+    accept: props.accept
   })
 
   const handleHttpUpload = async (options: UploadRequestOptions) => {
