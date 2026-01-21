@@ -288,14 +288,17 @@ export function downloadFile(
 ): void {
   const blob: Blob = result instanceof Blob ? result : new Blob([result as BlobPart])
   // 👉 自动识别后缀
-  const ext = getExtensionByBlob(blob) || fileName.endsWith('.') ? defaultExt : ''
+  const ext = getExtensionByBlob(blob, defaultExt) || fileName.endsWith('.') ? defaultExt : ''
+
+  let finalName = fileName
+  if (ext && !fileName.endsWith(`.${ext}`)) {
+    finalName = `${fileName}.${ext}`
+  }
 
   const downloadElement = document.createElement('a')
   const href = URL.createObjectURL(blob)
 
   downloadElement.href = href
-
-  const finalName = ext ? `${fileName}.${ext}` : fileName
 
   downloadElement.download = finalName
 

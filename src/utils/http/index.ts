@@ -106,8 +106,16 @@ class HttpRequest {
     // 响应拦截
     this.instance.interceptors.response.use(
       (response: AxiosResponse<BaseResponse>) => {
-        const { data, config } = response
+        const { data, config, status } = response
+
         this.axiosCanceler.removePending(config)
+
+        if (
+          status === ApiStatus.success &&
+          (config.responseType === 'blob' || config.responseType === 'arraybuffer')
+        ) {
+          return response
+        }
 
         if (data.code === ApiStatus.success) return response
 
