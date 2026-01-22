@@ -51,7 +51,7 @@
     }
   })
 
-  const emits = defineEmits(['submitSuccess'])
+  const emits = defineEmits(['submit'])
   const resetForm = () => {
     if (refForm.value && refForm.value.formRef) {
       refForm.value.formRef.clearValidate()
@@ -70,7 +70,7 @@
     }
     visible.value = false
     resetForm()
-    emits('submitSuccess')
+    emits('submit')
   }
 
   const open = (row, index, type) => {

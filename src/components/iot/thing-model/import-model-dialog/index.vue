@@ -38,12 +38,14 @@
         <template v-else>
           <el-form-item label="文件上传" required>
             <el-upload
+              ref="uploadRef"
               class="w-full"
               drag
               :limit="1"
               accept=".json"
               show-file-list
               :auto-upload="false"
+              :on-exceed="handleExceed"
               :on-change="handleFileChange"
               :before-upload="beforeUpload"
             >
@@ -96,9 +98,8 @@
 
 <script setup>
   import { transformThingJsonToTable, downloadFile } from '@/utils'
-  import { InfoFilled, UploadFilled } from '@element-plus/icons-vue'
-  import thingJson from '../thing.json'
-  import { ElMessage, ElMessageBox } from 'element-plus'
+  // import thingJson from '../thing.json'
+  import { ElMessage, ElMessageBox, genFileId } from 'element-plus'
   import * as api from '@/api/iot'
   import { useUploadBefore } from '@/components/core/Upload/composables/useUploadBefore'
 
@@ -137,6 +138,14 @@
   const handleFileChange = (file) => {
     pendingFile = file
     console.log('file', file)
+  }
+
+  const uploadRef = useTemplateRef('uploadRef')
+  const handleExceed = (files) => {
+    uploadRef.value?.clearFiles()
+    const file = files[0]
+    file.uid = genFileId()
+    uploadRef.value?.handleStart(file)
   }
 
   const handleConfirm = async () => {

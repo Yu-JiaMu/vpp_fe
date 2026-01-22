@@ -47,7 +47,7 @@ export function updateProductCategoryThingModel(params) {
 // 导入产品品类物模型文件
 export function importProductCategoryThingModelJson(params) {
   return request.post(
-    `/stage-api/model//productCateory/import/thingModel/${params.id}`,
+    `/stage-api/model//productCateory/import/thingModel?id=${params.id}`,
     params.file
   )
 }

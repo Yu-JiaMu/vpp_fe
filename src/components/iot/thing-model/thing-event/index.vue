@@ -103,7 +103,7 @@
     validateNameLength,
     validateDescLength,
     validateCommon,
-    createUniqueValidator,
+    createUniqueValidatorByValue,
     getByteLength
   } from '@/utils'
   import ParamsDialog from './params-dialog.vue'
@@ -117,6 +117,10 @@
     parentType: {
       type: String,
       default: ''
+    },
+    currentRow: {
+      type: Object,
+      default: () => {}
     }
   })
 
@@ -151,7 +155,11 @@
       { required: true, message: '请输入标识符', trigger: 'blur' },
       { validator: validateIdentifier, trigger: 'blur' },
       {
-        validator: createUniqueValidator(props.tableData, 'identifier'),
+        validator: createUniqueValidatorByValue(
+          props.tableData,
+          'identifier',
+          () => props.currentRow.identifier
+        ),
         trigger: 'blur'
       }
     ],

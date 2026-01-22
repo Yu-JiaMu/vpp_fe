@@ -84,12 +84,12 @@ export function importProductThingModel(params) {
 
 // 上传物模型文件导入
 export function importProductThingModelJson(params) {
-  return request.post(SERVICE_API + `/product/import/thingModel/${params.id}`, params.file)
+  return request.post(SERVICE_API + `/product/import/thingModel?id=${params.id}`, params.file)
 }
 
 // 导出产品物模型
 export function exportProductThingModel(id) {
-  return request.get(SERVICE_API + `/product/export/thingModel${id}`, {}, { responseType: 'blob' })
+  return request.get(SERVICE_API + `/product/export/thingModel/${id}`, {}, { responseType: 'blob' })
 }
 
 // 下载物模型模版

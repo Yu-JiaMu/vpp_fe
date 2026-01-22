@@ -39,6 +39,7 @@ export function handleDataType(item: ThingItem): string {
   }
   return '-'
 }
+
 export function buildRow(
   item: ThingItem,
   overrides: Record<string, any> = {}
@@ -62,7 +63,11 @@ export function buildRow(
     ...overrides
   }
 }
-
+const MODULE_FUNCTION_MODE_MAP: Record<keyof Module, string> = {
+  properties: 'property',
+  functions: 'service',
+  events: 'event'
+}
 // 把json物模型转成list
 export const transformThingJsonToTable = (thingJson: ThingJson): Record<string, any>[] => {
   if (!thingJson) return []
@@ -95,8 +100,15 @@ export const transformThingJsonToTable = (thingJson: ThingJson): Record<string, 
   thingJson.modules?.forEach((module) => {
     MODULE_HANDLERS.forEach(({ key, map }) => {
       const list = module[key]
+      const fallbackFunctionMode = MODULE_FUNCTION_MODE_MAP[key]
       list?.forEach((item: ThingItem) => {
-        result.push(map(item))
+        result.push(
+          map({
+            ...item,
+            // ⭐ 核心兜底逻辑
+            functionMode: item.functionMode ?? fallbackFunctionMode
+          })
+        )
       })
     })
   })

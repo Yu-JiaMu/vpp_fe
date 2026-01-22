@@ -22,10 +22,11 @@
 
       <component
         :is="componentMap[activeTab]"
-        :key="refMap[activeTab]"
+        :key="`${isAddPoint ? 'add' : 'edit'}-${refMap[activeTab]}`"
         :ref="refMap[activeTab]"
         :tableData="tableData"
         :currentIndex="currentIndex"
+        :currentRow="currentRow"
       />
     </div>
     <!-- Footer -->
@@ -105,23 +106,23 @@
     if (!ref?.submit) return
 
     const data = await ref.submit()
-    // console.log(data)
+    console.log(data)
 
     // if (!data) return
-    return
+
     emits('addFunctionPoint', { data, functionMode: activeTab.value })
-    ElMessage.success('新增成功')
+    ElMessage.success(isAddPoint.value ? '新增成功' : '编辑成功')
     dialogVisible.value = false
   }
 
   const currentIndex = ref(-1)
   const isAddPoint = ref(false)
+  const currentRow = ref(null)
 
   const open = async (row, index, type) => {
     isAddPoint.value = !type
-    if (index !== undefined) {
-      currentIndex.value = index
-    }
+    currentRow.value = row ?? null
+    currentIndex.value = index ?? -1
     dialogVisible.value = true
     activeTab.value = row ? row.functionMode : 'property'
     await nextTick()

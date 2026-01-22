@@ -406,7 +406,7 @@ export function validateIdentifier(rule: any, value: any, callback: any) {
  * @param options - 可选配置
  */
 type MaybeGetter<T> = T | (() => T)
-export function createUniqueValidator<T extends Record<string, any>>(
+export function createUniqueValidatorByIndex<T extends Record<string, any>>(
   list: T[],
   field: keyof T,
   index: MaybeGetter<any> = -1,
@@ -421,7 +421,7 @@ export function createUniqueValidator<T extends Record<string, any>>(
 
   return function validateUnique(_: any, value: any, callback: any) {
     index = typeof index === 'function' ? index() : index
-    // console.log(value, index, list)
+    console.log(value, index, list)
 
     // 空值交给 required 处理
     if (value === '' || value === null || value === undefined) {
@@ -442,6 +442,55 @@ export function createUniqueValidator<T extends Record<string, any>>(
 
       const itemValue = normalize(item?.[field])
       if (itemValue === undefined) return false
+
+      return itemValue === target
+    })
+
+    if (exists) {
+      return callback(new Error(message))
+    }
+
+    callback()
+  }
+}
+
+export function createUniqueValidatorByValue<T extends Record<string, any>>(
+  list: T[],
+  field: keyof T,
+  currentValue: MaybeGetter<any>,
+  options?: {
+    /** 是否忽略大小写 */
+    ignoreCase?: boolean
+    /** 自定义错误提示 */
+    message?: string
+  }
+) {
+  const { ignoreCase = false, message = '标识符已存在，请更换' } = options || {}
+
+  return function validateUnique(_: any, value: any, callback: any) {
+    const originValue = typeof currentValue === 'function' ? currentValue() : currentValue
+    console.log(value, originValue)
+    // 空值交给 required 处理
+    if (value === '' || value === null || value === undefined) {
+      return callback()
+    }
+
+    const normalize = (val: any) => {
+      if (ignoreCase && typeof val === 'string') {
+        return val.toLowerCase()
+      }
+      return val
+    }
+
+    const target = normalize(value)
+    const origin = normalize(originValue)
+
+    const exists = list.some((item) => {
+      const itemValue = normalize(item?.[field])
+      if (itemValue === undefined) return false
+
+      // 与当前值一致，视为自身，跳过
+      if (itemValue === origin) return false
 
       return itemValue === target
     })

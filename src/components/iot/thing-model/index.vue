@@ -62,7 +62,7 @@
         </el-button>
         <div class="dividing-line"></div>
         <el-button
-          :disabled="hasRegisterDevice || selectedItems.length === 0"
+          :disabled="hasRegisterDevice"
           text
           class="!text-g-303537 !ml-0"
           @click="handleBatchDelete"
@@ -148,7 +148,7 @@
     <!-- 添加自定义功能点 -->
     <AddCustomFunctionPointDialog
       ref="addCustomFunctionPointDialogRef"
-      :tableData="tableData"
+      :tableData="originTableData"
       @addFunctionPoint="addCustomPoint"
     />
   </div>
@@ -161,70 +161,113 @@
   import AddSystemFunctionPointsDialog from './add-system-function-points-dialog/index.vue'
   import AddCustomFunctionPointDialog from './add-custom-function-point-dialog/index.vue'
   import FunctionDefinePreview from './function-define-preview/index.vue'
-  import { ref } from 'vue'
-  // import thingJson from './thing.json'
+  import { ref, computed, watchEffect, provide } from 'vue'
   import { transformThingJsonToTable, transformTableToThingJson } from '@/utils'
   import { FUNCTION_MODE_MAP } from '@/enums'
   import { differenceBy } from 'lodash-es'
 
+  /* ====================== props / emits ====================== */
+
   const props = defineProps({
     info: {
       type: Object,
-      default: () => {}
+      default: () => ({})
     },
     thingJson: {
-      type: [Object],
-      default: () => {}
+      type: Object,
+      default: () => ({})
     },
     module: {
       type: String,
       default: ''
     }
   })
+
   const emits = defineEmits(['refresh'])
 
+  /* ====================== 状态 ====================== */
+
   let thingJson = {}
+
   const originTableData = ref([])
-  const tableData = ref([])
 
   const isEdit = ref(false)
   const hasRegisterDevice = ref(false)
-  // const isEditAndHasRegisterDevice = computed(() => isEdit.value && hasRegisterDevice.value)
-
   provide('hasRegisterDevice', hasRegisterDevice)
 
   const isReadOnly = ref(false)
-
   provide('isReadOnly', isReadOnly)
 
-  const isSettingModel = ref(true)
-  const handleSetModel = () => {
-    isSettingModel.value = true
-  }
+  const isSettingModel = ref(false)
+  const isChange = ref(false) // 已修改未保存
 
-  const handleCancelSetting = () => {
-    isSettingModel.value = false
-  }
+  /* ====================== 搜索 ====================== */
 
   const form = ref({
-    name: ''
+    name: '',
+    functionMode: ''
+  })
+
+  // 搜索确认态（关键）
+  const searchCondition = ref({
+    name: '',
+    functionMode: ''
   })
 
   const handleSearch = () => {
-    const { name, functionMode } = form.value
-    // console.log(name, functionMode)
-
-    tableData.value = originTableData.value.filter((row) => {
-      const matchName = !name || row.name?.includes(name)
-      const matchMode = !functionMode || row.functionMode === functionMode
-
-      return matchName && matchMode
-    })
+    searchCondition.value = { ...form.value }
   }
 
   const handleReset = () => {
     form.value.name = ''
+    form.value.functionMode = ''
+    searchCondition.value = { name: '', functionMode: '' }
   }
+
+  /* ====================== tableData（派生） ====================== */
+
+  const tableData = computed(() => {
+    const { name, functionMode } = searchCondition.value
+
+    return originTableData.value.filter((row) => {
+      const matchName = !name || row.name?.includes(name)
+      const matchMode = !functionMode || row.functionMode === functionMode
+      return matchName && matchMode
+    })
+  })
+
+  /* ====================== 初始化（props → 本地） ====================== */
+
+  watchEffect(() => {
+    hasRegisterDevice.value = (props.info?.deviceCount ?? 0) > 0 && isEdit.value
+  })
+
+  watchEffect(() => {
+    if (!props.thingJson?.modules) return
+
+    thingJson = props.thingJson
+    originTableData.value = transformThingJsonToTable(thingJson)
+  })
+
+  /* ====================== 设置模式 ====================== */
+
+  const handleSetModel = () => {
+    isSettingModel.value = true
+  }
+
+  const handleCancelSetting = async () => {
+    if (isChange.value) {
+      await ElMessageBox.confirm(`还未保存当前物模型，返回会丢失，确定返回吗？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+      handleRefresh()
+    }
+    isSettingModel.value = false
+  }
+
+  /* ====================== Dialog ====================== */
 
   const exportModelDialogRef = useTemplateRef('exportModelDialogRef')
   const handleExportModel = () => {
@@ -244,18 +287,18 @@
   }
 
   const addSystemFunctionPointsDialogRef = useTemplateRef('addSystemFunctionPointsDialogRef')
-
   const openSystemFunctionDialog = () => {
     addSystemFunctionPointsDialogRef.value.open()
   }
 
   const addCustomFunctionPointDialogRef = useTemplateRef('addCustomFunctionPointDialogRef')
   const openCustomFunctionDialog = (row, index, type) => {
-    console.log(row, index, type)
     isReadOnly.value = type === 'look'
     isEdit.value = type === 'edit'
     addCustomFunctionPointDialogRef.value.open(row, index, type)
   }
+
+  /* ====================== 表格选择 ====================== */
 
   const tableRef = useTemplateRef('tableRef')
   const selectedItems = ref([])
@@ -264,109 +307,104 @@
     selectedItems.value = selection
   }
 
+  /* ====================== 删除 ====================== */
+
   const handleRemove = async (index) => {
-    console.log(index)
     try {
       await ElMessageBox.confirm('此操作将删除该物模型，是否继续？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
         type: 'warning'
       })
+
       isChange.value = true
       originTableData.value.splice(index, 1)
-      handleSearch()
       ElMessage.success('删除成功')
-    } catch (error) {
-      if (error.message !== 'cancel') {
-        console.log(error)
-      }
-    }
+    } catch (err) {}
   }
 
   const handleBatchDelete = async () => {
-    if (selectedItems.value.length === 0) {
+    if (!selectedItems.value.length) {
       ElMessage.warning('请先选择要删除的项目')
       return
     }
 
     try {
       await ElMessageBox.confirm('此操作将删除该物模型，是否继续？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
         type: 'warning'
       })
 
       isChange.value = true
-      console.log(selectedItems.value)
-
-      // 删除选中的项目
       originTableData.value = differenceBy(originTableData.value, selectedItems.value, 'id')
 
-      handleSearch()
-
-      // 清空选中状态
-      tableRef.value.clearSelection()
+      tableRef.value?.clearSelection()
       selectedItems.value = []
 
       ElMessage.success('批量删除成功')
-    } catch (error) {
-      if (error.message !== 'cancel') {
-        console.log(error)
-      }
-    }
+    } catch (err) {}
   }
 
-  const isChange = ref(false) // 已修改未保存
+  /* ====================== 添加功能点 ====================== */
 
   const addFunctionPoint = (data) => {
-    console.log(data)
     isChange.value = true
     const model = thingJson.modules[0]
 
     data.forEach((item) => {
-      // 模型已存在
-      const existModel = originTableData.value.find(
-        (modelItem) => modelItem.identifier === item.identifier
-      )
-      if (existModel) return
+      const exist = originTableData.value.find((row) => row.identifier === item.identifier)
+      if (exist) return
 
-      let key = FUNCTION_MODE_MAP.getItem(item.functionMode).pKey
-
+      const key = FUNCTION_MODE_MAP.getItem(item.functionMode).pKey
       model[key].push(item.originData)
     })
 
     originTableData.value = transformThingJsonToTable(thingJson)
-    handleSearch()
   }
 
   const addCustomPoint = ({ data, functionMode }) => {
     isChange.value = true
+
     const model = thingJson.modules[0]
-    let key = FUNCTION_MODE_MAP.getItem(functionMode).pKey
-    model[key].push(data)
+    const key = FUNCTION_MODE_MAP.getItem(functionMode).pKey
+
+    if (!Array.isArray(model[key])) {
+      model[key] = []
+    }
+
+    const index = model[key].findIndex((row) => row.identifier === data.identifier)
+
+    if (index > -1) {
+      model[key][index] = data
+    } else {
+      model[key].push(data)
+    }
+
     originTableData.value = transformThingJsonToTable(thingJson)
-    handleSearch()
   }
+
+  /* ====================== 提交 ====================== */
 
   const handleSubmit = async () => {
     const newThingJson = transformTableToThingJson(originTableData.value, thingJson)
-    console.log('转换后的物模型', newThingJson)
+
     try {
       switch (props.module) {
         case 'product':
-          await api.updateProductThingModel({ id: props.info.id, thingModel: newThingJson })
+          await api.updateProductThingModel({
+            id: props.info.id,
+            thingModel: newThingJson
+          })
           break
         case 'productCategory':
-          await api.updateProductCategoryThingModel({ id: props.info.id, thingModel: newThingJson })
-          break
-        default:
+          await api.updateProductCategoryThingModel({
+            id: props.info.id,
+            thingModel: newThingJson
+          })
           break
       }
-      ElMessage.success('更新成功')
 
-      isChange.value = false
-    } catch (error) {
-      console.log(error)
+      ElMessage.success('更新成功')
+      handleRefresh()
+    } catch (err) {
+      console.log(err)
     }
   }
 
@@ -374,32 +412,6 @@
     isChange.value = false
     emits('refresh')
   }
-
-  function init() {
-    console.log('初始化')
-    originTableData.value = transformThingJsonToTable(thingJson)
-    console.log('table', originTableData.value)
-
-    handleSearch()
-  }
-
-  watch(
-    () => props.thingJson,
-    (val) => {
-      thingJson = val
-      console.log('thingJson', val)
-      init()
-    },
-    {
-      immediate: true
-    }
-  )
-
-  onMounted(() => {
-    // tableData.value = [...originTableData.value]
-    // init()
-    // handleSubmit()
-  })
 </script>
 
 <style lang="scss" scoped>
