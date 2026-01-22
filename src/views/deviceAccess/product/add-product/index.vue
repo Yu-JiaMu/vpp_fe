@@ -158,8 +158,8 @@
               v-model="form.imgUrl"
               accept="image/*"
               :fileSize="0.5"
-              width="80px"
-              height="80px"
+              width="100px"
+              height="100px"
             >
               <template #tip>
                 <span class="text-xs text-g-505658"

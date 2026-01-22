@@ -1,13 +1,13 @@
 <template>
   <div
-    class="art-button-back relative text-g-5 text-lg font-scBold w-fit"
+    class="relative text-lg art-button-back text-g-5 font-scBold w-fit flex-cc"
     :class="{ 'is-back': isBack }"
     @click="fullBack"
   >
     <el-button class="icon-back mr-2.5" @click="goBack">
-      <ArtSvgIcon icon="ri:arrow-left-line" class="text-g-5 text-lg" />
+      <ArtSvgIcon icon="ri:arrow-left-line" class="text-lg text-g-5" />
     </el-button>
-    <slot />
+    <span> <slot /></span>
   </div>
 </template>
 

@@ -71,7 +71,7 @@
         </el-table-column>
         <el-table-column prop="name" label="产品品类">
           <template #default="{ row }">
-            <div class="flex flex-cz-center text-theme cursor-pointer">
+            <div class="flex cursor-pointer flex-cz-center text-theme">
               <span class="mr5">{{ row.name }}</span>
               <template v-if="!row.thingModelStatus">
                 <el-tooltip
@@ -121,6 +121,7 @@
   // 从iot.js全部导入
   import * as productCategoryApi from '@/api/iot/productCategory.js'
   import { Warning } from '@element-plus/icons-vue'
+  const router = useRouter()
   import { INTERNAL_DEVICE_TYPES } from '@/enums'
   import { downloadFile } from '@/utils'
   const router = useRouter()
