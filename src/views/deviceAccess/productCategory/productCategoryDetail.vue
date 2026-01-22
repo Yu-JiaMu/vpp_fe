@@ -44,7 +44,7 @@
       module="productCategory"
       :info="productCategoryDetail"
       :thingJson="productCategoryDetail.thingModelJson"
-      @refresh="getDetail"
+      @refresh="getProductCategoryDetail"
     ></ThingModel>
   </div>
 </template>
@@ -69,7 +69,6 @@
     }
   ]
 
-  const getDetail = () => {}
   onMounted(() => {
     getProductCategoryDetail()
   })

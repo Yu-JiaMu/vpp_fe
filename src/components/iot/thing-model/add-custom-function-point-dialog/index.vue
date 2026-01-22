@@ -22,7 +22,7 @@
 
       <component
         :is="componentMap[activeTab]"
-        :key="`${isAddPoint ? 'add' : 'edit'}-${refMap[activeTab]}`"
+        :key="componentKey"
         :ref="refMap[activeTab]"
         :tableData="tableData"
         :currentIndex="currentIndex"
@@ -119,7 +119,10 @@
   const isAddPoint = ref(false)
   const currentRow = ref(null)
 
+  const componentKey = ref(Date.now())
+
   const open = async (row, index, type) => {
+    componentKey.value = Date.now()
     isAddPoint.value = !type
     currentRow.value = row ?? null
     currentIndex.value = index ?? -1

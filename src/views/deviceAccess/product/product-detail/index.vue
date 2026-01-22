@@ -6,7 +6,13 @@
     <div class="bg-white rounded-md px-4 py-5 mb-2.5 flex items-center gap-4">
       <!-- 产品图 -->
       <div class="w-[70px] h-[70px]">
-        <img src="@/assets/images/icon/icon-empty-pic.webp" alt="" />
+        <img
+          v-if="product.imgUrl"
+          :src="product.imgUrl"
+          class="w-[70px] h-[70px] object-contain"
+          alt=""
+        />
+        <img v-else src="@/assets/images/icon/icon-empty-pic.webp" alt="" />
       </div>
 
       <!-- 产品名称 -->

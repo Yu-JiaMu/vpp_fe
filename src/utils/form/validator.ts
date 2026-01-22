@@ -469,7 +469,7 @@ export function createUniqueValidatorByValue<T extends Record<string, any>>(
 
   return function validateUnique(_: any, value: any, callback: any) {
     const originValue = typeof currentValue === 'function' ? currentValue() : currentValue
-    // console.log(value, originValue)
+    console.log(value, originValue)
     // 空值交给 required 处理
     if (value === '' || value === null || value === undefined) {
       return callback()
