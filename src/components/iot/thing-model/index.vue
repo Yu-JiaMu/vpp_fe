@@ -238,9 +238,9 @@
 
   /* ====================== 初始化（props → 本地） ====================== */
 
-  /*   watchEffect(() => {
-      hasRegisterDevice.value = (props.info?.deviceCount ?? 0) > 0 && isEdit.value
-    }) */
+  watchEffect(() => {
+    hasRegisterDevice.value = (props.info?.deviceCount ?? 0) > 0 && isEdit.value
+  })
 
   watchEffect(() => {
     if (!props.thingJson?.modules) return
