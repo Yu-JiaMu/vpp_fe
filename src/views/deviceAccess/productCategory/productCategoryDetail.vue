@@ -43,7 +43,7 @@
       v-if="activeTab === 'model'"
       module="productCategory"
       :info="productCategoryDetail"
-      :thingJson="productCategoryDetail.thingModel"
+      :thingJson="productCategoryDetail.thingModelJson"
       @refresh="getDetail"
     ></ThingModel>
   </div>
