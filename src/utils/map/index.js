@@ -2,7 +2,6 @@
 const key = 'a9f1840ab6ebfb81e17f611ca72572d2'
 const securityJsCode = '522054ec0e1ef9da651e7975e9235abf'
 import AMapLoader from '@amap/amap-jsapi-loader'
-import { reject } from 'lodash'
 class SimpleAMapService {
   constructor(options = {}) {
     this.options = {

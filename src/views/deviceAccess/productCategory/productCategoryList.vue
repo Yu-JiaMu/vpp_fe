@@ -21,7 +21,7 @@
         /> -->
       </ArtSearchBar>
       <div class="flex flex-space-between mb10">
-        <div class="flex flex-cz-center flex-sp-center add-container" @click="openDialog">
+        <div class="flex flex-cz-center flex-sp-center add-container" @click="openDialog('add')">
           <img
             src="~@/assets/images/deviceAccess/1.png"
             style="width: 20px; height: 20px"
@@ -72,7 +72,7 @@
         <el-table-column prop="name" label="产品品类">
           <template #default="{ row }">
             <div class="flex cursor-pointer flex-cz-center text-theme">
-              <span class="mr5">{{ row.name }}</span>
+              <span class="mr5" @click="handleDetail(row)">{{ row.name }}</span>
               <template v-if="!row.thingModelStatus">
                 <el-tooltip
                   class="box-item"
@@ -110,7 +110,12 @@
     />
 
     <!-- 成功弹窗 -->
-    <ProductCategorySuccessDialog v-model="showSuccessDialog" @confirm="handleConfirm" />
+    <ProductCategorySuccessDialog
+      ref="productCategorySuccessDialogRef"
+      v-model="showSuccessDialog"
+      @confirm="handleConfirm"
+      @goToModelDefinition="goToModelDefinition"
+    />
   </div>
 </template>
 
@@ -289,7 +294,9 @@
       // params: { id: row.id }
     })
   }
-
+  const goToModelDefinition = (e) => {
+    handleDetail(e)
+  }
   // 处理删除
   const handleDelete = async (row) => {
     try {
@@ -346,22 +353,6 @@
         // 用户取消
       })
   }
-
-  // 单个导出物模型
-  const handleExportSingle = (row) => {
-    if (!row.rawData?.thingModelJson) {
-      ElMessage.warning('该产品品类未配置物模型')
-      return
-    }
-
-    try {
-      ElMessage.success('导出成功')
-    } catch (error) {
-      console.error('导出失败:', error)
-      ElMessage.error('导出失败')
-    }
-  }
-
   // 批量导出物模型
   const handleExportThingModel = async () => {
     if (selectedRows.value.length === 0) {
@@ -423,7 +414,6 @@
     if (type === 'add') return
     await nextTick()
     if (productCategoryDialogRef.value && productCategoryDialogRef.value.initFormData) {
-      console.log(data)
       productCategoryDialogRef.value.initFormData(data)
     }
   }
@@ -440,20 +430,20 @@
   const showSuccessDialog = ref(false)
 
   // 处理提交成功
+  const productCategorySuccessDialogRef = ref(null)
   const handleSuccess = async (formData) => {
     console.log('表单提交成功:', formData)
-    if (formData.id) return
     try {
       // 这里调用新增API
-      const response = await productCategoryApi.addProductCategory(formData)
-      if (response.code === 200) {
-        ElMessage.success('新增成功')
-        showSuccessDialog.value = true
-        // 刷新表格数据
-        getTableData()
-      } else {
-        ElMessage.error(response.msg || '新增失败')
+      // await productCategoryApi.addProductCategory(formData)
+      showSuccessDialog.value = true
+      await nextTick()
+      console.log(productCategorySuccessDialogRef.value.setId)
+      if (productCategorySuccessDialogRef.value && productCategorySuccessDialogRef.value.setId) {
+        productCategorySuccessDialogRef.value.setId(formData.id)
       }
+      // 刷新表格数据
+      getTableData()
     } catch (error) {
       console.error('新增失败:', error)
       ElMessage.error('新增失败，请稍后重试')
