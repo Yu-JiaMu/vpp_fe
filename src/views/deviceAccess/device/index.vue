@@ -235,7 +235,7 @@
               </el-icon> -->
               <el-popover placement="bottom" trigger="hover" :width="200" :show-arrow="false">
                 <template #reference>
-                  <el-button type="text" class="column-setting-btn">
+                  <el-button link class="column-setting-btn">
                     <el-icon size="18"><Setting /></el-icon>
                   </el-button>
                 </template>
@@ -244,9 +244,7 @@
                 <div class="column-setting-menu">
                   <div class="menu-header flex items-center gap-5">
                     <span>显示/隐藏列</span>
-                    <el-button type="text" size="small" @click="handleResetColumns">
-                      重置
-                    </el-button>
+                    <el-button link size="small" @click="handleResetColumns"> 重置 </el-button>
                   </div>
                   <!-- <el-divider /> -->
                   <div class="column-list">
