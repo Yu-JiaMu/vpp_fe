@@ -115,16 +115,36 @@
         <el-table-column type="selection" width="55" />
 
         <!-- 设备名称列 -->
-        <el-table-column prop="name" label="设备名称" />
+        <el-table-column
+          prop="name"
+          label="设备名称"
+          v-if="visibleColumns.includes('name')"
+          width="200"
+        />
 
         <!-- 设备ID列 -->
-        <el-table-column prop="id" label="设备ID" />
+        <el-table-column
+          prop="id"
+          label="设备ID"
+          v-if="visibleColumns.includes('id')"
+          width="200"
+        />
 
         <!-- 所属产品列 -->
-        <el-table-column prop="productName" label="所属产品" />
+        <el-table-column
+          prop="productName"
+          label="所属产品"
+          v-if="visibleColumns.includes('productName')"
+          width="200"
+        />
 
         <!-- 状态列 -->
-        <el-table-column prop="devState" label="状态">
+        <el-table-column
+          prop="devState"
+          label="状态"
+          v-if="visibleColumns.includes('devState')"
+          width="120"
+        >
           <template #default="{ row }">
             <el-tag
               :type="
@@ -141,36 +161,105 @@
           </template>
         </el-table-column>
         <!-- 节点类型列 -->
-        <el-table-column prop="nodeType" label="节点类型" min-width="100">
+        <el-table-column
+          prop="nodeType"
+          label="节点类型"
+          min-width="100"
+          v-if="visibleColumns.includes('nodeType')"
+          width="200"
+        >
           <template #default="{ row }"> {{ NODE_TYPES.getLabel(row.nodeType) }} </template>
         </el-table-column>
 
         <!-- 上级设备列 -->
-        <el-table-column prop="parentId" label="上级节点设备" />
+        <el-table-column
+          prop="parentDevice"
+          label="上级节点设备"
+          v-if="visibleColumns.includes('parentDevice')"
+          width="200"
+        />
+        <!-- 启用/禁用列 -->
+        <el-table-column
+          prop="devEnable"
+          label="启用/禁用"
+          v-if="visibleColumns.includes('devEnable')"
+          width="150"
+        >
+          <template #default="{ row }">
+            <el-switch
+              v-model="row.devEnable"
+              :active-value="true"
+              :inactive-value="false"
+              @change="handleDeviceEnableChange(row)"
+            />
+          </template>
+        </el-table-column>
 
+        <!-- 标签列 -->
+        <el-table-column
+          prop="tagArray"
+          label="标签"
+          v-if="visibleColumns.includes('tagArray')"
+          width="200"
+        >
+          <template #default="{ row }">
+            <div class="flex gap-2 flex-wrap">
+              <el-tag type="primary" v-for="(tag, index) in row.tagArray" :key="index">
+                {{ tag }}</el-tag
+              >
+            </div>
+          </template>
+        </el-table-column>
+
+        <!-- 最后在线时间列 -->
+        <el-table-column
+          prop="lastOnlineTime"
+          label="最后在线时间"
+          v-if="visibleColumns.includes('lastOnlineTime')"
+          width="200"
+        />
+        <!-- 创建时间列 -->
+        <el-table-column
+          prop="createTime"
+          label="创建时间"
+          v-if="visibleColumns.includes('createTime')"
+          width="200"
+        />
         <!-- 操作列（固定显示） -->
         <el-table-column fixed="right" label="操作" :width="200">
           <template #header>
-            <div class="flex flex-cz-center">
+            <div class="flex items-center">
               <span class="mr15">操作</span>
               <!-- <el-icon size="18" class="cursor-pointer setting-icon">
                 <Setting />
               </el-icon> -->
-              <el-dropdown>
-                <el-icon size="18" class="cursor-pointer setting-icon">
-                  <Setting />
-                </el-icon>
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item @click="goDeviceRegister('single')"
-                      >单个设备注册</el-dropdown-item
-                    >
-                    <el-dropdown-item @click="goDeviceRegister('multiple')"
-                      >多个设备注册</el-dropdown-item
-                    >
-                  </el-dropdown-menu>
+              <el-popover placement="bottom" trigger="hover" :width="200" :show-arrow="false">
+                <template #reference>
+                  <el-button type="text" class="column-setting-btn">
+                    <el-icon size="18"><Setting /></el-icon>
+                  </el-button>
                 </template>
-              </el-dropdown>
+
+                <!-- 列设置菜单 -->
+                <div class="column-setting-menu">
+                  <div class="menu-header flex items-center gap-5">
+                    <span>显示/隐藏列</span>
+                    <el-button type="text" size="small" @click="handleResetColumns">
+                      重置
+                    </el-button>
+                  </div>
+                  <!-- <el-divider /> -->
+                  <div class="column-list">
+                    <div v-for="column in allColumns" :key="column.prop" class="column-item">
+                      <el-checkbox
+                        v-model="column.visible"
+                        :label="column.label"
+                        @change="handleColumnChange"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </el-popover>
             </div>
           </template>
 
@@ -267,6 +356,51 @@
     getTableData()
   }
   // 表格数据
+  // 所有列配置
+  const allColumns = reactive([
+    { prop: 'name', label: '设备名称', visible: true },
+    { prop: 'id', label: '设备ID', visible: true },
+    { prop: 'productId', label: '所属产品', visible: true },
+    { prop: 'devState', label: '状态', visible: true },
+    { prop: 'nodeType', label: '节点类型', visible: true },
+    { prop: 'parentDevice', label: '上级节点设备', visible: true },
+    { prop: 'devEnable', label: '启用/禁用', visible: true },
+    { prop: 'tagArray', label: '标签', visible: true },
+    { prop: 'lastOnlineTime', label: '最后在线时间', visible: true },
+    { prop: 'createTime', label: '创建时间', visible: true }
+  ])
+
+  // 计算属性：可见的列
+  const visibleColumns = computed(() => {
+    return allColumns.filter((column) => column.visible).map((column) => column.prop)
+  })
+  // 列设置相关方法
+  const handleColumnChange = () => {
+    // 保存列显示状态到本地存储
+    localStorage.setItem('deviceTableColumns', JSON.stringify(allColumns))
+  }
+  const handleResetColumns = () => {
+    allColumns.forEach((column) => {
+      column.visible = true
+    })
+    localStorage.removeItem('deviceTableColumns')
+  }
+  // 加载保存的列设置
+  const loadColumnSettings = () => {
+    const savedColumns = localStorage.getItem('deviceTableColumns')
+    if (savedColumns) {
+      try {
+        const parsedColumns = JSON.parse(savedColumns)
+        allColumns.forEach((column, index) => {
+          if (parsedColumns[index]) {
+            column.visible = parsedColumns[index].visible
+          }
+        })
+      } catch (error) {
+        console.error('加载列设置失败:', error)
+      }
+    }
+  }
   const tableData = ref([])
   // 分页数据
   const tableRef = ref(null)
@@ -298,7 +432,8 @@
       ElMessage.error('设备列表失败')
     }
   }
-
+  //改变设备装填
+  const handleDeviceEnableChange = () => {}
   // 操作按钮处理函数
   const handleDetail = (row) => {
     console.log('查看详情:', row)
@@ -321,6 +456,7 @@
   }
 
   onMounted(() => {
+    loadColumnSettings()
     getProduceList()
     getTableData()
   })
@@ -482,5 +618,12 @@
     font-size: 13px;
     display: flex;
     align-items: center;
+  }
+  .column-item {
+    border-bottom: 1px solid #edeef3;
+    padding: 3px 0;
+    &:last-child {
+      border-bottom: none !important;
+    }
   }
 </style>
