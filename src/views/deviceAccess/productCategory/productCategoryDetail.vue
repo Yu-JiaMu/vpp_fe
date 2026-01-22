@@ -1,8 +1,9 @@
 <template>
   <div class="product-category-detail">
     <ElCard class="art-table-card" shadow="never">
-      <div>便携式电源</div>
-      <el-row class="mt20">
+      <!-- 设备详情 -->
+      <ArtButtonBack class="mb-2.5 mt20" is-back> {{ productCategoryDetail.name }} </ArtButtonBack>
+      <el-row class="mt20 product-font">
         <el-col :span="6">
           <span class="mr5">所属行业/场景:</span>
           <span
@@ -15,7 +16,7 @@
         </el-col>
         <div></div>
       </el-row>
-      <el-row class="mt10">
+      <el-row class="mt10 product-font">
         <el-col :span="6">
           <span class="mr5">创建时间:</span>
           <span>{{ productCategoryDetail.createTime }}</span>
@@ -87,6 +88,12 @@
     border-radius: 0px 6px 6px 6px !important;
   }
   .product-category-detail {
+    .product-font {
+      font-family: Source Han Sans SC;
+      font-size: 16px;
+      font-weight: 400;
+      color: #303537;
+    }
     .tab-con {
       border-radius: 6px 6px 0px 0px;
       border: 1px solid var(--default-border);
