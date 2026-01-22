@@ -33,8 +33,10 @@ export function apiProductCategoryDetail(id) {
   return request.get(`/stage-api/model/productCateory/${id}`)
 }
 //导出
-export function apiProductCategoryExport(id, params) {
-  return request.get(`/stage-api/model/productCateory/export/thingModel/${id}`, params)
+export function apiProductCategoryExport(params) {
+  return request.post(`/stage-api/model/productCateory/export/thingModel`, params, {
+    responseType: 'blob'
+  })
 }
 
 // 更新产品品类物模型

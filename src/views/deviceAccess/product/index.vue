@@ -59,7 +59,6 @@
 </template>
 
 <script setup>
-  import { formatTime } from '@/utils'
   import { NODE_TYPES, PROTOCOL_TYPES_MAP } from '@/enums'
   import * as api from '@/api/iot'
 
