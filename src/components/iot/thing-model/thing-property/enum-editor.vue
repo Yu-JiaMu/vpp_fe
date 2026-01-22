@@ -74,7 +74,7 @@
 </template>
 
 <script setup>
-  import { validateParamDesc, createUniqueValidator } from '@/utils'
+  import { validateParamDesc } from '@/utils'
   const modelValue = defineModel()
 
   const isReadOnly = inject('isReadOnly', false)

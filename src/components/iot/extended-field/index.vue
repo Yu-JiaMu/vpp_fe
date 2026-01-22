@@ -9,7 +9,7 @@
           clearable
           class="input-with-prepend"
           style="width: 248px"
-          @keyup.enter="handleSearch"
+          @change="handleSearch"
         >
           <template #prepend> 标识符 </template>
         </el-input>
@@ -34,7 +34,15 @@
     </div>
 
     <!-- 表格 -->
-    <el-table :data="tableData" border stripe class="w-full">
+    <el-table
+      ref="tableRef"
+      :data="tableData"
+      border
+      stripe
+      class="w-full"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" width="55" />
       <el-table-column prop="name" label="功能名称" width="120" />
       <el-table-column prop="identifier" label="标识符" width="160" />
       <el-table-column prop="dataType" label="数据类型" width="140">
@@ -69,127 +77,121 @@
     </el-table>
 
     <!-- 添加功能点 -->
-    <ParamsDialog ref="dialogRef" v-model="tableData" />
+    <ParamsDialog ref="dialogRef" v-model="originTableData" @submit="handleSubmit()" />
   </div>
 </template>
 
 <script setup>
+  import { ref, computed, watchEffect, provide } from 'vue'
   import ParamsDialog from '@/components/iot/thing-model/thing-function/params-dialog.vue'
   import FunctionDefinePreview from '@/components/iot/thing-model/function-define-preview/index.vue'
-  import { ref } from 'vue'
-  import thingJson from '@/components/iot/thing-model/thing.json'
   import { handleDataType } from '@/utils'
-  import { FUNCTION_MODE_MAP, REQUIRED_MAP } from '@/enums'
+  import { REQUIRED_MAP } from '@/enums'
   import { buildThingModel, parseThingModel } from '@/components/iot/thing-model/adapters'
 
+  const props = defineProps({
+    info: {
+      type: Object,
+      default: () => ({})
+    },
+    module: {
+      type: String,
+      default: ''
+    }
+  })
+
+  const emits = defineEmits(['submit'])
+
   const isEdit = ref(false)
-
   const isReadOnly = ref(false)
-
   provide('isReadOnly', isReadOnly)
 
   const form = ref({
-    identifier: '',
-    input: []
+    identifier: ''
   })
-  const expandInfo = [
-    {
-      name: '111',
-      identifier: 'identifier',
-      dataType: {
-        type: 'int',
-        specs: {
-          max: '10000',
-          min: '0',
-          step: '2',
-          unit: '千瓦时 / kWh'
-        }
-      },
-      required: true
-    },
-    {
-      name: '1222',
-      identifier: 'identifier2',
-      dataType: {
-        type: 'int',
-        specs: {
-          max: '10000',
-          min: '0',
-          step: '2',
-          unit: '千瓦时 / kWh'
-        }
-      },
-      required: true
-    },
-    {
-      name: '1233',
-      identifier: 'identifier2',
-      dataType: {
-        type: 'int',
-        specs: {
-          max: '10000',
-          min: '0',
-          step: '2',
-          unit: '千瓦时 / kWh'
-        }
-      },
-      required: true
-    }
-  ]
+
   const originTableData = ref([])
-  const tableData = ref([])
 
+  /* ====================== props → 本地数据初始化 ====================== */
+
+  watchEffect(() => {
+    const list = props.info?.expandInfoList ?? []
+    originTableData.value = list.map((item) => parseThingModel(item))
+  })
+
+  /* ====================== 派生数据 ====================== */
+
+  const searchKeyword = ref('')
   const handleSearch = () => {
-    const { identifier } = form.value
-
-    tableData.value = originTableData.value.filter((row) => {
-      const matchId = !identifier || row.identifier?.includes(identifier)
-
-      return matchId
-    })
+    searchKeyword.value = form.value.identifier?.trim() || ''
   }
+  const tableData = computed(() => {
+    if (!searchKeyword.value) {
+      return originTableData.value
+    }
 
-  const addCustomFunctionPointDialogRef = useTemplateRef('dialogRef')
+    return originTableData.value.filter((row) => row.identifier?.includes(searchKeyword.value))
+  })
+
+  /* ====================== Dialog ====================== */
+
+  const dialogRef = useTemplateRef('dialogRef')
+
   const openCustomFunctionDialog = (row, index, type) => {
-    console.log(row, index, type)
     isReadOnly.value = type === 'look'
     isEdit.value = type === 'edit'
-    addCustomFunctionPointDialogRef.value.open(row, index, type)
+    dialogRef.value.open(row, index, type)
   }
 
-  const handleRemove = (index) => {}
+  const tableRef = useTemplateRef('tableRef')
+  const selectedItems = ref([])
 
-  const addCustomPoint = ({ data, functionMode }) => {
-    isChange.value = true
-    const model = thingJson.modules[0]
-    let key = FUNCTION_MODE_MAP.getItem(functionMode).pKey
-    model[key].push(data)
-    originTableData.value = transformThingJsonToTable(thingJson)
-    handleSearch()
+  const handleSelectionChange = (selection) => {
+    selectedItems.value = selection
   }
 
-  const handlePatchRemove = () => {}
+  const handleRemove = async (index) => {
+    try {
+      await ElMessageBox.confirm('此操作将删除该项目，是否继续？', '提示', { type: 'warning' })
 
-  const transformJsonToTable = () => {
-    expandInfo.forEach((item) => {
-      originTableData.value.push(parseThingModel(item))
-    })
-    console.log(originTableData.value)
+      originTableData.value.splice(index, 1)
+      handleSubmit('删除成功')
+    } catch (error) {
+      if (error.message !== 'cancel') {
+        console.error('删除出错:', error)
+      }
+    }
   }
 
-  const handleSubmit = () => {
-    let data = []
-    originTableData.value.forEach((item) => {
-      data.push(buildThingModel(item))
-    })
-    console.log('转换后的拓展字段', data)
+  const handlePatchRemove = async () => {
+    if (!selectedItems.value.length) {
+      ElMessage.warning('请先选择要删除的项目')
+      return
+    }
+
+    try {
+      await ElMessageBox.confirm('此操作将删除选中的项目，是否继续？', '提示', { type: 'warning' })
+
+      originTableData.value = originTableData.value.filter(
+        (item) => !selectedItems.value.includes(item)
+      )
+
+      tableRef.value?.clearSelection()
+      selectedItems.value = []
+
+      handleSubmit('批量删除成功')
+    } catch (error) {
+      if (error.message !== 'cancel') {
+        console.error('删除出错:', error)
+      }
+    }
   }
 
-  onMounted(() => {
-    transformJsonToTable()
-    handleSearch()
-    handleSubmit()
-  })
+  const handleSubmit = (msg = '添加成功') => {
+    const data = originTableData.value.map((item) => buildThingModel(item))
+
+    emits('submit', { data, msg })
+  }
 </script>
 
 <style lang="scss" scoped>

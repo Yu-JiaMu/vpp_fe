@@ -82,7 +82,7 @@
     validateNameLength,
     validateDescLength,
     validateCommon,
-    createUniqueValidator,
+    createUniqueValidatorByValue,
     validateBooleanDesc,
     validateEnumList,
     getByteLength
@@ -106,6 +106,10 @@
     currentIndex: {
       type: Number,
       default: -1
+    },
+    currentRow: {
+      type: Object,
+      default: () => {}
     }
   })
 
@@ -133,7 +137,11 @@
       { required: true, message: '请输入标识符', trigger: 'blur' },
       { validator: validateIdentifier, trigger: 'blur' },
       {
-        validator: createUniqueValidator(props.tableData, 'identifier', props.currentIndex),
+        validator: createUniqueValidatorByValue(
+          props.tableData,
+          'identifier',
+          () => props.currentRow?.identifier
+        ),
         trigger: 'blur'
       }
     ],

@@ -52,8 +52,8 @@
     <!-- 拓展字段 -->
     <ExtendedField
       v-if="activeTab === 'extend'"
-      :product="product"
-      @refresh="getDetail"
+      :info="product"
+      @submit="handleSubmitExtendField"
     ></ExtendedField>
   </div>
 </template>
@@ -61,7 +61,6 @@
 <script setup>
   import * as api from '@/api/iot'
   import BaseInfo from './components/base-info.vue'
-  import ExtendedField from './components/extended-field/index.vue'
   const route = useRoute()
 
   const activeTab = ref('info')
@@ -138,6 +137,11 @@
       row.enabled = !row.enabled // 回滚状态
       // ElMessage.error('更新失败')
     }
+  }
+
+  const handleSubmitExtendField = async ({ data, msg = '添加成功' }) => {
+    await api.updateProductExpandInfo({ id: product.value.id, expandInfo: data })
+    ElMessage.success(msg)
   }
 
   const init = () => {
