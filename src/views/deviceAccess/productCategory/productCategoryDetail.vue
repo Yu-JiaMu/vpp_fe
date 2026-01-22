@@ -41,7 +41,7 @@
     <ThingModel
       v-if="activeTab === 'model'"
       module="productCategory"
-      :info="product"
+      :info="productCategoryDetail"
       :thingJson="productCategoryDetail.thingModel"
       @refresh="getDetail"
     ></ThingModel>
@@ -53,14 +53,11 @@
   const inputValue = ref('')
   const route = useRoute()
   const productCategoryId = route.query.id
-  const productCategoryDetail = reactive({})
+  const productCategoryDetail = ref({})
   //获取详情
   const getProductCategoryDetail = async () => {
     const res = await productCategoryApi.apiProductCategoryDetail(productCategoryId)
-    Object.keys(res).forEach((key) => {
-      productCategoryDetail[key] = res[key]
-    })
-    console.log(productCategoryDetail)
+    productCategoryDetail.value = res
   }
   //tab切换
   const activeTab = ref('model')
@@ -70,23 +67,7 @@
       value: 'model'
     }
   ]
-  const product = ref({
-    id: '1955073219080001',
-    name: '计量电表001',
-    enabled: true,
-    deviceCount: 41,
-    category: '能源电力 / 电表 / 表计',
-    nodeType: '网关设备',
-    protocol: 'MQTT',
-    network: 'WIFI',
-    dataFormat: 'JSON',
-    authType: '设备序列号',
-    vendor: '安科瑞',
-    productType: '104表计',
-    createdAt: '2025-08-31 12:00:00',
-    updatedAt: '2025-08-31 12:00:00',
-    desc: '用于MQTT协议相关产品'
-  })
+
   const getDetail = () => {}
   onMounted(() => {
     getProductCategoryDetail()

@@ -115,7 +115,6 @@
 </template>
 
 <script setup>
-  import { router } from '@/router'
   import ProductCategoryDialog from './dialog/ProductCategoryDialog.vue'
   import ProductCategorySuccessDialog from './dialog/ProductCategorySuccessDialog.vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
@@ -124,6 +123,7 @@
   import { Warning } from '@element-plus/icons-vue'
   import { INTERNAL_DEVICE_TYPES } from '@/enums'
   import { downloadFile } from '@/utils'
+  const router = useRouter()
   // 搜索条件
   const form = reactive({
     isAsc: 'desc',
