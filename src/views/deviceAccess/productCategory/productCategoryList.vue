@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="product-category-list">
     <ElCard class="art-table-card" shadow="never">
       <ArtSearchBar
         ref="searchBarRef"
@@ -11,6 +11,14 @@
         @reset="onReset"
         @search="onSearch"
       >
+        <!-- <el-cascader
+          style="width: 100%"
+          v-model="form.industryCodeAndsceneCode"
+          :options="industryOptions"
+          :props="{
+            expandTrigger: 'hover'
+          }"
+        /> -->
       </ArtSearchBar>
       <div class="flex flex-space-between mb10">
         <div class="flex flex-cz-center flex-sp-center add-container" @click="openDialog">
@@ -53,11 +61,12 @@
         border
         style="width: 100%"
         @selection-change="handleSelectionChange"
+        @sort-change="handleSort"
       >
         <el-table-column type="selection" width="55" />
         <el-table-column prop="categoryType" label="品类类别">
           <template #default="{ row }">
-            {{ formatCategoryType(row.categoryType) }}
+            {{ INTERNAL_DEVICE_TYPES.getLabel(row.categoryType) }}
           </template>
         </el-table-column>
         <el-table-column prop="name" label="产品品类">
@@ -80,23 +89,17 @@
 
         <el-table-column prop="industryCode" label="所属行业" />
         <el-table-column prop="sceneCode" label="所属场景" />
-        <el-table-column prop="updateTime" label="更新时间" />
+        <el-table-column prop="updateTime" label="更新时间" sortable="custom" />
         <el-table-column fixed="right" label="操作">
           <template #default="{ row }">
-            <el-button link type="primary" size="small" @click="handleDetail(row)">
-              详情
-            </el-button>
-            <el-button link type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
+            <el-button link type="primary" @click="handleDetail(row)"> 详情 </el-button>
+            <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
 
-            <el-button link type="danger" size="small" @click="handleDelete(row)">删除</el-button>
+            <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
-      <ArtPagination
-        v-model="pagination"
-        @size-change="onSizeChange"
-        @current-change="onPageChange"
-      />
+      <ArtPagination v-model="pagination" @change="getTableData" />
     </ElCard>
 
     <!-- 新增/编辑弹窗 -->
@@ -119,37 +122,18 @@
   // 从iot.js全部导入
   import * as productCategoryApi from '@/api/iot/productCategory.js'
   import { Warning } from '@element-plus/icons-vue'
-
+  import { INTERNAL_DEVICE_TYPES } from '@/enums'
+  import { downloadFile } from '@/utils'
   // 搜索条件
   const form = reactive({
+    isAsc: 'desc',
+    orderByColumn: 'updateTime',
     name: '',
     categoryType: '', // 品内类型
     industryCode: '', // 所属行业
     sceneCode: '', // 所属场景
     industryCodeAndsceneCode: []
   })
-
-  // 搜索
-  function onSearch() {
-    currentPage.value = 1
-    fetchTableData()
-  }
-
-  // 重置
-  function onReset() {
-    // 重置表单
-    Object.keys(form).forEach((key) => {
-      form[key] = ''
-    })
-    currentPage.value = 1
-    fetchTableData()
-  }
-
-  // 品类类型选项
-  const categoryTypeOptions = [
-    { label: '内设', value: 'inner' },
-    { label: '自定义', value: 'define' }
-  ]
 
   // 表单配置
   const formItems = computed(() => [
@@ -167,18 +151,20 @@
       props: {
         placeholder: '请选择品类类型',
         filterable: true,
-        options: categoryTypeOptions
+        options: INTERNAL_DEVICE_TYPES.options,
+        clearable: true
       }
     },
     {
       label: '所属行业',
       key: 'industryCodeAndsceneCode',
       type: 'cascader',
-      width: '300px',
+      width: '100%',
       props: {
         placeholder: '请选择所属行业',
         filterable: true,
-        options: industryOptions.value
+        options: industryOptions.value,
+        clearable: true
       }
     }
   ])
@@ -228,29 +214,23 @@
     }
   }
   // 分页数据
-  const currentPage = ref(1)
-  const pageSize = ref(10)
-  const tableRef = ref()
+  const tableRef = useTemplateRef('tableRef')
   const selectedRows = ref([])
-
   const pagination = reactive({
     size: 10,
     current: 1,
     total: 0
   })
-
-  function onSizeChange(size) {
-    pageSize.value = size
-    currentPage.value = 1
-    fetchTableData()
+  function onSearch() {
+    pagination.current = 1
+    getTableData()
   }
 
-  function onPageChange(page) {
-    console.log(page)
-    currentPage.value = page
-    fetchTableData()
+  function onReset() {
+    pagination.current = 1
+    tableRef.value?.clearSort()
+    getTableData()
   }
-
   // 处理表格选择变化
   const handleSelectionChange = (selection) => {
     selectedRows.value = selection
@@ -260,79 +240,44 @@
   // 获取表格数据
   const tableData = ref([])
 
-  // 格式化品类类型显示
-  const formatCategoryType = (type) => {
-    const map = {
-      inner: '内设',
-      define: '自定义'
+  // 获取表格数据函数
+  const getTableData = async () => {
+    try {
+      const queryParams = {
+        pageNum: pagination.current,
+        pageSize: pagination.size,
+        ...form
+      }
+      if (queryParams.industryCodeAndsceneCode?.length > 0) {
+        queryParams.industryCode = queryParams.industryCodeAndsceneCode[0]
+        queryParams.sceneCode = queryParams.industryCodeAndsceneCode[1]
+      }
+      delete queryParams.industryCodeAndsceneCode
+      const response = await productCategoryApi.apiGetProductCategoryList(queryParams)
+      if (response) {
+        tableData.value = response.rows
+        tableData.value = tableData.value.map((table) => {
+          return {
+            ...table,
+            thingModelStatus: formatThingModelStatus(table.thingModelJson) // 物模型状态
+          }
+        })
+        pagination.total = response.total || 0
+      }
+    } catch (error) {
+      console.error('获取产品列表失败:', error)
+      ElMessage.error('获取产品列表失败')
     }
-    return map[type] || type
   }
-
+  const handleSort = ({ order, prop }) => {
+    // console.log('更新时间', value)
+    form.orderByColumn = prop
+    form.isAsc = order
+    getTableData()
+  }
   // 格式化物模型状态
   const formatThingModelStatus = (thingModelJson) => {
     return thingModelJson ? true : false
-  }
-
-  const handleIndustryChange = (type = 'industryCode') => {
-    if (form.industryCodeAndsceneCode.length === 0) {
-      form.industryCode = ''
-      form.sceneCode = ''
-      return undefined
-    }
-    if (type === 'industryCode') return form.industryCodeAndsceneCode[0] || ''
-    if (type === 'sceneCode') return form.industryCodeAndsceneCode[1] || ''
-  }
-
-  // 获取表格数据函数
-  const fetchTableData = async () => {
-    try {
-      // 构建请求参数
-      const params = {
-        pageNum: currentPage.value,
-        pageSize: pageSize.value,
-        // 搜索条件
-        name: form.name || undefined,
-        categoryType: form.categoryType || undefined,
-        industryCode: handleIndustryChange('industryCode'),
-        sceneCode: handleIndustryChange('sceneCode')
-      }
-      console.log('请求参数:', params)
-
-      // 调用 API
-      const response = await productCategoryApi.apiGetProductCategoryList(params)
-      console.log(response, 'responseresponseresponseresponse')
-
-      if (response.code === 200) {
-        // API返回的数据是 response.rows
-        const apiData = response.rows || []
-        // 转换数据格式以匹配表格列
-        tableData.value = apiData.map((item) => ({
-          id: item.id,
-          name: item.name, // 产品品类
-          categoryType: item.categoryType, // 品类类型
-          industryCode: item.industryCode, // 所属行业
-          sceneCode: item.sceneCode, // 所属场景
-          updateTime: item.updateTime, // 更新时间
-          thingModelStatus: formatThingModelStatus(item.thingModelJson), // 物模型状态
-          createBy: item.createBy, // 创建人
-          // 保留原始数据
-          rawData: item
-        }))
-        pagination.total = response.total || 0
-        pagination.current = currentPage.value
-        pagination.size = pageSize.value
-      } else {
-        ElMessage.error(response.msg || '获取数据失败')
-        tableData.value = []
-        pagination.total = 0
-      }
-    } catch (error) {
-      console.error('获取表格数据失败:123', error)
-      ElMessage.error('网络错误，请稍后重试')
-      tableData.value = []
-      pagination.total = 0
-    }
   }
 
   // 处理详情
@@ -357,7 +302,7 @@
       // 调用删除API
       await productCategoryApi.apiProductCategoryDelete([row.id])
       ElMessage.success('删除成功')
-      fetchTableData() // 刷新表格
+      getTableData() // 刷新表格
     } catch (error) {
       if (error !== 'cancel') {
         console.error('删除失败:', error)
@@ -388,7 +333,7 @@
           const ids = selectedRows.value.map((row) => row.id)
           await productCategoryApi.apiProductCategoryDelete(ids)
           ElMessage.success(`成功删除 ${selectedRows.value.length} 条记录`)
-          fetchTableData() // 刷新表格
+          getTableData() // 刷新表格
           // 清空选中状态
           tableRef.value.clearSelection()
           selectedRows.value = []
@@ -424,22 +369,17 @@
       return
     }
 
-    const hasThingModelRows = selectedRows.value.filter((row) => row.rawData?.thingModelJson)
-    if (hasThingModelRows.length === 0) {
-      ElMessage.warning('选中的产品品类均未配置物模型')
+    const hasThingModelRows = selectedRows.value.every((row) => row.thingModelJson)
+    if (!hasThingModelRows) {
+      ElMessage.warning('选中的产品品类中未配置物模型')
       return
     }
 
     try {
       // 如果只选择了一个且有物模型，导出单个
-      if (hasThingModelRows.length === 1) {
-        handleExportSingle(hasThingModelRows[0])
-        return
-      }
-
       // 批量导出多个
       ElMessageBox.confirm(
-        `将导出选中的 ${hasThingModelRows.length} 个物模型，是否继续？`,
+        `将导出选中的 ${selectedRows.value.length} 个物模型，是否继续？`,
         '批量导出确认',
         {
           confirmButtonText: '确定',
@@ -449,34 +389,16 @@
       )
         .then(async () => {
           // 批量导出接口调用
-          const categoryIds = hasThingModelRows.map((row) => row.id)
+          const categoryIds = selectedRows.value.map((row) => row.id)
 
           try {
             // 调用批量导出接口
-            const response = await productCategoryApi.batchExportThingModel(categoryIds)
-
-            if (response.code === 200) {
-              if (response.data && response.data.downloadUrl) {
-                // 如果有下载链接，直接下载
-                window.open(response.data.downloadUrl, '_blank')
-                ElMessage.success('批量导出成功，开始下载')
-              } else if (response.data && response.data.fileContent) {
-                // 如果有文件内容，创建下载
-                const blob = new Blob([response.data.fileContent], { type: 'application/zip' })
-                const url = window.URL.createObjectURL(blob)
-                const link = document.createElement('a')
-                link.href = url
-                link.download = `物模型批量导出_${new Date().getTime()}.zip`
-                document.body.appendChild(link)
-                link.click()
-                document.body.removeChild(link)
-                window.URL.revokeObjectURL(url)
-                ElMessage.success('批量导出成功，开始下载')
-              } else {
-                ElMessage.success('批量导出请求已提交，请稍后查看下载')
-              }
+            const response = await productCategoryApi.apiProductCategoryExport(categoryIds)
+            if (categoryIds.length === 1) {
+              const name = selectedRows.value.map((row) => row.name) || []
+              downloadFile(response, name[0])
             } else {
-              ElMessage.error(response.msg || '批量导出失败')
+              downloadFile(response, '产品品类-物模型', 'zip')
             }
           } catch (error) {
             console.error('批量导出失败:', error)
@@ -528,7 +450,7 @@
         ElMessage.success('新增成功')
         showSuccessDialog.value = true
         // 刷新表格数据
-        fetchTableData()
+        getTableData()
       } else {
         ElMessage.error(response.msg || '新增失败')
       }
@@ -546,11 +468,16 @@
   // 页面加载时获取数据
   onMounted(() => {
     getIndustryList()
-    fetchTableData()
+    getTableData()
   })
 </script>
 
 <style lang="scss" scoped>
+  .product-category-list {
+    :deep(.el-cascader) {
+      width: 298px !important;
+    }
+  }
   .add-container {
     cursor: pointer;
     padding: 8px 12px;

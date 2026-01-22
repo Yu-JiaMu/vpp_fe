@@ -115,9 +115,14 @@ export const REQUIRED_MAP = createEnum({
   TRUE: { label: '必填', value: true },
   FALSE: { label: '非必填', value: false }
 })
-
+//设备状态
 export const DEVICE_STATUS_TYPES = createEnum({
   UNACTIVATED: { label: '未激活', value: 'unactivation' },
   OFFLINE: { label: '离线', value: 'offLine' },
   ONLINE: { label: '在线', value: 'onLine' }
+})
+//产品类别
+export const INTERNAL_DEVICE_TYPES = createEnum({
+  INNER: { label: '内设', value: 'inner' },
+  DEFINE: { label: '自定义', value: 'define' }
 })
