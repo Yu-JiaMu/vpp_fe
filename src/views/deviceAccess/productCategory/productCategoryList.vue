@@ -62,7 +62,7 @@
         </el-table-column>
         <el-table-column prop="name" label="产品品类">
           <template #default="{ row }">
-            <div class="flex flex-cz-center text-theme cursor-pointer">
+            <div class="flex cursor-pointer flex-cz-center text-theme">
               <span class="mr5">{{ row.name }}</span>
               <template v-if="!row.thingModelStatus">
                 <el-tooltip
@@ -83,12 +83,10 @@
         <el-table-column prop="updateTime" label="更新时间" />
         <el-table-column fixed="right" label="操作">
           <template #default="{ row }">
-            <el-button link type="primary" size="small" @click="handleDetail(row)">
-              详情
-            </el-button>
-            <el-button link type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
+            <el-button link type="primary" @click="handleDetail(row)"> 详情 </el-button>
+            <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
 
-            <el-button link type="danger" size="small" @click="handleDelete(row)">删除</el-button>
+            <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -112,14 +110,13 @@
 </template>
 
 <script setup>
-  import { router } from '@/router'
   import ProductCategoryDialog from './dialog/ProductCategoryDialog.vue'
   import ProductCategorySuccessDialog from './dialog/ProductCategorySuccessDialog.vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   // 从iot.js全部导入
   import * as productCategoryApi from '@/api/iot/productCategory.js'
   import { Warning } from '@element-plus/icons-vue'
-
+  const router = useRouter()
   // 搜索条件
   const form = reactive({
     name: '',

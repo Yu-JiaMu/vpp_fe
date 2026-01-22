@@ -142,6 +142,7 @@
   const handleSubmitExtendField = async ({ data, msg = '添加成功' }) => {
     await api.updateProductExpandInfo({ id: product.value.id, expandInfo: data })
     ElMessage.success(msg)
+    getDetail()
   }
 
   const init = () => {

@@ -187,7 +187,14 @@
 
   /* ====================== 状态 ====================== */
 
-  let thingJson = {}
+  let thingJson = {
+    version: '1.0',
+    identifier: 'pid',
+    name: '产品物模型',
+    modules: [
+      { identifier: 'default', name: '默认模块', properties: [], events: [], functions: [] }
+    ]
+  }
 
   const originTableData = ref([])
 
