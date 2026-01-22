@@ -179,19 +179,17 @@
       if (formData.id) {
         await productCategoryApi.apiProductCategoryEdit({ ...formData })
       } else {
-        await productCategoryApi.apiProductCategoryAdd({ ...formData })
+        const res = await productCategoryApi.apiProductCategoryAdd({ ...formData })
+        formData.id = res || '2014243059751063552'
+        emit('success', { ...formData })
       }
-
       // 提交成功提示
       ElMessage({
         message: '提交成功',
         type: 'success',
         duration: 2000
       })
-
       // 触发成功事件
-      emit('success', { ...formData })
-
       // 关闭弹窗
       emit('update:modelValue', false)
     } catch (error) {
@@ -235,12 +233,11 @@
   const resetForm = () => {
     if (formRef.value) {
       formRef.value.resetFields()
-    } else {
-      // 手动重置
-      Object.keys(formData).forEach((key) => {
-        formData[key] = ''
-      })
     }
+    // 手动重置
+    Object.keys(formData).forEach((key) => {
+      formData[key] = ''
+    })
   }
   //编辑时初始化表单数据
   const initFormData = (data) => {

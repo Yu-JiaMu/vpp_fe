@@ -51,7 +51,6 @@
 
 <script setup>
   import * as productCategoryApi from '@/api/iot/productCategory.js'
-  const inputValue = ref('')
   const route = useRoute()
   const productCategoryId = route.query.id
   const productCategoryDetail = ref({})

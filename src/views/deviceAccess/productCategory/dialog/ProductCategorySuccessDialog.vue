@@ -21,7 +21,7 @@
         >
       </div>
       <div class="mt20">
-        <el-button class="btn-height-45">去定义物模型</el-button>
+        <el-button class="btn-height-45" @click="addWMX">去定义物模型</el-button>
       </div>
     </div>
 
@@ -56,18 +56,19 @@
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
   })
-
-  // 方法
-  const goToModelDefinition = () => {
-    emit('goToModelDefinition')
-    dialogVisible.value = false
+  const productCategoryId = ref('')
+  const setId = (id) => {
+    productCategoryId.value = id
   }
 
   const handleCancel = () => {
     emit('cancel')
     dialogVisible.value = false
   }
-
+  const addWMX = () => {
+    emit('goToModelDefinition', { id: productCategoryId.value })
+    dialogVisible.value = false
+  }
   const handleConfirm = () => {
     emit('confirm')
     dialogVisible.value = false
@@ -76,6 +77,9 @@
   const handleClose = () => {
     handleCancel()
   }
+  defineExpose({
+    setId
+  })
 </script>
 
 <style scoped lang="scss">
