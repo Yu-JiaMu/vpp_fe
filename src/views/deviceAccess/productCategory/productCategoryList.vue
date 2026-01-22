@@ -121,7 +121,6 @@
   // 从iot.js全部导入
   import * as productCategoryApi from '@/api/iot/productCategory.js'
   import { Warning } from '@element-plus/icons-vue'
-  const router = useRouter()
   import { INTERNAL_DEVICE_TYPES } from '@/enums'
   import { downloadFile } from '@/utils'
   const router = useRouter()
