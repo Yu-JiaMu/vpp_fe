@@ -283,7 +283,8 @@
   const map = ref('')
   const createMap = async () => {
     map.value = new newMap()
-    map.value.createMap('instance-map')
+    await map.value.createMap('instance-map')
+    await getAddress()
   }
   const getAddress = async () => {
     const res = await map.value.getSearchAddressList('tipinput')
@@ -294,17 +295,13 @@
     form.value.lat = lat
     console.log(form, lng, lat)
   }
-  const ClearTime = ref(null)
+
   watch(
     () => dialogVisible.value,
     (newValue) => {
       if (!newValue) {
         map.value.destroy()
-        clearTimeout(ClearTime.value)
       } else {
-        ClearTime.value = setTimeout(() => {
-          getAddress()
-        }, 2000)
       }
     }
   )

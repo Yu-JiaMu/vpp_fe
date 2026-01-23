@@ -389,9 +389,9 @@ class SimpleAMapService {
   }
   //输入提示与 POI 搜索示例
   async getSearchAddressList(inputId, options = {}) {
-    if (!this.AMap) {
-      await this.loadAMapAPI()
-    }
+    // if (!this.AMap) {
+    //   await this.loadAMapAPI()
+    // }
     return new Promise((resolve, reject) => {
       try {
         //输入提示
@@ -401,16 +401,19 @@ class SimpleAMapService {
         }
         this.AMap.plugin(['AMap.PlaceSearch', 'AMap.AutoComplete'], () => {
           const auto = new this.AMap.AutoComplete(autoOptions)
-          const placeSearch = new this.AMap.PlaceSearch({
-            map: this.map,
-            pageSize: options.pageSize || 1,
-            pageIndex: options.pageIndex || 1
-          }) //构造地点查询类
+          // const placeSearch = new this.AMap.PlaceSearch({
+          //   map: this.map,
+          //   pageSize: options.pageSize || 1,
+          //   pageIndex: options.pageIndex || 1
+          // }) //构造地点查询类
           auto.on('select', (e) => {
-            placeSearch.setCity(e.poi.adcode)
-            placeSearch.search(e.poi.name) //关键字查询查询
+            // placeSearch.setCity(e.poi.adcode)
+            // placeSearch.search(e.poi.name) //关键字查询查询
             console.log(e)
             resolve(e)
+            this.clearMarkers()
+            this.addMarker(e.poi.location)
+            this.setCenter(e.poi.location)
           })
         })
       } catch (err) {

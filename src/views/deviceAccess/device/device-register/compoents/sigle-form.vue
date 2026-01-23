@@ -283,7 +283,8 @@
   const map = ref('')
   const createMap = async () => {
     map.value = new newMap()
-    map.value.createMap('sigle-map')
+    await map.value.createMap('sigle-map')
+    await getAddress()
   }
   const getAddress = async () => {
     const res = await map.value.getSearchAddressList('tipinput')
@@ -295,16 +296,16 @@
     console.log(form, lng, lat)
   }
   const ClearTime = ref(null)
-  watch(
-    () => map.value,
-    (newValue) => {
-      if (newValue) {
-        ClearTime.value = setTimeout(() => {
-          getAddress()
-        }, 2000)
-      }
-    }
-  )
+  // watch(
+  //   () => map.value,
+  //   (newValue) => {
+  //     if (newValue) {
+  //       // ClearTime.value = setTimeout(() => {
+  //       getAddress()
+  //       // }, 2000)
+  //     }
+  //   }
+  // )
   onMounted(() => {
     createMap()
   })
