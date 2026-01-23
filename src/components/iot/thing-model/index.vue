@@ -356,7 +356,9 @@
     const model = thingJson.modules[0]
 
     data.forEach((item) => {
-      const exist = originTableData.value.find((row) => row.identifier === item.identifier)
+      const exist = originTableData.value.find(
+        (row) => row.identifier.toLocaleLowerCase() === item.identifier.toLocaleLowerCase()
+      )
       if (exist) return
 
       const key = FUNCTION_MODE_MAP.getItem(item.functionMode).pKey
@@ -376,7 +378,9 @@
       model[key] = []
     }
 
-    const index = model[key].findIndex((row) => row.identifier === data.identifier)
+    const index = model[key].findIndex(
+      (row) => row.identifier.toLocaleLowerCase() === data.identifier.toLocaleLowerCase()
+    )
 
     if (index > -1) {
       model[key][index] = data

@@ -417,7 +417,7 @@ export function createUniqueValidatorByIndex<T extends Record<string, any>>(
     message?: string
   }
 ) {
-  const { ignoreCase = false, message = '标识符已存在，请更换' } = options || {}
+  const { ignoreCase = true, message = '标识符已存在，请更换' } = options || {}
 
   return function validateUnique(_: any, value: any, callback: any) {
     index = typeof index === 'function' ? index() : index
@@ -465,7 +465,7 @@ export function createUniqueValidatorByValue<T extends Record<string, any>>(
     message?: string
   }
 ) {
-  const { ignoreCase = false, message = '标识符已存在，请更换' } = options || {}
+  const { ignoreCase = true, message = '标识符已存在，请更换' } = options || {}
 
   return function validateUnique(_: any, value: any, callback: any) {
     const originValue = typeof currentValue === 'function' ? currentValue() : currentValue

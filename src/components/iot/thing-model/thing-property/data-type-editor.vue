@@ -349,7 +349,7 @@
   const unitList = ref([])
   const getUnits = async () => {
     const data = await apiGetDictData('iot_model_unit')
-    unitList.value = data.map((item) => ({ label: item.dictLabel, value: item.dictLabel }))
+    unitList.value = data.map((item) => ({ label: item.dictLabel, value: item.dictValue }))
   }
 
   onMounted(() => {

@@ -12,6 +12,7 @@
       :tableData="modelValue"
       :key="`editIndex-${editIndex}`"
       :currentIndex="editIndex"
+      :currentRow="currentRow"
     />
     <template #footer>
       <div class="flex justify-center gap-[6px]">
@@ -56,9 +57,10 @@
     emits('submitSuccess')
   }
 
+  const currentRow = ref(null)
   const open = (row, index) => {
     // console.log(row, index)
-
+    currentRow.value = row ?? null
     if (row && index !== undefined) {
       isEdit.value = true
       editIndex.value = index
