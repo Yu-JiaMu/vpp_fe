@@ -79,10 +79,14 @@
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item>批量导出设备</el-dropdown-item>
-                <el-dropdown-item>启用全部设备</el-dropdown-item>
-                <el-dropdown-item>批量禁用设备</el-dropdown-item>
-                <el-dropdown-item>批量删除设备</el-dropdown-item>
+                <el-dropdown-item @click="batchExport">批量导出设备</el-dropdown-item>
+                <el-dropdown-item @click="batchHandleDeviceEnableChange(true)"
+                  >启用全部设备</el-dropdown-item
+                >
+                <el-dropdown-item @click="batchHandleDeviceEnableChange(false)"
+                  >批量禁用设备</el-dropdown-item
+                >
+                <el-dropdown-item @click="batchDelete">批量删除设备</el-dropdown-item>
                 <el-dropdown-item>同步设备状态</el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -92,7 +96,7 @@
           <el-dropdown>
             <span class="el-dropdown-label cursor-pointer">
               <el-icon color="#246EF6" class="mr5" size="14"><Setting /></el-icon>
-              批量操作
+              设备注册
               <el-icon class="el-icon--right">
                 <arrow-down />
               </el-icon>
@@ -110,7 +114,14 @@
           </el-dropdown>
         </div>
       </div>
-      <el-table :data="tableData" border style="width: 100%" ref="tableRef">
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%"
+        ref="tableRef"
+        @sort-change="handleSort"
+        @selection-change="handleSelectionChange"
+      >
         <!-- 选择列 -->
         <el-table-column type="selection" width="55" />
 
@@ -224,6 +235,7 @@
           label="创建时间"
           v-if="visibleColumns.includes('createTime')"
           width="200"
+          sortable="custom"
         />
         <!-- 操作列（固定显示） -->
         <el-table-column fixed="right" label="操作" :width="200">
@@ -276,10 +288,20 @@
 <script setup>
   import * as deviceApi from '@/api/iot'
   import { NODE_TYPES, DEVICE_STATUS_TYPES } from '@/enums'
+  import { downloadFile } from '@/utils'
+  import { ElMessageBox } from 'element-plus'
   const router = useRouter()
   // 这是一个静态展示组件，不需要响应式数据
   // 只包含图片中展示的卡片列表
-  const form = reactive({})
+  const form = reactive({
+    isAsc: 'desc',
+    orderByColumn: 'createTime',
+    name: '',
+    id: '',
+    productId: '',
+    devState: '',
+    nodeType: ''
+  })
   // 表单配置
   const formItems = computed(() => [
     {
@@ -400,6 +422,7 @@
     }
   }
   const tableData = ref([])
+  const selectedRows = ref([])
   // 分页数据
   const tableRef = ref(null)
   const pagination = reactive({
@@ -407,20 +430,31 @@
     current: 1,
     total: 10
   })
+  const handleSort = ({ order, prop }) => {
+    // console.log('更新时间', value)
+    console.log(order, prop)
+    form.orderByColumn = prop
+    form.isAsc = order
+    getTableData()
+  }
+  const handleQueryParams = () => {
+    const queryParams = {
+      pageNum: pagination.current,
+      pageSize: pagination.size,
+      ...Object.keys(form).reduce((acc, key) => {
+        if (form[key] !== '' && form[key] !== undefined && form[key] !== null) {
+          acc[key] = form[key]
+        }
+        return acc
+      }, {})
+    }
+    return queryParams
+  }
   const getTableData = async () => {
     // deviceApi
     try {
-      const queryParams = {
-        pageNum: pagination.current,
-        pageSize: pagination.size,
-        ...Object.keys(form).reduce((acc, key) => {
-          if (form[key] !== '' && form[key] !== undefined && form[key] !== null) {
-            acc[key] = form[key]
-          }
-          return acc
-        }, {})
-      }
-      const response = await deviceApi.apiGetDeviceList(queryParams)
+      const QueryParamsRes = handleQueryParams()
+      const response = await deviceApi.apiGetDeviceList(QueryParamsRes)
       if (response) {
         tableData.value = response.rows
         pagination.total = response.total || 0
@@ -430,8 +464,52 @@
       ElMessage.error('设备列表失败')
     }
   }
-  //改变设备装填
-  const handleDeviceEnableChange = () => {}
+  // 处理表格选择变化
+  const handleSelectionChange = (selection) => {
+    selectedRows.value = selection
+    console.log('选中了', selectedRows.value.length, '条记录')
+  }
+  //单个设备状态
+  const handleDeviceEnableChange = async (row) => {
+    await deviceApi.apiDevUpdateStatus(row.devEnable, [row.id])
+    ElMessage.success('状态修改成功')
+    getTableData()
+  }
+  //批量设备状态 type 启用或禁用
+  const batchHandleDeviceEnableChange = async (type = true) => {
+    if (selectedRows.value.length === 0) {
+      ElMessage.warning('请选择操作的设备')
+      return
+    }
+    const deviceIds = selectedRows.value.map((item) => item.id)
+    await deviceApi.apiDevUpdateStatus(type, deviceIds)
+    ElMessage.success('状态修改成功')
+    getTableData()
+    tableRef.value?.clearSort()
+  }
+  //批量导出
+  const batchExport = async () => {
+    if (selectedRows.value.length === 0) {
+      ElMessage.warning('请选择操作的设备')
+      return
+    }
+    const QueryParamsRes = handleQueryParams()
+    const result = await deviceApi.apiDevExport(QueryParamsRes)
+    tableRef.value?.clearSort()
+    downloadFile(result, '设备列表', 'xlsx')
+  }
+  //批量删除
+  const batchDelete = async () => {
+    if (selectedRows.value.length === 0) {
+      ElMessage.warning('请选择操作的设备')
+      return
+    }
+    const deviceIds = selectedRows.value.map((item) => item.id)
+    await deviceApi.apiDevDelete(deviceIds)
+    ElMessage.success('状态修改成功')
+    getTableData()
+    tableRef.value?.clearSort()
+  }
   // 操作按钮处理函数
   const handleDetail = (row) => {
     console.log('查看详情:', row)
@@ -443,10 +521,24 @@
     console.log('查看子设备:', row)
     ElMessage.info(`查看 ${row.name} 子设备`)
   }
+  // 处理删除
+  const handleDelete = async (row) => {
+    try {
+      await ElMessageBox.confirm(`确定要删除产品品类 "${row.name}" 吗？`, '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
 
-  const handleDelete = (row) => {
-    console.log('删除设备:', row)
-    ElMessage.warning(`确认删除 ${row.name} 吗？`)
+      // 调用删除API
+      await deviceApi.apiDevDelete([row.id])
+      ElMessage.success('删除成功')
+      getTableData() // 刷新表格
+    } catch (error) {
+      if (error !== 'cancel') {
+        ElMessage.error('删除失败')
+      }
+    }
   }
   // 设备注册跳转
   const goDeviceRegister = (type) => {
