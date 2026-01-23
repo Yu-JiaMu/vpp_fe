@@ -67,6 +67,8 @@
 <script setup>
   import * as api from '@/api/iot'
   import BaseInfo from './components/base-info.vue'
+  import ExtendedField from './components/extended-field/index.vue'
+
   const route = useRoute()
 
   const activeTab = ref('info')

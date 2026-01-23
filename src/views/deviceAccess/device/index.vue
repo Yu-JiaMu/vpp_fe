@@ -70,7 +70,7 @@
         </div> -->
         <div class="mr30">
           <el-dropdown>
-            <span class="el-dropdown-label cursor-pointer">
+            <span class="cursor-pointer el-dropdown-label">
               <el-icon color="#FFA500" class="mr5" size="14"><Grid /></el-icon>
               批量操作
               <el-icon class="el-icon--right">
@@ -94,7 +94,7 @@
         </div>
         <div>
           <el-dropdown>
-            <span class="el-dropdown-label cursor-pointer">
+            <span class="cursor-pointer el-dropdown-label">
               <el-icon color="#246EF6" class="mr5" size="14"><Setting /></el-icon>
               设备注册
               <el-icon class="el-icon--right">
@@ -117,6 +117,7 @@
       <el-table
         :data="tableData"
         border
+        show-overflow-tooltip
         style="width: 100%"
         ref="tableRef"
         @sort-change="handleSort"
@@ -214,7 +215,7 @@
           width="200"
         >
           <template #default="{ row }">
-            <div class="flex gap-2 flex-wrap">
+            <div class="flex flex-wrap gap-2">
               <el-tag type="primary" v-for="(tag, index) in row.tagArray" :key="index">
                 {{ tag }}</el-tag
               >
@@ -254,7 +255,7 @@
 
                 <!-- 列设置菜单 -->
                 <div class="column-setting-menu">
-                  <div class="menu-header flex items-center gap-5">
+                  <div class="flex items-center gap-5 menu-header">
                     <span>显示/隐藏列</span>
                     <el-button link size="small" @click="handleResetColumns"> 重置 </el-button>
                   </div>

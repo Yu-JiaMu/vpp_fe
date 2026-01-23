@@ -19,7 +19,13 @@
         </el-input>
         <el-button @click="handleSearch">搜索</el-button>
       </div>
-      <el-table :data="filteredList" border max-height="566" style="width: 100%">
+      <el-table
+        :data="filteredList"
+        border
+        show-overflow-tooltip
+        max-height="566"
+        style="width: 100%"
+      >
         <el-table-column prop="name" label="产品品类" min-width="140">
           <template #default="{ row }">
             <div class="flex-c">

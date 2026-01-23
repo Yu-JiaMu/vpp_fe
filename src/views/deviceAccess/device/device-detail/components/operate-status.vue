@@ -1,5 +1,5 @@
 <template>
-  <div class="operate-status bg-white">
+  <div class="bg-white operate-status">
     <div class="flex gap-2 cursor-pointer mb20">
       <div
         class="tag"
@@ -22,11 +22,11 @@
         <el-button @click="handleSearch"> 搜索 </el-button>
         <ArtResetBtn class="!ml-0" @click="handleReset" />
       </div>
-      <div class="search-box flex justify-end items-center gap-8">
+      <div class="flex items-center justify-end gap-8 search-box">
         <el-switch v-model="form.refresh" active-text="实时刷新" />
         <div class="flex items-center icon-box">
           <div
-            class="icon-item cursor-pointer"
+            class="cursor-pointer icon-item"
             v-for="(icon, index) in iconList"
             :key="index"
             @click="hanldeIconClick(icon)"
@@ -45,7 +45,7 @@
         </div>
       </div>
       <template v-if="activeIcon === 'table'">
-        <el-table :data="tableData" border style="width: 100%">
+        <el-table :data="tableData" border show-overflow-tooltip style="width: 100%">
           <el-table-column prop="name" label="属性名称" width="400" />
           <el-table-column prop="content" label="值" width="400" />
           <el-table-column prop="updateTime" label="更新时间" width="400" />

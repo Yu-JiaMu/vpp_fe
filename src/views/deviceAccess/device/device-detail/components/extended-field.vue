@@ -5,31 +5,17 @@
       <div class="flex items-center gap-2.5">
         <el-input
           v-model="form.identifier"
-          placeholder="请输入标识符"
+          placeholder="请输入功能名称搜索"
           clearable
           class="input-with-prepend"
           style="width: 248px"
           @change="handleSearch"
         >
-          <template #prepend> 标识符 </template>
+          <template #prepend> 功能名称 </template>
         </el-input>
-        <span class="ml-2.5 text-xs text-theme"
-          >* 为设备添加自定义业务标签与属性，满足设备特殊属性需求
-        </span>
-        <!-- <el-button @click="handleSearch"> 搜索 </el-button>
-        <ArtResetBtn class="!ml-0" @click="handleReset" /> -->
-      </div>
 
-      <div class="flex items-center op-con">
-        <el-button text class="!text-g-303537" @click="openCustomFunctionDialog()">
-          <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-001.png" alt="" />
-          添加功能点
-        </el-button>
-
-        <el-button text class="!text-g-303537 !ml-0" @click="handlePatchRemove">
-          <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-004.png" alt="" />
-          删除
-        </el-button>
+        <el-button @click="handleSearch"> 搜索 </el-button>
+        <ArtResetBtn class="!ml-0" @click="handleReset" />
       </div>
     </div>
 
@@ -38,6 +24,7 @@
       ref="tableRef"
       :data="tableData"
       border
+      show-overflow-tooltip
       stripe
       class="w-full"
       @selection-change="handleSelectionChange"
@@ -45,13 +32,9 @@
       <el-table-column type="selection" width="55" />
       <el-table-column prop="name" label="功能名称" width="120" />
       <el-table-column prop="identifier" label="标识符" width="160" />
-      <el-table-column prop="dataType" label="数据类型" width="140">
-        <template #default="{ row }">
-          {{ handleDataType(row) }}
-        </template>
-      </el-table-column>
+
       <!-- 数据定义 -->
-      <el-table-column label="数据定义" min-width="260">
+      <el-table-column label="值" min-width="260">
         <template #default="{ row }">
           <FunctionDefinePreview :row="row" functionMode="property" />
         </template>
@@ -64,14 +47,9 @@
       <!-- 操作 -->
       <el-table-column label="操作" width="160" fixed="right">
         <template #default="{ row, $index }">
-          <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'look')">
-            查看
-          </el-button>
-
           <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'edit')">
             编辑
           </el-button>
-          <el-button type="danger" link @click="handleRemove($index)"> 删除 </el-button>
         </template>
       </el-table-column>
     </el-table>

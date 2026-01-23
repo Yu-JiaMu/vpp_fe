@@ -70,7 +70,7 @@
   import DeviceDiagnosis from './components/device-diagnosis.vue'
   //   import LogManagement from './components/log-management.vue'
   //   import SubDeviceManagement from './components/sub-device-management.vue'
-  //   import ExtensionField from './components/extension-field.vue'
+  import ExtendedField from './components/extended-field.vue'
   const device = ref({
     id: '1955073219080001',
     name: '计量电表001',

@@ -21,6 +21,7 @@
         :data="tableData"
         ref="tableRef"
         border
+        show-overflow-tooltip
         style="width: 100%"
         @sort-change="handleSort"
       >

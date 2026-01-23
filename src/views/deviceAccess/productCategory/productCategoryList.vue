@@ -59,6 +59,7 @@
         ref="tableRef"
         :data="tableData"
         border
+        show-overflow-tooltip
         style="width: 100%"
         @selection-change="handleSelectionChange"
         @sort-change="handleSort"

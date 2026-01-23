@@ -1,5 +1,5 @@
 <template>
-  <div class="device-function bg-white">
+  <div class="bg-white device-function">
     <div class="flex items-center">
       <div class="flex items-center gap-2 cursor-pointer">
         <div
@@ -22,7 +22,7 @@
       <el-tab-pane label="开关控制">
         <div class="flex gap2">
           <div class="flex-2 mr-[15px]">
-            <el-table :data="tableData" border>
+            <el-table :data="tableData" border show-overflow-tooltip>
               <el-table-column prop="name" label="参数名称" width="300" />
               <el-table-column prop="name" label="输入类型" width="300" />
               <el-table-column prop="name" label="值">
