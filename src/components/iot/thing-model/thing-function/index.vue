@@ -219,7 +219,7 @@
         validator: createUniqueValidatorByValue(
           props.tableData,
           'identifier',
-          () => props.currentRow.identifier
+          () => props.currentRow?.identifier
         ),
         trigger: 'blur'
       }

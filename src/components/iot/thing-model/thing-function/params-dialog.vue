@@ -12,6 +12,7 @@
       :tableData="modelValue"
       :key="`editIndex-${editIndex}-${paramsType}`"
       :currentIndex="editIndex"
+      :currentRow="currentRow"
     />
     <template #footer>
       <div class="flex justify-center gap-[6px]">
@@ -73,8 +74,10 @@
     emits('submit')
   }
 
+  const currentRow = ref(null)
   const open = (row, index, type) => {
     // console.log(row, index)
+    currentRow.value = row ?? null
     if (type) {
       isEdit.value = type === 'edit'
       isLook.value = type === 'look'

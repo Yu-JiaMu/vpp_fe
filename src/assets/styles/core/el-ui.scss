@@ -280,12 +280,20 @@ body {
 }
 
 // 修改el-tag样式
-.el-tag {
-  font-weight: 500;
-  transition: all 0s !important;
+body {
+  .el-tag {
+    font-weight: 500;
+    transition: all 0s;
+    &.el-tag--info {
+      --el-tag-text-color: '#909399';
+      --el-tag-bg-color: rgb(244, 244, 245);
+      --el-tag-border-color: rgb(233, 233, 235);
+      --el-tag-hover-color: #909399;
+    }
 
-  &.el-tag--default {
-    height: 26px !important;
+    &.el-tag--default {
+      height: 26px;
+    }
   }
 }
 
