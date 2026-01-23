@@ -52,7 +52,14 @@
     <DeviceDiagnosis v-if="activeTab === 'deviceDiagnosis'"></DeviceDiagnosis>
     <!--<LogManagement v-if="activeTab === 'logManagement'"></LogManagement>
     <SubDeviceManagement v-if="activeTab === 'subDeviceManagement'"></SubDeviceManagement>
-    <ExtensionField v-if="activeTab === 'extensionField'"></ExtensionField> -->
+-->
+
+    <!-- 拓展字段 -->
+    <ExtendedField
+      v-if="activeTab === 'extend'"
+      :info="product"
+      @submit="handleSubmitExtendField"
+    ></ExtendedField>
   </div>
 </template>
 
@@ -101,9 +108,15 @@
     },
     {
       label: '拓展字段',
-      value: 'extensionField'
+      value: 'extend'
     }
   ]
+
+  const handleSubmitExtendField = async ({ data, msg = '添加成功' }) => {
+    await api.updateProductExpandInfo({ id: product.value.id, expandInfo: data })
+    ElMessage.success(msg)
+    getDetail()
+  }
 </script>
 
 <style lang="scss" scoped>

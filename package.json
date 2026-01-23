@@ -95,6 +95,7 @@
     "@typescript-eslint/parser": "^8.3.0",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/compiler-sfc": "^3.0.5",
+    "archiver": "^7.0.1",
     "commitizen": "^4.3.0",
     "cz-git": "^1.11.1",
     "eslint": "^9.9.1",
@@ -126,6 +127,7 @@
     "vite-plugin-vue-devtools": "^7.7.6",
     "vue-demi": "^0.14.9",
     "vue-img-cutter": "^3.0.5",
-    "vue-tsc": "~2.1.6"
+    "vue-tsc": "~2.1.6",
+    "zx": "^8.8.5"
   }
 }
