@@ -120,9 +120,12 @@
           class="w-full"
           :disabled="isReadOnly || hasRegisterDevice"
         >
-          <el-option label="百分比（%）" value="%" />
-          <el-option label="秒（s）" value="s" />
-          <el-option label="毫秒（ms）" value="ms" />
+          <el-option
+            v-for="item in unitList"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
         </el-select>
       </el-form-item>
     </template>
@@ -205,6 +208,7 @@
   import { DATA_TYPE_MAP } from '@/enums'
   import StructTable from './struct-table.vue'
   import EnumEditor from './enum-editor.vue'
+  import { apiGetDictData } from '@/api/system'
 
   const model = defineModel()
 
@@ -341,4 +345,14 @@
   const handleMinChange = () => {
     props.formRef?.validateField(`${props.propPath}.config.max`)
   }
+
+  const unitList = ref([])
+  const getUnits = async () => {
+    const data = await apiGetDictData('iot_model_unit')
+    unitList.value = data.map((item) => ({ label: item.dictLabel, value: item.dictLabel }))
+  }
+
+  onMounted(() => {
+    getUnits()
+  })
 </script>
