@@ -23,3 +23,7 @@ export function apiDevExport(params) {
 export function apiDevDelete(params) {
   return request.post(`/stage-api/model/device/delete`, params)
 }
+//单个设备注册
+export function apiDevAdd(params) {
+  return request.post(`/stage-api/model/device/add`, params)
+}

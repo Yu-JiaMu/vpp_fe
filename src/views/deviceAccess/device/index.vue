@@ -87,7 +87,6 @@
                   >批量禁用设备</el-dropdown-item
                 >
                 <el-dropdown-item @click="batchDelete">批量删除设备</el-dropdown-item>
-                <el-dropdown-item>同步设备状态</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>

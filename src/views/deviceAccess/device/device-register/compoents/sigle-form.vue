@@ -2,13 +2,13 @@
   <div>
     <!-- 单表单组件 -->
     <el-form
-      ref="reviceFormRef"
+      ref="formRef"
       :model="form"
       :rules="rules"
       label-position="top"
       class="grid grid-cols-2 gap-x-12 gap-y-2"
     >
-      <el-form-item label="设备ID" prop="deviceId">
+      <el-form-item label="设备ID" prop="devIdentifier">
         <template #label="{ label }">
           <div class="flex-c">
             <span> {{ label }} </span>
@@ -22,12 +22,12 @@
             </el-tooltip>
           </div>
         </template>
-        <el-input v-model="form.deviceId" placeholder="请输入设备ID" />
+        <el-input v-model="form.devIdentifier" placeholder="请输入设备ID" />
       </el-form-item>
-      <el-form-item label="设备名称" prop="deviceName">
-        <el-input v-model="form.deviceName" placeholder="请输入设备名称" />
+      <el-form-item label="设备名称" prop="name">
+        <el-input v-model="form.name" placeholder="请输入设备名称" />
       </el-form-item>
-      <el-form-item label="所属分组" prop="deviceGroup">
+      <!-- <el-form-item label="所属分组" prop="deviceGroup">
         <el-select v-model="form.deviceGroup" placeholder="请选择所属分组" multiple>
           <el-option
             v-for="item in groupList"
@@ -36,9 +36,9 @@
             :value="item.value"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="启用/禁用" prop="status">
-        <el-select v-model="form.status" placeholder="请选择启用/禁用状态">
+      </el-form-item> -->
+      <el-form-item label="启用/禁用" prop="devEnable">
+        <el-select v-model="form.devEnable" placeholder="请选择启用/禁用状态">
           <el-option
             v-for="item in statusList"
             :key="item.value"
@@ -89,9 +89,14 @@
       </div>
 
       <template v-if="formShowMore.TZShowMore">
-        <el-form-item label="详细地址" class="col-span-2">
+        <!-- <el-form-item label="详细地址" class="col-span-2">
           <el-input v-model="form.xxdz" placeholder="请输入详细地址" />
-        </el-form-item>
+        </el-form-item> -->
+        <ExpandInfo
+          :expandInfoList="productDetail.expandInfoList"
+          v-model:modelValue="form.expandInfo"
+          class="col-span-2"
+        />
       </template>
       <!-- 更多配置 -->
       <div class="col-span-2 my-4">
@@ -110,16 +115,16 @@
         </div>
       </div>
       <template v-if="formShowMore.GDShowMore">
-        <el-form-item label="产品描述" prop="description">
+        <el-form-item label="产品描述" prop="remark">
           <el-input
-            v-model="form.description"
+            v-model="form.remark"
             type="textarea"
             :rows="5"
             placeholder="请输入"
             maxlength="200"
           />
           <div class="w-full text-right text-xs text-gray-400 mt-1">
-            {{ getByteLength(form.description) }}/200
+            {{ getByteLength(form.remark) }}/200
           </div>
         </el-form-item>
         <el-form-item label="设备标签" prop="deviceLabels">
@@ -150,7 +155,7 @@
           <template #label="{ label }">
             <div>
               <span class="mr10">{{ label }}</span>
-              <span class="map-trip">*请点击地图确定位置</span>
+              <span class="map-trip">*搜索地点确定位置</span>
             </div>
           </template>
           <div class="map-box">
@@ -158,7 +163,7 @@
               >{{ form.address }}---经度:{{ form.lng }}----纬度:{{ form.lat }}</span
             >
           </div>
-          <div class="mt10" id="sigle-map" style="height: 380px; width: 100%"></div>
+          <div class="mt10" id="sigle-map" style="height: 300px; width: 100%"></div>
           <div class="absolute top-[60px] left-[30px]">
             <el-input
               v-model="input"
@@ -172,7 +177,9 @@
         </el-form-item>
       </template>
       <div class="col-span-2 flex justify-center gap-5 mt-[120px] rounded-t-md">
-        <el-button size="large" type="info" class="w-80" v-ripple>取消</el-button>
+        <el-button size="large" type="info" class="w-80" v-ripple @click="previousStep"
+          >上一步</el-button
+        >
         <el-button size="large" type="primary" class="w-80" v-ripple @click="submitForm">
           确认
         </el-button>
@@ -191,22 +198,24 @@
   } from '@/utils'
   import newMap from '@/utils/map'
   import { Search } from '@element-plus/icons-vue'
+  import * as api from '@/api/iot'
+  import ExpandInfo from './expand-info.vue'
   const form = reactive({
-    deviceId: '',
-    deviceName: '',
-    deviceGroup: [],
-    status: 'enabled',
+    devIdentifier: '',
+    name: '',
+    devEnable: true,
     //通用配置信息
-    deviceAddress: '',
+    expandInfo: [],
     //结束
-    description: '',
+    remark: '',
     address: '',
     lng: '',
     lat: ''
   })
+
   const rules = reactive({
-    deviceId: [{ validator: validateProductId, trigger: 'blur' }],
-    deviceName: [
+    devIdentifier: [{ validator: validateProductId, trigger: 'blur' }],
+    name: [
       {
         required: true,
         validator: validateNameLength,
@@ -215,15 +224,15 @@
       },
       { validator: validateCommon, trigger: 'blur' }
     ],
-    deviceGroup: [{ type: 'array', required: false, message: '请选择所属分组', trigger: 'change' }],
-    status: [
+    // deviceGroup: [{ type: 'array', required: false, message: '请选择所属分组', trigger: 'change' }],
+    devEnable: [
       {
         required: true,
         message: '请选择启用/禁用状态',
         trigger: 'change'
       }
     ],
-    description: [
+    remark: [
       { validator: validateCommon, trigger: 'blur' },
       { validator: validateDescLength, trigger: 'blur' }
     ]
@@ -234,8 +243,8 @@
     { label: '分组二', value: 'group2' }
   ]
   const statusList = [
-    { label: '启用', value: 'enabled' },
-    { label: '禁用', value: 'disabled' }
+    { label: '启用', value: true },
+    { label: '禁用', value: false }
   ]
   //表单控制隐藏状态
   const formShowMore = reactive({
@@ -243,16 +252,7 @@
     GDShowMore: true, //更多
     TYShowMore: false //通用配置信息
   })
-  const tagList = ref([
-    {
-      flag: false,
-      value: 'tag1'
-    },
-    {
-      flag: false,
-      value: 'tag2'
-    }
-  ])
+  const tagList = ref([])
   const addTag = () => {
     tagList.value.push({
       flag: true,
@@ -266,17 +266,69 @@
     if (item.value.trim() === '') return ElMessage.warning('标签内容不能为空')
     item.flag = false
   }
-  const reviceFormRef = ref(null)
+  // 拓展字段数据
+  const expandFormData = ref({})
+  watch(
+    expandFormData,
+    (newVal) => {
+      console.log(newVal)
+      // Object.assign(form, newVal)
+    },
+    { deep: true }
+  )
+  const formRef = ref(null)
   const submitForm = async () => {
     // TODO: 测试创建成功弹窗
     /*  productCreateSuccessRef.value.open()
     return */
-    if (!reviceFormRef.value) return
-    const valid = await reviceFormRef.value.validate()
+    try {
+      // 验证表单
+      await formRef.value.validate()
 
-    if (!valid) return
+      // 这里 form 已经包含了正确的格式
+      const submitData = {
+        devIdentifier: form.devIdentifier ? form.devIdentifier : undefined,
+        name: form.name,
+        devEnable: form.devEnable,
+        remark: form.remark,
+        expandInfo: form.expandInfo,
+        tags: tagList.value.map((tag) => tag.value)
+      }
+
+      console.log('提交数据:', submitData)
+      emit('sumbitForm', submitData)
+      // 调用接口
+      // await api.apiDevAdd(form)
+    } catch (error) {
+      console.error('表单验证失败:', error)
+    }
   }
-
+  //上一步
+  const emit = defineEmits(['previousStep', 'getProductDetail', 'sumbitForm'])
+  const previousStep = () => {
+    emit('previousStep')
+  }
+  const productId = ref('')
+  const productDetail = ref({})
+  const getProductDetail = async (id) => {
+    productId.value = productId
+    const result = await api.apiGetProductDetail(id)
+    productDetail.value = result
+    if (productDetail.value.expandInfoList?.length > 0) {
+      // 处理初始值
+      form.expandInfo = result.expandInfoList.map((item) => {
+        const value = result.expandInfoValues?.[item.identifier]
+        return {
+          ...item,
+          [item.identifier]: value !== undefined ? value : null
+        }
+      })
+    }
+    console.log(productDetail.value, 'productDetail.value')
+  }
+  defineExpose({
+    getProductDetail
+  })
   //地图
   // 创建地图
   const input = ref('')
@@ -293,25 +345,13 @@
     const { lng, lat } = res.poi.location
     form.lng = lng
     form.lat = lat
-    console.log(form, lng, lat)
   }
-  const ClearTime = ref(null)
-  // watch(
-  //   () => map.value,
-  //   (newValue) => {
-  //     if (newValue) {
-  //       // ClearTime.value = setTimeout(() => {
-  //       getAddress()
-  //       // }, 2000)
-  //     }
-  //   }
-  // )
+
   onMounted(() => {
     createMap()
   })
   onUnmounted(() => {
     map.value.destroy()
-    clearTimeout(ClearTime.value)
   })
 </script>
 

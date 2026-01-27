@@ -18,10 +18,10 @@
       @reset="onReset"
       @search="onSearch"
     />
-    <div class="device-card-list">
+    <div class="device-card-list flex gap-5 flex-wrap">
       <div
-        class="device-card cursor-pointer"
-        v-for="(item, index) in 8"
+        class="device-card cursor-pointer flex items-center gap-5"
+        v-for="(item, index) in tableData"
         :key="index"
         :class="{ 'active-card': index === activeCardIndex }"
         @click="changeCard(item, index)"
@@ -32,45 +32,42 @@
           src="@/assets/images/deviceAccess/5.webp"
           v-if="index === activeCardIndex"
         />
-        <div class="device-icon-container mr30">
-          <img src="@/assets/images/user/avatar.webp" alt="" class="device-icon" />
+        <div class="device-icon-container">
+          <img v-if="item.imgUrl" :src="item.imgUrl" alt="" class="w-[100%] h-[100%]" />
+          <img src="@/assets/images/user/avatar.webp" alt="" v-else class="w-[100%] h-[100%]" />
         </div>
-        <div class="device-info">
+        <div class="device-info flex-1">
           <div class="devive-title flex flex-cz-center">
             <div class="device-kuai"></div>
-            <h3 class="device-name">ADW300电表</h3>
+            <h3 class="device-name">{{ item.name }}</h3>
           </div>
 
           <div class="info-row mt10">
-            <div class="info-label flex flex-cz-center mr30">
+            <div class="info-label flex flex-cz-center">
               <div class="device-kuai"></div>
               <div class="d-h">节点类型</div>
             </div>
             <div class="info-label flex flex-cz-center">
               <div class="device-kuai"></div>
-              <div class="d-h flex1">节点类型节</div>
+              <div class="d-h flex1">协议类型</div>
             </div>
           </div>
           <div class="info-row">
-            <div class="info-label flex flex-cz-center mr30">
+            <div class="info-label flex flex-cz-center">
               <div class="device-kuai display-none"></div>
-              <div class="d-h">网关子设备</div>
+              <div class="d-h">{{ NODE_TYPES.getLabel(item.nodeType) }}</div>
             </div>
             <div class="info-label flex flex-cz-center">
               <div class="device-kuai display-none"></div>
-              <div class="d-h flex1">ModbusTCP</div>
+              <div class="d-h flex1">{{ item.applyLayerProtocol }}</div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <ArtPagination
-      v-model="pagination"
-      @size-change="onSizeChange"
-      @current-change="onPageChange"
-    />
+    <ArtPagination v-model="pagination" @change="getTableData" />
     <div class="col-span-2 flex justify-center gap-5 mt-[50px] rounded-t-md">
-      <el-button size="large" type="info" class="w-80" v-ripple>取消</el-button>
+      <el-button size="large" type="info" class="w-80" v-ripple @click="goback">取消</el-button>
       <el-button size="large" type="primary" class="w-80" @click="nextForm" v-ripple>
         下一步
       </el-button>
@@ -79,6 +76,9 @@
 </template>
 
 <script setup>
+  import * as api from '@/api/iot'
+  import { NODE_TYPES } from '@/enums'
+  const router = useRouter()
   const form = reactive({
     name: ''
   })
@@ -93,9 +93,13 @@
   ])
   const onReset = () => {
     console.log('重置搜索')
+    pagination.current = 1
+    pagination.size = 10
+    getTableData()
   }
   const onSearch = () => {
     console.log('搜索条件：', form)
+    getTableData()
   }
   //分页数据
   const pagination = reactive({
@@ -103,16 +107,29 @@
     current: 1,
     total: 0
   })
-  const onSizeChange = (size) => {
-    console.log('每页条数改变：', size)
-  }
-  const onPageChange = (page) => {
-    console.log('当前页改变：', page)
-  }
+
   //表格数据
 
   const tableData = ref([])
+  // 获取产品列表
+  const getTableData = async () => {
+    try {
+      const queryParams = {
+        pageNum: pagination.current,
+        pageSize: pagination.size,
+        ...form
+      }
 
+      const response = await api.apiGetProductList(queryParams)
+      if (response) {
+        tableData.value = response.rows
+        pagination.total = response.total || 0
+      }
+    } catch (error) {
+      console.error('获取产品列表失败:', error)
+      ElMessage.error('获取产品列表失败')
+    }
+  }
   //切换card
   const activeCardIndex = ref(null)
   const changeCard = (item, index) => {
@@ -124,9 +141,15 @@
     console.log('下一步')
     //通过activeCardIndex判断是否选择了卡片
     if (activeCardIndex.value === null) return ElMessage.warning('请先选择一个产品')
-    emit('next-step')
+    emit('next-step', tableData.value[activeCardIndex.value].id)
+  }
+  const goback = () => {
+    router.back()
   }
   const emit = defineEmits(['next-step'])
+  onMounted(() => {
+    getTableData()
+  })
 </script>
 
 <style lang="scss" scoped>
@@ -147,9 +170,6 @@
     }
     .device-card-list {
       //gird布局 一行排列3个间距20px
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
       box-sizing: border-box;
       .active-card {
         border: 1px solid #2a4dfc !important;
@@ -157,8 +177,7 @@
       .device-card {
         border: 1px solid #ebecf1;
         border-radius: 6px;
-        padding: 24px 24px 24px 24px;
-        display: flex;
+        padding: 24px;
         position: relative;
         .shu {
           position: absolute;
@@ -170,10 +189,8 @@
           border-radius: 6px;
         }
         .device-icon-container {
-          img {
-            width: 93px;
-            height: 93px;
-          }
+          width: 93px;
+          height: 93px;
         }
         .device-info {
           flex: 1;
@@ -194,10 +211,15 @@
               font-family:
                 Source Han Sans SC,
                 Source Han Sans SC-Light;
+              max-width: 260px;
+              overflow: hidden; /* 隐藏溢出内容 */
+              text-overflow: ellipsis; /* 显示省略号 */
+              white-space: nowrap; /* 不换行 */
             }
           }
           .info-row {
             display: flex;
+            // gap: 10px;
             align-items: center;
             //单行超出省略
 

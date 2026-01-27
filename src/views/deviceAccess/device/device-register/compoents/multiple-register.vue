@@ -10,9 +10,8 @@
 <script setup>
   import MultipleCardList from './multiple-card-List.vue'
   import MultipleFileUpload from './multiple-file-upload.vue'
-  const activeStep = ref(2)
+  const activeStep = ref(1)
   const nextStep = (e) => {
-    console.log('进入第二步表单')
     activeStep.value = 2
   }
 </script>
