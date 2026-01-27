@@ -17,10 +17,16 @@
         <span class="title-font">文件上传</span>
       </div>
       <el-upload
-        class="file-upload-content mt-[20px]"
+        ref="uploadRef"
+        class="w-full"
         drag
-        action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-        multiple
+        :limit="1"
+        accept=".xlsx"
+        show-file-list
+        :auto-upload="false"
+        :on-exceed="handleExceed"
+        :on-change="handleFileChange"
+        :before-upload="beforeUpload"
       >
         <el-icon class="el-icon--upload"><upload-filled /></el-icon>
         <!-- <img src="@/assets/images/deviceAccess/7.png" alt="" /> -->
@@ -29,6 +35,10 @@
           <div>（格式：xlsx）</div>
         </div>
       </el-upload>
+      <div class="flex justify-end items-center">
+        <el-switch v-model="form.devEnable" />
+        <span class="ml-[10px] text-[14px] text-[#192936]">导入并启用</span>
+      </div>
     </div>
     <div class="file-upload-box">
       <div class="title-box flex items-center gap-2">
@@ -36,16 +46,65 @@
         <span class="title-font">下载模板</span>
       </div>
       <div class="gs-box">
-        <div class="gs-content-item flex flex-cz-center flex-sp-center cursor-pointer">
+        <div
+          class="gs-content-item flex flex-cz-center flex-sp-center cursor-pointer"
+          @click="downloadDevTemplate"
+        >
           <img src="@/assets/images/deviceAccess/8.png" alt="" style="width: 35px; height: 35px" />
           <span>模版格式 . xlsx</span>
         </div>
       </div>
     </div>
+    <div class="col-span-2 flex justify-center gap-5 mt-[30px] rounded-t-md">
+      <el-button size="large" type="info" class="w-80" v-ripple @click="previousStep"
+        >上一步</el-button
+      >
+      <el-button size="large" type="primary" class="w-80" v-ripple @click="submitForm">
+        确认
+      </el-button>
+    </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+  import * as api from '@/api/iot'
+  import { downloadFile } from '@/utils'
+  import { useUploadBefore } from '@/components/core/Upload/composables/useUploadBefore'
+  import { ElMessage, genFileId } from 'element-plus'
+  const downloadDevTemplate = async () => {
+    const result = await api.apiDevdownloadExcelTemplate()
+    downloadFile(result, '多产品注册模板', 'xlsx')
+  }
+  const beforeUpload = useUploadBefore({
+    fileSize: 10,
+    accept: '.xlsx'
+  })
+  /** JSON 导入 */
+  const handleFileChange = (file) => {
+    form.pendingFile = file
+    console.log('file', file)
+  }
+  const uploadRef = useTemplateRef('uploadRef')
+  const handleExceed = (files) => {
+    console.log(files)
+    uploadRef.value?.clearFiles()
+    const file = files[0]
+    file.uid = genFileId()
+    uploadRef.value?.handleStart(file)
+  }
+  const emit = defineEmits(['previousStep', 'sumbitForm'])
+  const previousStep = async () => {
+    emit('previousStep')
+  }
+  const form = reactive({
+    pendingFile: '',
+    devEnable: true
+  })
+  const submitForm = async () => {
+    console.log(form)
+    emit('sumbitForm', form)
+  }
+</script>
 
 <style lang="scss" scoped>
   .multiple-file-upload {

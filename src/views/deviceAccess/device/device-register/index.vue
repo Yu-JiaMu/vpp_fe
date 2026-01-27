@@ -24,7 +24,8 @@
 <script setup>
   import MultipleRegister from './compoents/multiple-register.vue'
   import SingleRegister from './compoents/single-register.vue'
-  const activeTab = ref('single')
+  const route = useRoute()
+  const activeTab = ref('')
   const TABS = [
     {
       label: '单个注册',
@@ -35,6 +36,11 @@
       value: 'multiple'
     }
   ]
+  onMounted(() => {
+    if (route.query.registerType) {
+      activeTab.value = route.query.registerType
+    }
+  })
 </script>
 
 <style lang="scss" scoped>

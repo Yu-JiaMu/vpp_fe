@@ -4,7 +4,7 @@
       <el-icon color="#298AF9" size="22"><Warning /></el-icon>
       <span class="ml10">
         请先选择产品，本次注册的设备将继承产品定义的内容，成为该产品的所属设备。
-        <span class="t-c">批量注册支持多个产品选择!!</span>
+        <span class="t-c">单个注册仅支持单选产品!</span>
       </span>
     </div>
     <ArtSearchBar
@@ -23,15 +23,11 @@
         class="device-card cursor-pointer flex items-center gap-5"
         v-for="(item, index) in tableData"
         :key="index"
-        :class="{ 'active-card': index === activeCardIndex }"
-        @click="changeCard(item, index)"
+        :class="{ 'active-card': item.flag }"
+        @click="changeCard(item)"
       >
         <!-- 活跃的竖线 -->
-        <img
-          class="shu"
-          src="@/assets/images/deviceAccess/5.webp"
-          v-if="index === activeCardIndex"
-        />
+        <img class="shu" src="@/assets/images/deviceAccess/5.webp" v-if="item.flag" />
         <div class="device-icon-container">
           <img v-if="item.imgUrl" :src="item.imgUrl" alt="" class="w-[100%] h-[100%]" />
           <img src="@/assets/images/user/avatar.webp" alt="" v-else class="w-[100%] h-[100%]" />
@@ -67,7 +63,7 @@
     </div>
     <ArtPagination v-model="pagination" @change="getTableData" />
     <div class="col-span-2 flex justify-center gap-5 mt-[50px] rounded-t-md">
-      <el-button size="large" type="info" class="w-80" v-ripple>取消</el-button>
+      <el-button size="large" type="info" class="w-80" v-ripple @click="goback">取消</el-button>
       <el-button size="large" type="primary" class="w-80" @click="nextForm" v-ripple>
         下一步
       </el-button>
@@ -78,6 +74,7 @@
 <script setup>
   import * as api from '@/api/iot'
   import { NODE_TYPES } from '@/enums'
+  const router = useRouter()
   const form = reactive({
     name: ''
   })
@@ -92,9 +89,13 @@
   ])
   const onReset = () => {
     console.log('重置搜索')
+    pagination.current = 1
+    pagination.size = 10
+    getTableData()
   }
   const onSearch = () => {
     console.log('搜索条件：', form)
+    getTableData()
   }
   //分页数据
   const pagination = reactive({
@@ -117,7 +118,12 @@
 
       const response = await api.apiGetProductList(queryParams)
       if (response) {
-        tableData.value = response.rows
+        tableData.value = response.rows.map((item) => {
+          return {
+            ...item,
+            flag: false
+          }
+        })
         pagination.total = response.total || 0
       }
     } catch (error) {
@@ -125,19 +131,21 @@
       ElMessage.error('获取产品列表失败')
     }
   }
-
   //切换card
-  const activeCardIndex = ref(null)
-  const changeCard = (item, index) => {
-    console.log('选择的卡片：', item, index)
-    activeCardIndex.value = index
+  const changeCard = async (item) => {
+    item.flag = !item.flag
   }
   //下一步
   const nextForm = () => {
     console.log('下一步')
     //通过activeCardIndex判断是否选择了卡片
-    if (activeCardIndex.value === null) return ElMessage.warning('请先选择一个产品')
-    emit('next-step')
+    const someActiveCard = tableData.value.some((item) => item.flag)
+    if (!someActiveCard) return ElMessage.warning('请先选择一个产品')
+    const productIds = tableData.value.filter((item) => item.flag).map((map) => map.id)
+    emit('next-step', productIds)
+  }
+  const goback = () => {
+    router.back()
   }
   const emit = defineEmits(['next-step'])
   onMounted(() => {
