@@ -1,17 +1,21 @@
 <template>
-  <el-form ref="formRef" :model="formModel" :rules="rules" label-position="top">
-    <el-table :data="schema" border>
-      <el-table-column prop="name" label="参数名称" width="180" />
-      <el-table-column prop="dataType.type" label="输入类型" width="120" />
-      <el-table-column label="值">
-        <template #default="{ row }">
-          <el-form-item :prop="row.identifier">
-            <ThingModelEditItem :item="row" v-model="formModel[row.identifier]" />
-          </el-form-item>
-        </template>
-      </el-table-column>
-    </el-table>
-  </el-form>
+  <div class="thing-value-form">
+    <el-form ref="formRef" :model="formModel" :rules="rules" label-position="top">
+      <el-table :data="schema" border>
+        <el-table-column prop="name" label="参数名称" width="180" />
+        <el-table-column prop="dataType.type" label="输入类型" width="120" />
+        <el-table-column label="值">
+          <template #default="{ row }">
+            <div class="py-5">
+              <el-form-item :prop="row.identifier" class="!mb-0">
+                <ThingModelEditItem :item="row" v-model="formModel[row.identifier]" />
+              </el-form-item>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-form>
+  </div>
 </template>
 
 <script setup>
@@ -89,3 +93,11 @@
     reset
   })
 </script>
+
+<style lang="scss" scoped>
+  .thing-value-form {
+    :deep(.el-table--default td) {
+      padding: 0 !important;
+    }
+  }
+</style>

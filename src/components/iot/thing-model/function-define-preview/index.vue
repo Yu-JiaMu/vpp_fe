@@ -17,7 +17,7 @@
     <div v-if="rowData.define.type === 'date'"> 整数类型Int64的UTC时间戳(毫秒) </div>
 
     <!-- boolean/enum -->
-    <div v-if="['boolean', 'enum'].includes(rowData.define.type)" class="flex-col gap-2">
+    <div v-if="['boolean', 'enum'].includes(rowData.define.type)" class="flex flex-wrap gap-2">
       <el-tag
         class="enum-tag"
         v-for="(value, label) in rowData.define.specs"

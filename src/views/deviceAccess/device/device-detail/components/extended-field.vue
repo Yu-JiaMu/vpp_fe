@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between p-5 search-con">
       <div class="flex items-center gap-2.5">
         <el-input
-          v-model="form.identifier"
+          v-model="form.name"
           placeholder="请输入功能名称搜索"
           clearable
           class="input-with-prepend"
@@ -25,10 +25,9 @@
       <el-table-column prop="name" label="功能名称" width="120" />
       <el-table-column prop="identifier" label="标识符" width="160" />
 
-      <!-- 数据定义 -->
       <el-table-column label="值" min-width="260">
         <template #default="{ row }">
-          <FunctionDefinePreview :row="row" functionMode="property" />
+          <ThingFieldPreview :item="row" />
         </template>
       </el-table-column>
       <el-table-column prop="required" label="是否必填项" width="100">
@@ -46,7 +45,7 @@
 
     <!-- 添加功能点 -->
     <el-dialog v-model="dialogVisible" align-center title="编辑" :show-close="false" width="598">
-      <ThingValueForm ref="valueFormRef" :schema="[]" />
+      <ThingValueForm ref="valueFormRef" :schema="schema" />
       <!-- 底部按钮 -->
       <template #footer>
         <div class="flex justify-center gap-[6px]">
@@ -68,9 +67,7 @@
 </template>
 
 <script setup>
-  import FunctionDefinePreview from '@/components/iot/thing-model/function-define-preview/index.vue'
   import { REQUIRED_MAP } from '@/enums'
-  import { buildThingModel, parseThingModel } from '@/components/iot/thing-model/adapters'
   import * as api from '@/api/iot'
 
   const route = useRoute()
@@ -78,7 +75,7 @@
   const emits = defineEmits(['submit'])
 
   const form = ref({
-    identifier: ''
+    name: ''
   })
 
   const originTableData = ref([])
@@ -92,40 +89,66 @@
 
   const searchKeyword = ref('')
   const handleSearch = () => {
-    searchKeyword.value = form.value.identifier?.trim() || ''
+    searchKeyword.value = form.value.name?.trim() || ''
   }
   const tableData = computed(() => {
     if (!searchKeyword.value) {
       return originTableData.value
     }
 
-    return originTableData.value.filter((row) => row.identifier?.includes(searchKeyword.value))
+    return originTableData.value.filter((row) => row.name?.includes(searchKeyword.value))
   })
 
   /* ====================== Dialog ====================== */
   const dialogVisible = ref(false)
   const schema = ref([])
   const openDialog = (row, index, type) => {
+    console.log(row)
+
     dialogVisible.value = true
     schema.value = [row]
   }
 
   const valueFormRef = useTemplateRef('valueFormRef')
+
   const handleSubmit = async () => {
-    const valid = await valueFormRef.value?.validate()
-    if (!valid) return
+    try {
+      await valueFormRef.value?.validate()
 
-    const params = valueFormRef.value.getValues()
-    console.log(params)
+      const [params] = valueFormRef.value.getValues() || []
+      if (!params) return
 
-    // emits('submit')
+      const { identifier, value } = params
+
+      const list = originTableData.value.map((item) =>
+        item.identifier === identifier
+          ? {
+              ...item,
+              [identifier]: value
+            }
+          : item
+      )
+
+      const request = {
+        id: route.query.id,
+        expandInfo: list
+      }
+
+      await api.apiDevUpdateExpandInfo(request)
+
+      ElMessage.success('更新成功')
+      dialogVisible.value = false
+      getTableData()
+    } catch (err) {
+      console.warn('表单校验失败或请求异常', err)
+    }
   }
 
   const getTableData = async () => {
     const data = await api.apiDevExpandInfo({ id: route.query.id })
-    console.log(data)
 
-    originTableData.value = list.map((item) => parseThingModel(item))
+    originTableData.value = data
+    // console.log('originTableData.value', originTableData.value)
   }
 
   onMounted(() => {
