@@ -70,6 +70,7 @@
 
   const handleReset = () => {
     init()
+    result.value = ''
   }
 
   /**
