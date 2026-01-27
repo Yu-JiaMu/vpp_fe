@@ -275,7 +275,6 @@
 
           <template #default="{ row }">
             <el-button link type="primary" @click="handleDetail(row)"> 详情 </el-button>
-            <el-button link type="primary" @click="handleSubDevice(row)"> 子设备 </el-button>
             <el-button link type="danger" @click="handleDelete(row)"> 删除 </el-button>
           </template>
         </el-table-column>
@@ -525,11 +524,6 @@
     console.log('查看详情:', row)
     // ElMessage.info(`查看 ${row.name} 详情`)
     router.push({ name: 'DeviceDetail', query: { deviceId: row.deviceId } })
-  }
-
-  const handleSubDevice = (row) => {
-    console.log('查看子设备:', row)
-    ElMessage.info(`查看 ${row.name} 子设备`)
   }
   // 处理删除
   const handleDelete = async (row) => {
