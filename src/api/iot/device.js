@@ -41,3 +41,13 @@ export function apiDevExpandInfo({ id }) {
 export function apiDevUpdateExpandInfo(params) {
   return request.post(`/stage-api/model/device/update/expandInfo`, params)
 }
+
+//批量注册 下载模板
+export function apiDevdownloadExcelTemplate() {
+  return request.get(`/stage-api/model/device/download/excel/template`, '', {
+    responseType: 'blob'
+  })
+}
+export function apiDevBatchRegister(params) {
+  return request.post(`/stage-api/model/device/batch/register`, params)
+}
