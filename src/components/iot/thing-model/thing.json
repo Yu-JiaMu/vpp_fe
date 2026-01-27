@@ -253,45 +253,249 @@
           "desc": "",
           "callType": "async",
           "input": [
+							{
+									"identifier": "EventID", 
+									"name": "事件编号", 
+									"required": true,
+									"dataType": {
+											"type": "int", 
+											"specs": {
+													"max": "10000", 
+													"min": "0", 
+													"step": "2", 
+													"unit": "千瓦时 / kWh"
+											}
+									},
+									"EventID":1
+							}, 
+							{
+									"identifier": "speed", 
+									"name": "当前速度", 
+									 "dataType": {
+											"type": "float",
+											"specs": {
+												"max": 140,
+												"min": 0,
+												"step": 0.1,
+												"unit": "km/h"
+											}
+										}
+							}, 
+							{
+									"identifier": "EventTime", 
+									"name": "事件发生时间", 
+									"dataType": {
+											"type": "date", 
+											"specs": { }
+									},
+									"EventTime": "2018-01-01 00:00:00"
+							}, 
+							{
+									"identifier": "EventCode", 
+									"name": "事件类型编号", 
+									"dataType": {
+											"type": "double", 
+											"specs": {
+													"max": "200", 
+													"min": "-200", 
+													"step": "0.01", 
+													"unit": "摄氏度 / ℃"
+											}
+									}
+							}, 
+							{
+									"identifier": "EventPos", 
+									"name": "事件位置编号", 
+									"dataType": {
+											"type": "text", 
+											"specs": {
+													"length": 4
+											}
+									}
+							}, 
+							{
+									"identifier": "Switch", 
+									"name": "开关", 
+									"dataType": {
+											"type": "boolean", 
+											"specs": {
+													"true": "对", 
+													"false": "错"
+											}
+									}
+							}, 
+							{
+									"identifier": "EnumTest", 
+									"name": "枚举", 
+									"dataType": {
+											"type": "enum", 
+											"specs": {
+													"1": "枚举1", 
+													"2": "枚举2"
+											}
+									}
+							},
+							{
+									"identifier": "geoPoint", 
+									"name": "经纬度", 
+									 "dataType": {
+											"type": "geo_point",
+											"specs": {
+												"length": 11
+											}
+										}
+							},
+							{
+									"identifier": "password", 
+									"name": "密码", 
+									 "dataType": {
+											"type": "password",
+											"specs": {
+												"length": 11
+											}
+										}
+							},
+							{
+									"identifier": "object", 
+									"name": "结构体", 
+									  "dataType": {
+										"type": "object",
+										"specs": {
+											"specsArray": [
+												{
+													"name": "经度",
+													"identifier": "longitude",
+													"desc": "经度说明",
+													"dataType": {
+														"type": "double",
+														"specs": {
+															"min": "-180",
+															"max": "180",
+															"unit": "度 / °",
+															"step": "0.01"
+														}
+													}
+												},
+												{
+													"name": "纬度",
+													"identifier": "latitude",
+													"desc": "纬度说明",
+													"dataType": {
+														"type": "double",
+														"specs": {
+															"min": "-90",
+															"max": "90",
+															"unit": "度 / °",
+															"step": "0.01"
+														}
+													}
+												},
+												{
+													"name": "海拔",
+													"identifier": "altitude",
+													"desc": "海拔说明",
+													"dataType": {
+														"type": "double",
+														"specs": {
+															"min": "0",
+															"max": "10000",
+															"unit": "米 / m",
+															"step": "0.01"
+														}
+													}
+												}
+											]
+										}
+									}
+							},
+							{
+									"identifier": "array", 
+									"name": "数组", 
+									 "dataType": {
+											"type": "array",
+											"specs": {
+												"maxItemsCount": 100,
+												"type": "int",
+												"specs": {
+													"max": 140,
+													"min": 0,
+													"step": 1,
+													"unit": "s"
+												}
+											}
+										}
+							}
+							
+					],
+          "output": [
             {
-              "identifier": "EventID",
-              "name": "事件编号",
+              "identifier": "ReturnCode",
+              "name": "返回码",
               "dataType": {
-                "type": "text",
+                "type": "enum",
                 "specs": {
-                  "length": 255
-                }
-              }
-            },
-            {
-              "identifier": "EventTime",
-              "name": "事件发生时间",
-              "dataType": {
-                "type": "date",
-                "specs": {}
-              }
-            },
-            {
-              "identifier": "EventCode",
-              "name": "事件类型编号",
-              "dataType": {
-                "type": "text",
-                "specs": {
-                  "length": 255
-                }
-              }
-            },
-            {
-              "identifier": "EventPos",
-              "name": "事件位置编号",
-              "dataType": {
-                "type": "text",
-                "specs": {
-                  "length": 255
+                  "0": "执行成功",
+                  "1": "执行失败",
+                  "2": "预留"
                 }
               }
             }
           ],
+          "functionMode": "service"
+        },
+				{
+          "identifier": "ReceiveEvents22",
+          "name": "事件关闭",
+          "functionType": "st",
+          "desc": "",
+          "callType": "async",
+          "input": [
+							{
+									"identifier": "EventID", 
+									"name": "事件编号", 
+									"dataType": {
+											"type": "int", 
+											"specs": {
+													"max": "10000", 
+													"min": "0", 
+													"step": "2", 
+													"unit": "千瓦时 / kWh"
+											}
+									}
+							}, 
+							{
+									"identifier": "EventTime", 
+									"name": "事件发生时间", 
+									"dataType": {
+											"type": "date", 
+											"specs": { }
+									}
+							}, 
+							{
+									"identifier": "EventCode", 
+									"name": "事件类型编号", 
+									"dataType": {
+											"type": "double", 
+											"specs": {
+													"max": "200", 
+													"min": "-200", 
+													"step": "0.01", 
+													"unit": "摄氏度 / ℃"
+											}
+									}
+							}, 
+							{
+									"identifier": "EventPos", 
+									"name": "事件位置编号", 
+									"dataType": {
+											"type": "text", 
+											"specs": {
+													"length": 255
+											}
+									}
+							}
+						
+					],
           "output": [
             {
               "identifier": "ReturnCode",

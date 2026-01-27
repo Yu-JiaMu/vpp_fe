@@ -65,7 +65,7 @@
 <script setup>
   import InstanceMessage from './components/instance-message.vue'
   import OperateStatus from './components/operate-status.vue'
-  import DeviceFunction from './components/device-function.vue'
+  import DeviceFunction from './components/device-function/index.vue'
   import DeviceDiagnosis from './components/device-diagnosis.vue'
   import LogManagement from './components/log-management.vue'
   import SubDeviceManagement from './components/sub-device-management/index.vue'
@@ -79,7 +79,7 @@
     category: '能源电力 / 电表 / 表计',
     nodeType: '网关设备'
   })
-  const activeTab = ref('logManagement')
+  const activeTab = ref('deviceFunction')
   const TABS = [
     {
       label: '实例信息',
