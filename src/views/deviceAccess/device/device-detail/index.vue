@@ -54,11 +54,7 @@
     <SubDeviceManagement v-if="activeTab === 'subDeviceManagement'"></SubDeviceManagement>
 
     <!-- 拓展字段 -->
-    <ExtendedField
-      v-if="activeTab === 'extend'"
-      :info="product"
-      @submit="handleSubmitExtendField"
-    ></ExtendedField>
+    <ExtendedField v-if="activeTab === 'extend'"></ExtendedField>
   </div>
 </template>
 
@@ -79,7 +75,7 @@
     category: '能源电力 / 电表 / 表计',
     nodeType: '网关设备'
   })
-  const activeTab = ref('deviceFunction')
+  const activeTab = ref('extend')
   const TABS = [
     {
       label: '实例信息',
@@ -111,12 +107,6 @@
       value: 'extend'
     }
   ]
-
-  const handleSubmitExtendField = async ({ data, msg = '添加成功' }) => {
-    await api.updateProductExpandInfo({ id: product.value.id, expandInfo: data })
-    ElMessage.success(msg)
-    getDetail()
-  }
 </script>
 
 <style lang="scss" scoped>
