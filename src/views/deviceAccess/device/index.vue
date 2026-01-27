@@ -11,7 +11,7 @@
           <div class="label-block gray-block"></div>
           <div class="card-label-simple">设备数</div>
         </div>
-        <div class="card-value-simple">0</div>
+        <div class="card-value-simple">{{ staticstics.deviceNum || 0 }}</div>
       </div>
 
       <!-- 直连设备数卡片（默认选中样式） -->
@@ -20,7 +20,7 @@
           <div class="label-block blue-block"></div>
           <div class="card-label-simple active-label">直连设备数</div>
         </div>
-        <div class="card-value-simple">0</div>
+        <div class="card-value-simple">{{ staticstics.directDeviceNum || 0 }}</div>
         <!-- 蓝色下划线 -->
         <div class="active-underline"></div>
       </div>
@@ -31,7 +31,7 @@
           <div class="label-block orange-block"></div>
           <div class="card-label-simple">直连网关数</div>
         </div>
-        <div class="card-value-simple">0</div>
+        <div class="card-value-simple">{{ staticstics.directGatewayNum || 0 }}</div>
       </div>
 
       <!-- 网关子设备数卡片 -->
@@ -40,16 +40,16 @@
           <div class="label-block purple-block"></div>
           <div class="card-label-simple">网关子设备数</div>
         </div>
-        <div class="card-value-simple">0</div>
+        <div class="card-value-simple">{{ staticstics.gatewaySubDeviceNum || 0 }}</div>
       </div>
 
       <!-- 在线设备数卡片 -->
       <div class="stat-card-simple">
         <div class="card-header-simple">
           <div class="label-block red-block"></div>
-          <div class="card-label-simple">在线设备数（0%）</div>
+          <div class="card-label-simple">在线设备数（{{ onlineDeviceBFB }}）</div>
         </div>
-        <div class="card-value-simple">0</div>
+        <div class="card-value-simple">{{ staticstics.onlineDeviceNum || 0 }}</div>
       </div>
     </div>
     <ElCard class="art-table-card" shadow="never">
@@ -87,7 +87,6 @@
                   >批量禁用设备</el-dropdown-item
                 >
                 <el-dropdown-item @click="batchDelete">批量删除设备</el-dropdown-item>
-                <el-dropdown-item>同步设备状态</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -294,6 +293,16 @@
   const router = useRouter()
   // 这是一个静态展示组件，不需要响应式数据
   // 只包含图片中展示的卡片列表
+  const staticstics = reactive({})
+  const getStatistics = async () => {
+    const result = await deviceApi.apiDevStatistics()
+    Object.keys(result).forEach((key) => {
+      staticstics[key] = result[key]
+    })
+  }
+  const onlineDeviceBFB = computed(() => {
+    return ((staticstics.onlineDeviceNum / staticstics.deviceNum) * 100).toFixed(2) + '%'
+  })
   const form = reactive({
     isAsc: 'desc',
     orderByColumn: 'createTime',
@@ -547,6 +556,7 @@
   }
 
   onMounted(() => {
+    getStatistics()
     loadColumnSettings()
     getProduceList()
     getTableData()

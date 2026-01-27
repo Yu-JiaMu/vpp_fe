@@ -128,32 +128,6 @@ class SimpleAMapService {
     }
   }
 
-  // 搜索地点 - 根据图片中的"请输入搜索内容"
-  async searchPlaces(keyword, city = '成都') {
-    if (!this.AMap) {
-      await this.loadAMapAPI()
-    }
-    return new Promise((resolve, reject) => {
-      this.AMap.plugin('AMap.PlaceSearch', () => {
-        const placeSearch = new this.AMap.PlaceSearch({
-          pageSize: 20,
-          pageIndex: 1,
-          city: city,
-          citylimit: true,
-          map: this.map, // 绑定地图
-          panel: 'search-result' // 结果容器ID
-        })
-        placeSearch.search(keyword, (status, result) => {
-          if (status === 'complete' && result.info === 'OK') {
-            console.log('搜索结果:', result.poiList.pois)
-            resolve(result.poiList.pois)
-          } else {
-            reject(new Error(`搜索失败: ${result.info}`))
-          }
-        })
-      })
-    })
-  }
   // 添加标记
   async addMarker(lnglat, title = '', options = {}) {
     if (!this.map) return null
@@ -180,35 +154,7 @@ class SimpleAMapService {
     }
     return marker
   }
-  // 添加图片中的成都地标
-  addChengduLandmarks() {
-    if (!this.map) return
-    // 根据图片中的位置添加标记
-    const landmarks = [
-      { name: '郫县东站', lnglat: [103.884, 30.808], type: 'station' },
-      { name: '成都站', lnglat: [104.068, 30.697], type: 'station' },
-      { name: '成都东站', lnglat: [104.145, 30.631], type: 'station' },
-      { name: '郫都区', lnglat: [103.884, 30.808], type: 'district' },
-      { name: '青羊区', lnglat: [104.063, 30.668], type: 'district' },
-      { name: '成华区', lnglat: [104.103, 30.66], type: 'district' },
-      { name: '武侯区', lnglat: [104.043, 30.633], type: 'district' },
-      { name: '鹿浦立交', lnglat: [104.118, 30.718], type: 'road' },
-      { name: '凤凰立交', lnglat: [104.085, 30.628], type: 'road' },
-      { name: '靖江', lnglat: [103.998, 30.633], type: 'area' },
-      { name: '永宁街道', lnglat: [103.828, 30.683], type: 'street' },
-      { name: '马家场', lnglat: [103.978, 30.718], type: 'area' },
-      { name: '九江街道', lnglat: [103.955, 30.615], type: 'street' },
-      { name: '九华街道', lnglat: [104.015, 30.685], type: 'street' },
-      { name: '锦城湖', lnglat: [104.055, 30.575], type: 'park' },
-      { name: '成渝大熊猫教育研究基地', lnglat: [104.141, 30.741], type: 'park' },
-      { name: '成都南站', lnglat: [104.067, 30.605], type: 'station' }
-    ]
-    landmarks.forEach((landmark) => {
-      this.addMarker(landmark.lnglat, landmark.name, {
-        icon: this.getMarkerIcon(landmark.type)
-      })
-    })
-  }
+
   // 根据类型获取不同的图标
   getMarkerIcon(type) {
     const iconMap = {
@@ -233,31 +179,7 @@ class SimpleAMapService {
       this.map.setCenter(lnglat)
     }
   }
-  // 地址转坐标
-  async addressToLngLat(address, city = '成都') {
-    if (!this.AMap) {
-      await this.loadAMapAPI()
-    }
-    return new Promise((resolve, reject) => {
-      this.AMap.plugin('AMap.Geocoder', () => {
-        const geocoder = new this.AMap.Geocoder({
-          city: city
-        })
-        geocoder.getLocation(address, (status, result) => {
-          if (status === 'complete' && result.info === 'OK') {
-            const geocode = result.geocodes[0]
-            resolve({
-              lng: geocode.location.lng,
-              lat: geocode.location.lat,
-              address: geocode.formattedAddress
-            })
-          } else {
-            reject(new Error(`地址解析失败: ${result.info}`))
-          }
-        })
-      })
-    })
-  }
+
   //获取当前定位
   async getLocationAddress() {
     if (!this.AMap) {
@@ -387,7 +309,7 @@ class SimpleAMapService {
       })
     }
   }
-  //输入提示与 POI 搜索示例
+  //输入提示
   async getSearchAddressList(inputId, options = {}) {
     // if (!this.AMap) {
     //   await this.loadAMapAPI()
@@ -399,21 +321,14 @@ class SimpleAMapService {
           input: inputId,
           city: options.city || '成都' // 根据图片，默认城市为成都
         }
-        this.AMap.plugin(['AMap.PlaceSearch', 'AMap.AutoComplete'], () => {
+        this.AMap.plugin(['AMap.AutoComplete'], () => {
           const auto = new this.AMap.AutoComplete(autoOptions)
-          // const placeSearch = new this.AMap.PlaceSearch({
-          //   map: this.map,
-          //   pageSize: options.pageSize || 1,
-          //   pageIndex: options.pageIndex || 1
-          // }) //构造地点查询类
           auto.on('select', (e) => {
-            // placeSearch.setCity(e.poi.adcode)
-            // placeSearch.search(e.poi.name) //关键字查询查询
             console.log(e)
-            resolve(e)
             this.clearMarkers()
             this.addMarker(e.poi.location)
             this.setCenter(e.poi.location)
+            resolve(e)
           })
         })
       } catch (err) {
@@ -422,34 +337,7 @@ class SimpleAMapService {
       }
     })
   }
-  // 处理输入提示选择
-  handleAutoCompleteSelect(e, placeSearch, options) {
-    if (!e.poi) return
 
-    const poi = e.poi
-
-    // 清空之前的搜索结果
-    this.clearSearchResults()
-
-    // 在地图上标记
-    this.addSearchMarker(poi, { isSelected: true })
-
-    // 移动到位置
-    if (this.map && poi.location) {
-      this.map.setCenter([poi.location.lng, poi.location.lat])
-      this.map.setZoom(16)
-    }
-
-    // 回调
-    if (options.onSelect) {
-      options.onSelect(poi)
-    }
-
-    // 添加到最近搜索
-    this.addToRecentSearches(poi)
-
-    return poi
-  }
   // 销毁地图
   destroy() {
     if (this.map) {
