@@ -31,3 +31,13 @@ export function apiDevStatistics() {
 export function apiDevAdd(params) {
   return request.post(`/stage-api/model/device/add`, params)
 }
+
+// 设备拓展字段查询
+export function apiDevExpandInfo({ id }) {
+  return request.get(`/stage-api/model/device/getExtendInfo/${id}`)
+}
+
+// 更新设备拓展字段
+export function apiDevUpdateExpandInfo(params) {
+  return request.post(`/stage-api/model/device/update/expandInfo`, params)
+}

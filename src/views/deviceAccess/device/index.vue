@@ -524,7 +524,7 @@
   const handleDetail = (row) => {
     console.log('查看详情:', row)
     // ElMessage.info(`查看 ${row.name} 详情`)
-    router.push({ name: 'DeviceDetail', query: { deviceId: row.deviceId } })
+    router.push({ name: 'DeviceDetail', query: { id: row.id } })
   }
 
   const handleSubDevice = (row) => {

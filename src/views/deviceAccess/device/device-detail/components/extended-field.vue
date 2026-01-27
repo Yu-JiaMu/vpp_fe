@@ -20,15 +20,7 @@
     </div>
 
     <!-- 表格 -->
-    <el-table
-      ref="tableRef"
-      :data="tableData"
-      border
-      show-overflow-tooltip
-      stripe
-      class="w-full"
-      @selection-change="handleSelectionChange"
-    >
+    <el-table ref="tableRef" :data="tableData" border show-overflow-tooltip stripe class="w-full">
       <el-table-column type="selection" width="55" />
       <el-table-column prop="name" label="功能名称" width="120" />
       <el-table-column prop="identifier" label="标识符" width="160" />
@@ -47,42 +39,43 @@
       <!-- 操作 -->
       <el-table-column label="操作" width="160" fixed="right">
         <template #default="{ row, $index }">
-          <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'edit')">
-            编辑
-          </el-button>
+          <el-button type="primary" link @click="openDialog(row, $index, 'edit')"> 编辑 </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <!-- 添加功能点 -->
-    <ParamsDialog ref="dialogRef" v-model="originTableData" @submit="handleSubmit()" />
+    <el-dialog v-model="dialogVisible" align-center title="编辑" :show-close="false" width="598">
+      <ThingValueForm ref="valueFormRef" :schema="[]" />
+      <!-- 底部按钮 -->
+      <template #footer>
+        <div class="flex justify-center gap-[6px]">
+          <el-button
+            size="large"
+            type="info"
+            class="w-[177px]"
+            v-ripple
+            @click="dialogVisible = false"
+            >取消</el-button
+          >
+          <el-button type="primary" class="w-[177px]" v-ripple @click="handleSubmit">
+            确定
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-  import { ref, computed, watchEffect, provide } from 'vue'
-  import ParamsDialog from '@/components/iot/thing-model/thing-function/params-dialog.vue'
   import FunctionDefinePreview from '@/components/iot/thing-model/function-define-preview/index.vue'
-  import { handleDataType } from '@/utils'
   import { REQUIRED_MAP } from '@/enums'
   import { buildThingModel, parseThingModel } from '@/components/iot/thing-model/adapters'
+  import * as api from '@/api/iot'
 
-  const props = defineProps({
-    info: {
-      type: Object,
-      default: () => ({})
-    },
-    module: {
-      type: String,
-      default: ''
-    }
-  })
+  const route = useRoute()
 
   const emits = defineEmits(['submit'])
-
-  const isEdit = ref(false)
-  const isReadOnly = ref(false)
-  provide('isReadOnly', isReadOnly)
 
   const form = ref({
     identifier: ''
@@ -90,12 +83,10 @@
 
   const originTableData = ref([])
 
-  /* ====================== props → 本地数据初始化 ====================== */
-
-  watchEffect(() => {
-    const list = props.info?.expandInfoList ?? []
-    originTableData.value = list.map((item) => parseThingModel(item))
-  })
+  const handleReset = () => {
+    form.value.identifier = ''
+    handleSearch()
+  }
 
   /* ====================== 派生数据 ====================== */
 
@@ -112,64 +103,34 @@
   })
 
   /* ====================== Dialog ====================== */
-
-  const dialogRef = useTemplateRef('dialogRef')
-
-  const openCustomFunctionDialog = (row, index, type) => {
-    isReadOnly.value = type === 'look'
-    isEdit.value = type === 'edit'
-    dialogRef.value.open(row, index, type)
+  const dialogVisible = ref(false)
+  const schema = ref([])
+  const openDialog = (row, index, type) => {
+    dialogVisible.value = true
+    schema.value = [row]
   }
 
-  const tableRef = useTemplateRef('tableRef')
-  const selectedItems = ref([])
+  const valueFormRef = useTemplateRef('valueFormRef')
+  const handleSubmit = async () => {
+    const valid = await valueFormRef.value?.validate()
+    if (!valid) return
 
-  const handleSelectionChange = (selection) => {
-    selectedItems.value = selection
+    const params = valueFormRef.value.getValues()
+    console.log(params)
+
+    // emits('submit')
   }
 
-  const handleRemove = async (index) => {
-    try {
-      await ElMessageBox.confirm('此操作将删除该项目，是否继续？', '提示', { type: 'warning' })
+  const getTableData = async () => {
+    const data = await api.apiDevExpandInfo({ id: route.query.id })
+    console.log(data)
 
-      originTableData.value.splice(index, 1)
-      handleSubmit('删除成功')
-    } catch (error) {
-      if (error.message !== 'cancel') {
-        console.error('删除出错:', error)
-      }
-    }
+    originTableData.value = list.map((item) => parseThingModel(item))
   }
 
-  const handlePatchRemove = async () => {
-    if (!selectedItems.value.length) {
-      ElMessage.warning('请先选择要删除的项目')
-      return
-    }
-
-    try {
-      await ElMessageBox.confirm('此操作将删除选中的项目，是否继续？', '提示', { type: 'warning' })
-
-      originTableData.value = originTableData.value.filter(
-        (item) => !selectedItems.value.includes(item)
-      )
-
-      tableRef.value?.clearSelection()
-      selectedItems.value = []
-
-      handleSubmit('批量删除成功')
-    } catch (error) {
-      if (error.message !== 'cancel') {
-        console.error('删除出错:', error)
-      }
-    }
-  }
-
-  const handleSubmit = (msg = '添加成功') => {
-    const data = originTableData.value.map((item) => buildThingModel(item))
-
-    emits('submit', { data, msg })
-  }
+  onMounted(() => {
+    getTableData()
+  })
 </script>
 
 <style lang="scss" scoped>
