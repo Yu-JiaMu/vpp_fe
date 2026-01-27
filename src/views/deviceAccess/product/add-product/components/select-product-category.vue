@@ -10,7 +10,12 @@
           @keyup.enter="handleSearch"
         >
           <template #prepend>
-            <el-select v-model="form.mode" placeholder="请选择" style="width: 116px">
+            <el-select
+              v-model="form.mode"
+              placeholder="请选择"
+              style="width: 116px"
+              @change="form.key = ''"
+            >
               <el-option label="产品品类" value="name" />
               <el-option label="所属行业" value="industryCode" />
               <el-option label="所属场景" value="sceneCode" />

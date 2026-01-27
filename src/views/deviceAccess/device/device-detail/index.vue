@@ -50,9 +50,8 @@
     <OperateStatus v-if="activeTab === 'operateStatus'"></OperateStatus>
     <DeviceFunction v-if="activeTab === 'deviceFunction'"></DeviceFunction>
     <DeviceDiagnosis v-if="activeTab === 'deviceDiagnosis'"></DeviceDiagnosis>
-    <!--<LogManagement v-if="activeTab === 'logManagement'"></LogManagement>
+    <LogManagement v-if="activeTab === 'logManagement'"></LogManagement>
     <SubDeviceManagement v-if="activeTab === 'subDeviceManagement'"></SubDeviceManagement>
--->
 
     <!-- 拓展字段 -->
     <ExtendedField
@@ -68,9 +67,10 @@
   import OperateStatus from './components/operate-status.vue'
   import DeviceFunction from './components/device-function.vue'
   import DeviceDiagnosis from './components/device-diagnosis.vue'
-  //   import LogManagement from './components/log-management.vue'
-  //   import SubDeviceManagement from './components/sub-device-management.vue'
+  import LogManagement from './components/log-management.vue'
+  import SubDeviceManagement from './components/sub-device-management/index.vue'
   import ExtendedField from './components/extended-field.vue'
+
   const device = ref({
     id: '1955073219080001',
     name: '计量电表001',
@@ -79,7 +79,7 @@
     category: '能源电力 / 电表 / 表计',
     nodeType: '网关设备'
   })
-  const activeTab = ref('deviceDiagnosis')
+  const activeTab = ref('logManagement')
   const TABS = [
     {
       label: '实例信息',
