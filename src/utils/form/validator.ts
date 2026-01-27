@@ -29,6 +29,7 @@
  * @module utils/validation/formValidator
  * @author Art Design Pro Team
  */
+import type { FormItemRule } from 'element-plus'
 
 /**
  * 密码强度级别枚举
@@ -624,4 +625,215 @@ export function validateEnumList(rule: any, value: any, callback: any) {
   }
 
   callback()
+}
+
+export type DataType =
+  | 'int'
+  | 'double'
+  | 'float'
+  | 'text'
+  | 'password'
+  | 'enum'
+  | 'array'
+  | 'object'
+  | 'geo_point'
+
+export interface DataTypeSpec {
+  min?: number | string
+  max?: number | string
+  length?: number
+  maxItemsCount?: number
+  specsArray?: Array<{
+    identifier: string
+    name: string
+  }>
+  [key: string]: any
+}
+
+export interface SchemaItem {
+  identifier: string
+  name: string
+  required?: boolean
+  dataType: {
+    type: DataType
+    specs?: DataTypeSpec
+  }
+}
+
+// 必填规则
+function createRequiredRule(name: string): FormItemRule {
+  return {
+    required: true,
+    message: `${name}不能为空`,
+    trigger: 'blur'
+  }
+}
+
+// 数字类型校验（int / float / double）
+function createNumberRule(name: string, specs: DataTypeSpec = {}): FormItemRule {
+  return {
+    trigger: 'blur',
+    validator(_, value, cb) {
+      if (value == null) return cb()
+
+      if (typeof value !== 'number') {
+        return cb(new Error(`${name}必须是数字`))
+      }
+
+      if (specs.min !== undefined && value < Number(specs.min)) {
+        return cb(new Error(`${name}不能小于 ${specs.min}`))
+      }
+
+      if (specs.max !== undefined && value > Number(specs.max)) {
+        return cb(new Error(`${name}不能大于 ${specs.max}`))
+      }
+
+      cb()
+    }
+  }
+}
+
+// 文本长度校验
+function createTextLengthRule(name: string, maxLength?: number): FormItemRule | null {
+  if (!maxLength) return null
+
+  return {
+    max: maxLength,
+    message: `${name}长度不能超过 ${maxLength}`,
+    trigger: 'blur'
+  }
+}
+
+// 枚举校验
+function createEnumRule(name: string, specs: DataTypeSpec = {}): FormItemRule {
+  return {
+    trigger: 'change',
+    validator(_, value, cb) {
+      if (value == null) return cb()
+
+      if (!Object.keys(specs).includes(String(value))) {
+        return cb(new Error(`${name}不在枚举范围内`))
+      }
+
+      cb()
+    }
+  }
+}
+
+// JSON（array / object）校验
+function createJsonRule(
+  name: string,
+  type: 'array' | 'object',
+  specs: DataTypeSpec = {}
+): FormItemRule {
+  return {
+    trigger: 'blur',
+    validator(_, value, cb) {
+      if (!value) return cb()
+
+      let parsed: any
+      try {
+        parsed = JSON.parse(value)
+      } catch {
+        return cb(new Error(`${name}必须是合法 JSON`))
+      }
+
+      if (type === 'array') {
+        if (!Array.isArray(parsed)) {
+          return cb(new Error(`${name}必须是数组`))
+        }
+        if (specs.maxItemsCount && parsed.length > specs.maxItemsCount) {
+          return cb(new Error(`${name}元素数量不能超过 ${specs.maxItemsCount}`))
+        }
+      }
+
+      if (type === 'object') {
+        if (typeof parsed !== 'object' || Array.isArray(parsed)) {
+          return cb(new Error(`${name}必须是对象`))
+        }
+
+        const fields = specs.specsArray || []
+        for (const f of fields) {
+          if (parsed[f.identifier] == null) {
+            return cb(new Error(`缺少字段 ${f.name}`))
+          }
+        }
+      }
+
+      cb()
+    }
+  }
+}
+
+// 经纬度校验（geo_point）
+function createGeoPointRule(name: string): FormItemRule {
+  return {
+    trigger: 'blur',
+    validator(_, value, cb) {
+      if (!value) return cb()
+
+      const parts = value.split(',')
+      if (parts.length !== 2) {
+        return cb(new Error(`${name}格式应为：经度,纬度`))
+      }
+
+      const lng = Number(parts[0].trim())
+      const lat = Number(parts[1].trim())
+
+      if (Number.isNaN(lng) || Number.isNaN(lat)) {
+        return cb(new Error(`${name}必须是数字格式`))
+      }
+
+      if (lng < -180 || lng > 180) {
+        return cb(new Error('经度范围应在 -180 ~ 180'))
+      }
+
+      if (lat < -90 || lat > 90) {
+        return cb(new Error('纬度范围应在 -90 ~ 90'))
+      }
+
+      cb()
+    }
+  }
+}
+
+//  生成修改物模型值统一校验规则
+export function buildThingModelValueRules(schema: SchemaItem[]): Record<string, FormItemRule[]> {
+  const rules: Record<string, FormItemRule[]> = {}
+
+  schema.forEach((item) => {
+    const { identifier, name, required } = item
+    const { type, specs = {} } = item.dataType
+
+    const fieldRules: FormItemRule[] = []
+
+    if (required) {
+      fieldRules.push(createRequiredRule(name))
+    }
+
+    if (['int', 'double', 'float'].includes(type)) {
+      fieldRules.push(createNumberRule(name, specs))
+    }
+
+    if (['text', 'password'].includes(type)) {
+      const rule = createTextLengthRule(name, specs.length)
+      rule && fieldRules.push(rule)
+    }
+
+    if (type === 'enum') {
+      fieldRules.push(createEnumRule(name, specs))
+    }
+
+    if (type === 'array' || type === 'object') {
+      fieldRules.push(createJsonRule(name, type, specs))
+    }
+
+    if (type === 'geo_point') {
+      fieldRules.push(createGeoPointRule(name))
+    }
+
+    rules[identifier] = fieldRules
+  })
+
+  return rules
 }
