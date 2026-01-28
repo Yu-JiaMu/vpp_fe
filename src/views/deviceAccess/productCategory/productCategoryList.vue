@@ -94,9 +94,10 @@
         <el-table-column fixed="right" label="操作">
           <template #default="{ row }">
             <el-button link type="primary" @click="handleDetail(row)"> 详情 </el-button>
-            <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
-
-            <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
+            <template v-if="INTERNAL_DEVICE_TYPES.values.DEFINE === row.categoryType">
+              <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
+              <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
+            </template>
           </template>
         </el-table-column>
       </el-table>
@@ -107,7 +108,8 @@
     <ProductCategoryDialog
       ref="productCategoryDialogRef"
       v-model="dialogVisible"
-      @success="handleSuccess"
+      @add-success="handleSuccess"
+      @edit-success="getTableData"
     />
 
     <!-- 成功弹窗 -->
@@ -325,7 +327,14 @@
       ElMessage.warning('请选择要删除的产品品类')
       return
     }
-
+    //包含内置
+    const isInner = selectedRows.value.some(
+      (item) => item.categoryType === INTERNAL_DEVICE_TYPES.values.INNER
+    )
+    if (isInner) {
+      ElMessage.warning('内置产品品类不能删除')
+      return
+    }
     ElMessageBox.confirm(
       `确定要删除选中的 ${selectedRows.value.length} 条记录吗？`,
       '批量删除确认',

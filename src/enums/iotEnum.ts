@@ -125,6 +125,6 @@ export const DEVICE_STATUS_TYPES = createEnum({
 
 //产品类别
 export const INTERNAL_DEVICE_TYPES = createEnum({
-  INNER: { label: '内设', value: 'inner' },
+  INNER: { label: '内置', value: 'inner' },
   DEFINE: { label: '自定义', value: 'define' }
 })

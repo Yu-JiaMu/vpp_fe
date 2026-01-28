@@ -10,17 +10,16 @@
   >
     <!-- 弹窗主体内容 -->
     <div class="success-container">
-      <div>
+      <div class="flex items-center gap-2.5">
+        <img src="@/assets/images/deviceAccess/20.png" class="w-[24px] h-[24px]" alt="" />
         <span class="font1">产品品类创建成功</span>
       </div>
-      <div class="font2 mt20">
+      <div class="font2 mt20 ml-[30px]">
         <div>接下来推荐操作:</div>
         <div>【 定义产品品类物模型】</div>
-        <div style="width: 390px">
-          基于预置的物模型模板快速创建产品，可自动继承完整的产品品类功能定义。</div
-        >
+        <div> 您需自定义产品品类物模型，基于品类模板即可快速创建产品。</div>
       </div>
-      <div class="mt20">
+      <div class="mt20 ml-[30px]">
         <el-button class="btn-height-45" @click="addWMX">去定义物模型</el-button>
       </div>
     </div>
@@ -118,7 +117,7 @@
   }
 
   .success-container {
-    padding-left: 100px;
+    padding-left: 55px;
     .font1 {
       font-size: 16px;
       font-weight: 700;
