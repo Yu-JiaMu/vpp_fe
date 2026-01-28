@@ -205,6 +205,7 @@
     const valid = await formRef.value.validate()
     if (!valid) return
     submitLoading.value = true
+    console.log('form', form)
 
     try {
       await api.apiEditProduct({ ...props.product, ...form, id: props.product.id })

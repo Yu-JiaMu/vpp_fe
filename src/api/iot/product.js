@@ -50,7 +50,7 @@ export function apiAddProduct(params) {
  * @returns {Promise}
  */
 export function apiEditProduct(params) {
-  return request.put(SERVICE_API + '/product/edit', params)
+  return request.put(SERVICE_API + '/product/edit', params, { skipClean: true })
 }
 
 /**
