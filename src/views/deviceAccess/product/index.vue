@@ -253,8 +253,6 @@
       await api.apiEditProduct({ ...row, enabled: row.enabled })
       ElMessage.success('更新成功')
     } catch (error) {
-      if (error === 'cancel') return
-      console.error('更新失败:', error)
       row.enabled = !row.enabled // 回滚状态
       // ElMessage.error('更新失败')
     }

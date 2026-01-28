@@ -119,6 +119,7 @@
           v-model="model.config.unit"
           class="w-full"
           :disabled="isReadOnly || hasRegisterDevice"
+          filterable
         >
           <el-option
             v-for="item in unitList"

@@ -49,13 +49,21 @@
         {{ product.manufactory }}
       </el-descriptions-item>
 
-      <el-descriptions-item label="产品类型">
+      <el-descriptions-item label="产品型号">
         {{ product.productModel }}
       </el-descriptions-item>
 
-      <el-descriptions-item label="产品标识符">
-        {{ product.identifier }}
+      <el-descriptions-item label="创建时间">
+        {{ product.createTime }}
       </el-descriptions-item>
+
+      <el-descriptions-item label="更新时间">
+        {{ product.updateTime }}
+      </el-descriptions-item>
+
+      <!-- <el-descriptions-item label="产品标识符">
+        {{ product.identifier }}
+      </el-descriptions-item> -->
 
       <el-descriptions-item label="产品描述" :span="2">
         {{ product.remark }}
@@ -205,6 +213,7 @@
     const valid = await formRef.value.validate()
     if (!valid) return
     submitLoading.value = true
+    console.log('form', form)
 
     try {
       await api.apiEditProduct({ ...props.product, ...form, id: props.product.id })
