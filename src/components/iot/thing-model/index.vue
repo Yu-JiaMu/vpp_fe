@@ -299,9 +299,11 @@
   }
 
   const addCustomFunctionPointDialogRef = useTemplateRef('addCustomFunctionPointDialogRef')
+  const originalIdentifier = ref(null) // 保存原始identifier
   const openCustomFunctionDialog = (row, index, type) => {
     isReadOnly.value = type === 'look'
     isEdit.value = type === 'edit'
+    originalIdentifier.value = row?.identifier || null // 保存原始identifier
     addCustomFunctionPointDialogRef.value.open(row, index, type)
   }
 
@@ -417,15 +419,27 @@
       model[key] = []
     }
 
-    const index = model[key].findIndex(
-      (row) => row.identifier.toLocaleLowerCase() === data.identifier.toLocaleLowerCase()
-    )
+    // 使用原始identifier查找记录（如果有原始identifier，说明是编辑操作）
+    let index = -1
+    if (originalIdentifier.value) {
+      index = model[key].findIndex(
+        (row) => row.identifier.toLocaleLowerCase() === originalIdentifier.value.toLocaleLowerCase()
+      )
+    } else {
+      // 如果没有原始identifier，用新identifier查找（新增操作）
+      index = model[key].findIndex(
+        (row) => row.identifier.toLocaleLowerCase() === data.identifier.toLocaleLowerCase()
+      )
+    }
 
     if (index > -1) {
       model[key][index] = data
     } else {
       model[key].push(data)
     }
+
+    // 清空原始identifier引用
+    originalIdentifier.value = null
 
     originTableData.value = transformThingJsonToTable(thingJson)
   }
