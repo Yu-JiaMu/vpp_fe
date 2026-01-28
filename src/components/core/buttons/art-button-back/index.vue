@@ -4,7 +4,7 @@
     :class="{ 'is-back': isBack }"
     @click="fullBack"
   >
-    <el-button class="icon-back mr-2.5" @click="goBack">
+    <el-button class="icon-back mr-2.5" @click.stop="goBack">
       <ArtSvgIcon icon="ri:arrow-left-line" class="text-lg text-g-5" />
     </el-button>
     <span> <slot /></span>
