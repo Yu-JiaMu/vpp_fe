@@ -28,16 +28,15 @@
     pagination.value.current = 1
     pagination.value.size = val
     emit('size-change', val)
+    emit('change')
   }
   const onPageChange = (val) => {
-    console.log('size change')
     pagination.value.current = val
     emit('current-change', val)
+    emit('change')
   }
 
-  const onChange = (val) => {
-    emit('change', val)
-  }
+  const onChange = (val) => {}
 </script>
 
 <style lang="scss" scoped>
