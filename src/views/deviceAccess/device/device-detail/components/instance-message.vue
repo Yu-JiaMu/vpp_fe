@@ -13,31 +13,31 @@
     <!-- 信息表格 -->
     <el-descriptions :column="3" border label-width="133px" class="">
       <el-descriptions-item label="设备ID">
-        {{ deviceDetail.deviceId }}
+        {{ deviceDetail.id }}
       </el-descriptions-item>
 
       <el-descriptions-item label="设备名称">
-        {{ deviceDetail.deviceName }}
+        {{ deviceDetail.name }}
       </el-descriptions-item>
 
       <el-descriptions-item label="设备品类">
-        {{ deviceDetail.deviceCategory }}
+        {{ deviceDetail.productName }}
       </el-descriptions-item>
 
       <el-descriptions-item label="固件版本">
-        {{ deviceDetail.nodeType }}
+        {{ deviceDetail.firmwareVersion }}
       </el-descriptions-item>
 
       <el-descriptions-item label="协议类型">
-        {{ deviceDetail.protocol }}
+        {{ deviceDetail.protocolType }}
       </el-descriptions-item>
 
-      <el-descriptions-item label="所属分组">
-        {{ deviceDetail.deviceGroup }}
-      </el-descriptions-item>
+      <!-- <el-descriptions-item label="所属分组">
+        {{ deviceDetail.devGroupIds }}
+      </el-descriptions-item> -->
 
       <el-descriptions-item label="注册时间">
-        {{ deviceDetail.registerTime }}
+        {{ deviceDetail.createTime }}
       </el-descriptions-item>
 
       <el-descriptions-item label="更新时间">
@@ -45,20 +45,22 @@
       </el-descriptions-item>
 
       <el-descriptions-item label="最后上线时间">
-        {{ deviceDetail.latestOnlineTime }}
+        {{ deviceDetail.lastOnlineTime }}
       </el-descriptions-item>
 
       <el-descriptions-item label="设备标签" :span="2">
         <div class="flex gap-2">
-          <el-tag type="primary" v-for="(item, index) in 5" :key="index">tag1</el-tag>
+          <el-tag type="primary" v-for="(tag, index) in deviceDetail.tagArray || []" :key="index">{{
+            tag
+          }}</el-tag>
         </div>
       </el-descriptions-item>
 
       <el-descriptions-item label="设备描述" :span="1">
-        {{ deviceDetail.deviceDescription }}
+        {{ deviceDetail.remark }}
       </el-descriptions-item>
       <el-descriptions-item label="位置信息" :span="4">
-        {{ deviceDetail.locationInfo }}
+        {{ deviceDetail.address }}
       </el-descriptions-item>
     </el-descriptions>
     <!-- 基本信息编辑弹窗 -->
@@ -67,9 +69,10 @@
       align-center
       title="基本信息编辑"
       :show-close="false"
-      width="598"
+      width="800"
       :close-on-click-modal="false"
       :z-index="99"
+      :close-on-press-escape="false"
     >
       <div class="p-2">
         <el-form ref="reviceFormRef" :model="form" :rules="rules" label-width="82px">
@@ -77,13 +80,13 @@
             <el-input v-model="form.id" placeholder="请输入设备ID" disabled />
           </el-form-item>
           <!-- 设备名称 -->
-          <el-form-item label="设备名称" prop="deviceName" required>
-            <el-input v-model="form.deviceName" placeholder="请输入设备名称" />
+          <el-form-item label="设备名称" prop="name" required>
+            <el-input v-model="form.name" placeholder="请输入设备名称" />
           </el-form-item>
 
           <!-- 所属分组 -->
-          <el-form-item label="所属分组" prop="deviceGroup">
-            <el-select v-model="form.deviceGroup" placeholder="请选择所属分组" multiple>
+          <!-- <el-form-item label="所属分组" prop="devGroupIds">
+            <el-select v-model="form.devGroupIds" placeholder="请选择所属分组" multiple>
               <el-option
                 v-for="item in groupList"
                 :key="item.value"
@@ -91,8 +94,8 @@
                 :value="item.value"
               />
             </el-select>
-          </el-form-item>
-          <el-form-item label="设备标签" prop="deviceLabels">
+          </el-form-item> -->
+          <el-form-item label="设备标签">
             <div class="labels-box">
               <span
                 class="tag"
@@ -118,28 +121,35 @@
           </el-form-item>
 
           <!-- 描述 -->
-          <el-form-item label="描述" prop="deviceDescription">
+          <el-form-item label="描述" prop="remark">
             <el-input
-              v-model="form.deviceDescription"
+              v-model="form.remark"
               type="textarea"
               placeholder="请输入设备说明"
               :rows="5"
               maxlength="200"
             />
             <div class="w-full mt-1 text-xs text-right text-gray-400">
-              {{ getByteLength(form.deviceDescription) }}/200
+              {{ getByteLength(form.remark) }}/200
             </div>
           </el-form-item>
 
           <el-form-item label="位置信息" class="relative col-span-2">
-            <div class="map-box">
-              <div v-if="form.address">
+            <div class="map-box" v-if="form.address">
+              <div>
                 {{ form.address }}
               </div>
-              <div> 经度:{{ form.lng }}--纬度:{{ form.lat }} </div>
+              <div>
+                <span>经度:{{ form.lng }}</span>
+                <span class="ml-[5px] mr-[15px]">纬度:{{ form.lat }}</span>
+                <span class="cursor-pointer text-theme" @click="clearAddress">清空</span>
+              </div>
             </div>
             <div class="mt10" id="instance-map" style="height: 250px; width: 100%"></div>
-            <div class="absolute top-[80px] left-[30px]">
+            <div
+              class="absolute left-[30px]"
+              :class="{ 'top-[80px]': form.address, 'top-[15px]': !form.address }"
+            >
               <el-input
                 v-model="input"
                 id="tipinput"
@@ -156,12 +166,7 @@
       <!-- 底部按钮 -->
       <template #footer>
         <div class="flex justify-center gap-[6px]">
-          <el-button
-            size="large"
-            type="info"
-            class="w-[177px]"
-            v-ripple
-            @click="dialogVisible = false"
+          <el-button size="large" type="info" class="w-[177px]" v-ripple @click="handleCancel"
             >取消</el-button
           >
           <el-button type="primary" class="w-[177px]" v-ripple @click="handleSubmit">
@@ -178,24 +183,33 @@
   import { getByteLength, validateNameLength, validateCommon, validateDescLength } from '@/utils'
   import { Search } from '@element-plus/icons-vue'
   import newMap from '@/utils/map'
-  const deviceDetail = ref({
-    deviceId: '1955073219080001',
-    deviceName: '计量电表001',
-    deviceCategory: '能源电力/电表/表计',
-    deviceGroup: '以太网',
-    nodeType: 'v1.0.0',
-    protocol: 'Modbus TCP',
-    registerTime: '2023-08-01 10:00:00',
-    updateTime: '2023-08-10 15:30:00',
-    latestOnlineTime: '2023-08-15 09:45:00',
-    deviceDescription:
-      '这是一款高性能的计量电表，适用于各种工业和商业应用场景，具有精准的测量能力和稳定的性能表现。',
-
-    locationInfo: '位置信息' // 图片中未明确
+  import * as api from '@/api/iot'
+  const route = useRoute()
+  const props = defineProps({
+    deviceDetail: {
+      type: Object,
+      default: () => {}
+    }
   })
+  const emit = defineEmits(['eidtSuccess'])
+  // const deviceDetail = ref({
+  //   deviceId: '1955073219080001',
+  //   deviceName: '计量电表001',
+  //   deviceCategory: '能源电力/电表/表计',
+  //   deviceGroup: '以太网',
+  //   nodeType: 'v1.0.0',
+  //   protocol: 'Modbus TCP',
+  //   registerTime: '2023-08-01 10:00:00',
+  //   updateTime: '2023-08-10 15:30:00',
+  //   latestOnlineTime: '2023-08-15 09:45:00',
+  //   deviceDescription:
+  //     '这是一款高性能的计量电表，适用于各种工业和商业应用场景，具有精准的测量能力和稳定的性能表现。',
+
+  //   locationInfo: '位置信息' // 图片中未明确
+  // })
   const rules = reactive({
     // deviceId: [{ validator: validateProductId, trigger: 'blur' }],
-    deviceName: [
+    name: [
       {
         required: true,
         validator: validateNameLength,
@@ -204,22 +218,22 @@
       },
       { validator: validateCommon, trigger: 'blur' }
     ],
-    deviceGroup: [{ type: 'array', required: false, message: '请选择所属分组', trigger: 'change' }],
-    status: [
+    // devGroupIds: [{ type: 'array', required: false, message: '请选择所属分组', trigger: 'change' }],
+    devEnable: [
       {
         required: true,
         message: '请选择启用/禁用状态',
         trigger: 'change'
       }
     ],
-    description: [{ validator: validateDescLength, trigger: 'blur' }]
+    remark: [{ validator: validateDescLength, trigger: 'blur' }]
   })
-  const form = ref({
+  const form = reactive({
     id: '',
-    deviceName: '',
-    deviceDescription: '',
-    tagList: [],
-    deviceGroup: '',
+    name: '',
+    remark: '',
+    // tagList: [],
+    // devGroupIds: '',
     address: 'dsfsdf',
     lng: '121',
     lat: '456'
@@ -229,24 +243,7 @@
     { label: '分组一', value: 'group1' },
     { label: '分组二', value: 'group2' }
   ]
-  const tagList = ref([
-    {
-      flag: false,
-      value: 'tag1'
-    },
-    {
-      flag: false,
-      value: 'tag2'
-    },
-    {
-      flag: false,
-      value: 'tag1'
-    },
-    {
-      flag: false,
-      value: 'tag2'
-    }
-  ])
+  const tagList = ref([])
   const addTag = () => {
     tagList.value.push({
       flag: true,
@@ -257,51 +254,99 @@
     tagList.value.splice(index, 1)
   }
   const submitTag = (item) => {
-    if (item.value.trim() === '') return ElMessage.warning('标签内容不能为空')
+    const value = item.value
+    if (value.trim() === '') return ElMessage.warning('标签内容不能为空')
+    const pattern = /^[a-zA-Z0-9\u4e00-\u9fa5\-_@]*$/
+    if (value && !pattern.test(value)) {
+      // callback(new Error('仅支持中文、英文字母、数字、短划线、下划线、@'))
+      return ElMessage.warning('仅支持中文、英文字母、数字、短划线、下划线、@')
+    }
+    if (value && getByteLength(value) > 50) {
+      // callback(new Error('描述不能超过200个字符（中文占2位）'))
+      return ElMessage.warning('描述不能超过50个字符）')
+    }
     item.flag = false
   }
   const dialogVisible = ref(false)
   const handleEdit = async () => {
-    // Object.assign(form, pick(props.product, ['logo', 'deviceName', 'vendor', 'model', 'deviceDescription']))
+    input.value = ''
+    Object.assign(
+      form,
+      pick(props.deviceDetail, ['id', 'name', 'tagArray', 'remark', 'address', 'lng', 'lat'])
+    )
+    tagList.value = form.tagArray.map((item) => {
+      return {
+        value: item,
+        flag: false
+      }
+    })
     dialogVisible.value = true
     await nextTick()
     createMap()
+  }
+  const handleCancel = () => {
+    dialogVisible.value = false
+
+    map.value.destroy()
   }
   const reviceFormRef = ref(null)
   const handleSubmit = async () => {
     if (!reviceFormRef.value) return
     const valid = await reviceFormRef.value.validate()
-
     if (!valid) return
+    const params = {
+      id: form.id,
+      name: form.name,
+      remark: form.remark,
+      tags: tagList.value.map((tag) => tag.value),
+      lng: form.lng,
+      lat: form.lat,
+      address: form.address
+    }
+    await api.apiDevEdit(params)
+    dialogVisible.value = false
+    ElMessage.success('编辑成功')
+    emit('eidtSuccess')
   }
   //地图
   // 创建地图
   const input = ref('')
   const map = ref('')
   const createMap = async () => {
+    console.log(form, 'console.log(form)')
     map.value = new newMap()
     await map.value.createMap('instance-map')
+    if (form.lng && form.lat) {
+      console.log(form, 'console.log(form)')
+      map.value.addMarker([form.lng, form.lat])
+      map.value.setCenter([form.lng, form.lat])
+    }
     await getAddress()
   }
   const getAddress = async () => {
     const res = await map.value.getSearchAddressList('tipinput')
     console.log('res------address', res)
-    form.value.address = res.poi.district + res.poi.name
-    const { lng, lat } = res.poi.location
-    form.value.lng = lng
-    form.value.lat = lat
+    form.address = res.address
+    const { lng, lat } = res
+    form.lng = lng
+    form.lat = lat
     console.log(form, lng, lat)
   }
-
+  const clearAddress = async () => {
+    map.value.clearMarkers()
+    form.lng = ''
+    form.lat = ''
+    form.address = ''
+  }
   watch(
     () => dialogVisible.value,
     (newValue) => {
       if (!newValue) {
         map.value.destroy()
-      } else {
       }
     }
   )
+
   onMounted(() => {})
   onUnmounted(() => {})
 </script>
@@ -314,9 +359,8 @@
     width: 100%;
     box-sizing: border-box;
     padding: 5px 10px;
-    display: grid;
-    //一行放8个标签
-    grid-template-columns: repeat(5, 1fr);
+    display: flex;
+    flex-wrap: wrap;
     gap: 5px;
 
     .tag {

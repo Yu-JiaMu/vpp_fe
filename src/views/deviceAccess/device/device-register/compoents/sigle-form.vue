@@ -127,7 +127,7 @@
             {{ getByteLength(form.remark) }}/200
           </div>
         </el-form-item>
-        <el-form-item label="设备标签" prop="deviceLabels">
+        <el-form-item label="设备标签">
           <div class="labels-box">
             <span
               class="tag"
@@ -260,7 +260,17 @@
     tagList.value.splice(index, 1)
   }
   const submitTag = (item) => {
-    if (item.value.trim() === '') return ElMessage.warning('标签内容不能为空')
+    const value = item.value
+    if (value.trim() === '') return ElMessage.warning('标签内容不能为空')
+    const pattern = /^[a-zA-Z0-9\u4e00-\u9fa5\-_@]*$/
+    if (value && !pattern.test(value)) {
+      // callback(new Error('仅支持中文、英文字母、数字、短划线、下划线、@'))
+      return ElMessage.warning('仅支持中文、英文字母、数字、短划线、下划线、@')
+    }
+    if (value && getByteLength(value) > 50) {
+      // callback(new Error('描述不能超过200个字符（中文占2位）'))
+      return ElMessage.warning('描述不能超过50个字符）')
+    }
     item.flag = false
   }
   // 拓展字段数据
@@ -289,7 +299,10 @@
         devEnable: form.devEnable,
         remark: form.remark,
         expandInfo: form.expandInfo,
-        tags: tagList.value.map((tag) => tag.value)
+        tags: tagList.value.map((tag) => tag.value),
+        lng: form.lng,
+        lat: form.lat,
+        address: form.address
       }
 
       console.log('提交数据:', submitData)
@@ -338,8 +351,8 @@
   const getAddress = async () => {
     const res = await map.value.getSearchAddressList('tipinput')
     console.log('res------address', res)
-    form.address = res.poi.district + res.poi.name
-    const { lng, lat } = res.poi.location
+    form.address = res.address
+    const { lng, lat } = res
     form.lng = lng
     form.lat = lat
   }
@@ -364,9 +377,8 @@
     width: 100%;
     box-sizing: border-box;
     padding: 5px;
-    display: grid;
-    //一行放8个标签
-    grid-template-columns: repeat(8, minmax(0, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 10px;
 
     .tag {
@@ -377,7 +389,7 @@
       font-size: 14px;
       font-weight: 400;
       color: #505658;
-
+      padding: 0 5px;
       /* 添加以下样式实现居中 */
       display: flex; /* 使用flex布局 */
       align-items: center; /* 垂直居中 */
