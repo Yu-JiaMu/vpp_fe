@@ -119,7 +119,7 @@
               :disabled="hasRegisterDevice"
               type="danger"
               link
-              @click="handleRemove($index)"
+              @click="handleRemove(row, $index)"
             >
               删除
             </el-button>
@@ -315,15 +315,38 @@
   }
 
   /* ====================== 删除 ====================== */
+  const removeFromModelByIdentifier = (model, identifier) => {
+    if (!identifier) return
 
-  const handleRemove = async (index) => {
+    Object.keys(model).forEach((key) => {
+      const list = model[key]
+      if (!Array.isArray(list)) return
+
+      const index = list.findIndex(
+        (item) => item.identifier?.toLocaleLowerCase() === identifier.toLocaleLowerCase()
+      )
+
+      if (index > -1) {
+        list.splice(index, 1)
+      }
+    })
+  }
+
+  const handleRemove = async (row, index) => {
+    const model = thingJson.modules[0]
+
     try {
       await ElMessageBox.confirm('此操作将删除该物模型，是否继续？', '提示', {
         type: 'warning'
       })
 
       isChange.value = true
+
+      // 删除 model 中对应的项
+      removeFromModelByIdentifier(model, row.identifier)
+
       originTableData.value.splice(index, 1)
+
       ElMessage.success('删除成功')
     } catch (err) {}
   }
@@ -334,12 +357,21 @@
       return
     }
 
+    const model = thingJson.modules[0]
+
     try {
       await ElMessageBox.confirm('此操作将删除该物模型，是否继续？', '提示', {
         type: 'warning'
       })
 
       isChange.value = true
+
+      // 先删 model
+      selectedItems.value.forEach((item) => {
+        removeFromModelByIdentifier(model, item.identifier)
+      })
+
+      // 再删表格
       originTableData.value = differenceBy(originTableData.value, selectedItems.value, 'id')
 
       tableRef.value?.clearSelection()
@@ -356,13 +388,20 @@
     const model = thingJson.modules[0]
 
     data.forEach((item) => {
-      const exist = originTableData.value.find(
-        (row) => row.identifier.toLocaleLowerCase() === item.identifier.toLocaleLowerCase()
-      )
-      if (exist) return
-
       const key = FUNCTION_MODE_MAP.getItem(item.functionMode).pKey
-      model[key].push(item.originData)
+      const list = model[key]
+
+      const index = list.findIndex(
+        (row) => row.identifier?.toLocaleLowerCase() === item.identifier?.toLocaleLowerCase()
+      )
+
+      if (index > -1) {
+        list.splice(index, 1, item.originData)
+        ElMessage.success('更新成功')
+      } else {
+        list.push(item.originData)
+        ElMessage.success('添加成功')
+      }
     })
 
     originTableData.value = transformThingJsonToTable(thingJson)
