@@ -219,13 +219,13 @@
       { validator: validateCommon, trigger: 'blur' }
     ],
     // devGroupIds: [{ type: 'array', required: false, message: '请选择所属分组', trigger: 'change' }],
-    devEnable: [
-      {
-        required: true,
-        message: '请选择启用/禁用状态',
-        trigger: 'change'
-      }
-    ],
+    // devEnable: [
+    //   {
+    //     required: true,
+    //     message: '请选择启用/禁用状态',
+    //     trigger: 'change'
+    //   }
+    // ],
     remark: [{ validator: validateDescLength, trigger: 'blur' }]
   })
   const form = reactive({
@@ -367,11 +367,10 @@
       background: #eefeff;
       border: 1px solid #38ecf2;
       border-radius: 6px;
-      height: 24px;
       font-size: 14px;
       font-weight: 400;
       color: #505658;
-
+      padding: 0 5px;
       /* 添加以下样式实现居中 */
       display: flex; /* 使用flex布局 */
       align-items: center; /* 垂直居中 */
