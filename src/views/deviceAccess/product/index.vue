@@ -137,7 +137,7 @@
     },
     {
       label: '产品品类',
-      key: 'productCategoryName',
+      key: 'categoryId',
       type: 'select',
       props: {
         placeholder: '请选择产品品类',
