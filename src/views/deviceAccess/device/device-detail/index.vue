@@ -11,25 +11,34 @@
 
       <!-- 设备名称 -->
       <div class="flex-1">
-        <div class="flex items-center gap-2 mb-1.5">
-          <span class="text-base text-gray-800 font-scMedium">{{ device.name }} </span>
-          <div>
+        <div class="flex items-center gap-4 mb-1.5">
+          <span class="text-base text-gray-800 font-scMedium">{{ deviceDetail.name }} </span>
+          <div class="flex items-center">
             <span class="text-sm text-g-505658">状态：</span>
-            <el-tag :type="device.status === '在线' ? 'success' : 'danger'" size="small">
-              {{ device.status }}
+            <el-tag
+              :type="
+                deviceDetail.devState === DEVICE_STATUS_TYPES.values.ONLINE
+                  ? 'success'
+                  : deviceDetail.devState === DEVICE_STATUS_TYPES.values.OFFLINE
+                    ? 'danger'
+                    : 'warning'
+              "
+              size="small"
+            >
+              {{ DEVICE_STATUS_TYPES.getLabel(deviceDetail.devState) }}
             </el-tag>
           </div>
         </div>
         <div class="text-sm text-g-505658">
           <span>设备ID：</span>
           <span>
-            {{ device.id }}
+            {{ deviceDetail.id }}
           </span>
         </div>
         <div class="text-sm text-g-505658">
           <span>所属产品：</span>
           <span class="underline text-primary">
-            {{ device.category }}
+            {{ deviceDetail.productName }}
           </span>
         </div>
       </div>
@@ -46,7 +55,11 @@
       </div>
     </div>
     <!-- 多个子组件 -->
-    <InstanceMessage v-if="activeTab === 'instanceMessage'"></InstanceMessage>
+    <InstanceMessage
+      :deviceDetail="deviceDetail"
+      v-if="activeTab === 'instanceMessage'"
+      @eidt-success="getDeviceDetail(deviceDetail.id)"
+    ></InstanceMessage>
     <OperateStatus v-if="activeTab === 'operateStatus'"></OperateStatus>
     <DeviceFunction v-if="activeTab === 'deviceFunction'"></DeviceFunction>
     <DeviceDiagnosis v-if="activeTab === 'deviceDiagnosis'"></DeviceDiagnosis>
@@ -66,16 +79,15 @@
   import LogManagement from './components/log-management.vue'
   import SubDeviceManagement from './components/sub-device-management/index.vue'
   import ExtendedField from './components/extended-field.vue'
-
-  const device = ref({
-    id: '1955073219080001',
-    name: '计量电表001',
-    status: '在线',
-    deviceCount: 41,
-    category: '能源电力 / 电表 / 表计',
-    nodeType: '网关设备'
-  })
-  const activeTab = ref('extend')
+  import * as api from '@/api/iot'
+  import { NODE_TYPES, DEVICE_STATUS_TYPES } from '@/enums'
+  const route = useRoute()
+  const deviceDetail = ref({})
+  const getDeviceDetail = async (deviceId) => {
+    const result = await api.apiDevDetail(deviceId)
+    deviceDetail.value = result
+  }
+  const activeTab = ref('instanceMessage')
   const TABS = [
     {
       label: '实例信息',
@@ -107,6 +119,11 @@
       value: 'extend'
     }
   ]
+  onMounted(() => {
+    if (route.query.id) {
+      getDeviceDetail(route.query.id)
+    }
+  })
 </script>
 
 <style lang="scss" scoped>

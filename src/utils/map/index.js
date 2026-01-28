@@ -132,7 +132,7 @@ class SimpleAMapService {
   async addMarker(lnglat, title = '', options = {}) {
     if (!this.map) return null
     const marker = new this.AMap.Marker({
-      position: lnglat,
+      position: lnglat, //Array.isArray(lnglat) ? new this.AMap.LngLat(lnglat[0], lnglat[1]) : lnglat,
       title: title,
       icon: options.icon || 'https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png',
       offset: new this.AMap.Pixel(-13, -30),
@@ -323,12 +323,21 @@ class SimpleAMapService {
         }
         this.AMap.plugin(['AMap.AutoComplete'], () => {
           const auto = new this.AMap.AutoComplete(autoOptions)
-          auto.on('select', (e) => {
+          auto.on('select', async (e) => {
             console.log(e)
             this.clearMarkers()
             this.addMarker(e.poi.location)
             this.setCenter(e.poi.location)
-            resolve(e)
+            const lnglat = [e.poi.location.lng, e.poi.location.lat]
+            const address = await this.getCoordinatesToAddress(lnglat)
+            if (lnglat.length > 0) {
+              const addresObj = {
+                address: address,
+                lng: lnglat[0],
+                lat: lnglat[1]
+              }
+              resolve(addresObj)
+            }
           })
         })
       } catch (err) {
@@ -337,7 +346,38 @@ class SimpleAMapService {
       }
     })
   }
+  //逆地理编码（坐标 -> 地址）
+  async getCoordinatesToAddress(lnglat) {
+    if (!this.AMap) {
+      await this.loadAMapAPI()
+    }
 
+    return new Promise((resolve, reject) => {
+      // 加载 Geocoder 插件
+      this.AMap.plugin('AMap.Geocoder', () => {
+        try {
+          // 创建 Geocoder 实例
+          const geocoder = new this.AMap.Geocoder({
+            city: '全国'
+          })
+
+          // 调用逆地理编码
+          geocoder.getAddress(lnglat, (status, result) => {
+            if (status === 'complete' && result.regeocode) {
+              const address = result.regeocode.formattedAddress
+              resolve(address)
+            } else {
+              console.error('逆地理编码失败:', result)
+              reject('根据经纬度查询地址失败')
+            }
+          })
+        } catch (error) {
+          console.error('逆地理编码错误:', error)
+          reject('地理编码器初始化失败: ' + error.message)
+        }
+      })
+    })
+  }
   // 销毁地图
   destroy() {
     if (this.map) {

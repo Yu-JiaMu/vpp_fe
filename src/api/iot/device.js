@@ -51,3 +51,12 @@ export function apiDevdownloadExcelTemplate() {
 export function apiDevBatchRegister(params) {
   return request.post(`/stage-api/model/device/batch/register`, params)
 }
+//获取设备详情
+export function apiDevDetail(deviceId) {
+  return request.get(`/stage-api/model/device/${deviceId}`)
+}
+//编辑
+
+export function apiDevEdit(params) {
+  return request.put(`/stage-api/model/device/edit`, params)
+}
