@@ -18,7 +18,7 @@
               content="若不填写，系统将自动生成唯一标识"
               placement="top"
             >
-              <ArtSvgIcon icon="ri:question-line" class="text-g-2 ml-2" />
+              <ArtSvgIcon icon="ri:question-line" class="ml-2 text-g-2" />
             </el-tooltip>
           </div>
         </template>
@@ -60,7 +60,7 @@
               class="ml-1 text-[18px]"
             />
           </div>
-          <div class="flex-grow border-t border-dashed border-gray-300"></div>
+          <div class="flex-grow border-t border-gray-300 border-dashed"></div>
         </div>
       </div>
       <template v-if="TYShowMore">
@@ -84,7 +84,7 @@
               class="ml-1 text-[18px]"
             />
           </div>
-          <div class="flex-grow border-t border-dashed border-gray-300"></div>
+          <div class="flex-grow border-t border-gray-300 border-dashed"></div>
         </div>
       </div>
 
@@ -111,7 +111,7 @@
               class="ml-1 text-[18px]"
             />
           </div>
-          <div class="flex-grow border-t border-dashed border-gray-300"></div>
+          <div class="flex-grow border-t border-gray-300 border-dashed"></div>
         </div>
       </div>
       <template v-if="formShowMore.GDShowMore">
@@ -123,7 +123,7 @@
             placeholder="请输入"
             maxlength="200"
           />
-          <div class="w-full text-right text-xs text-gray-400 mt-1">
+          <div class="w-full mt-1 text-xs text-right text-gray-400">
             {{ getByteLength(form.remark) }}/200
           </div>
         </el-form-item>
@@ -151,7 +151,7 @@
             /></el-icon>
           </div>
         </el-form-item>
-        <el-form-item label="位置信息" class="col-span-2 relative">
+        <el-form-item label="位置信息" class="relative col-span-2">
           <template #label="{ label }">
             <div>
               <span class="mr10">{{ label }}</span>
@@ -232,10 +232,7 @@
         trigger: 'change'
       }
     ],
-    remark: [
-      { validator: validateCommon, trigger: 'blur' },
-      { validator: validateDescLength, trigger: 'blur' }
-    ]
+    remark: [{ validator: validateDescLength, trigger: 'blur' }]
   })
   const groupList = [
     { label: '默认分组', value: 'default' },

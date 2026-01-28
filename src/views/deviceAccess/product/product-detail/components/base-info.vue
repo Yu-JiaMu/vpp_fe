@@ -192,10 +192,7 @@
       },
       { validator: validateCommon, trigger: 'blur' }
     ],
-    remark: [
-      { validator: validateCommon, trigger: 'blur' },
-      { validator: validateDescLength, trigger: 'blur' }
-    ]
+    remark: [{ validator: validateDescLength, trigger: 'blur' }]
   }
 
   const handleReset = () => {

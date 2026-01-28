@@ -180,11 +180,6 @@
         }
         ElMessage.success('更新成功')
       } catch (error) {
-        ElMessageBox.alert('导入失败，请检查导入内容后重新导入。', '温馨提示', {
-          confirmButtonText: '确认',
-          type: 'warning',
-          callback: (action) => {}
-        })
         throw error
       }
     }

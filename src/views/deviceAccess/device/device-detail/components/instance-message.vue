@@ -1,11 +1,11 @@
 <template>
-  <div class="base-info bg-white base-info-table">
-    <div class="flex justify-between items-center p-5">
+  <div class="bg-white base-info base-info-table">
+    <div class="flex items-center justify-between p-5">
       <div class="font-scBold text-g-131617 flex-c">
         <img src="@/assets/images/icon/icon-info.png" class="w-5 h-5 mr-2.5" alt="" />
         基本信息
       </div>
-      <div class="text-g-303537 flex-c cursor-pointer" @click="handleEdit">
+      <div class="cursor-pointer text-g-303537 flex-c" @click="handleEdit">
         <img src="@/assets/images/icon/icon-edit.png" class="w-5 h-5 mr-1" alt="" />
         编辑
       </div>
@@ -129,12 +129,12 @@
               :rows="5"
               maxlength="200"
             />
-            <div class="w-full text-right text-xs text-gray-400 mt-1">
+            <div class="w-full mt-1 text-xs text-right text-gray-400">
               {{ getByteLength(form.remark) }}/200
             </div>
           </el-form-item>
 
-          <el-form-item label="位置信息" class="col-span-2 relative">
+          <el-form-item label="位置信息" class="relative col-span-2">
             <div class="map-box" v-if="form.address">
               <div>
                 {{ form.address }}
@@ -142,7 +142,7 @@
               <div>
                 <span>经度:{{ form.lng }}</span>
                 <span class="ml-[5px] mr-[15px]">纬度:{{ form.lat }}</span>
-                <span class="text-theme cursor-pointer" @click="clearAddress">清空</span>
+                <span class="cursor-pointer text-theme" @click="clearAddress">清空</span>
               </div>
             </div>
             <div class="mt10" id="instance-map" style="height: 250px; width: 100%"></div>
@@ -226,10 +226,7 @@
         trigger: 'change'
       }
     ],
-    remark: [
-      { validator: validateCommon, trigger: 'blur' },
-      { validator: validateDescLength, trigger: 'blur' }
-    ]
+    remark: [{ validator: validateDescLength, trigger: 'blur' }]
   })
   const form = reactive({
     id: '',

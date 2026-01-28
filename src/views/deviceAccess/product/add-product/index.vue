@@ -266,10 +266,7 @@
     networkWay: [{ required: true, message: '请选择联网方式', trigger: 'change' }],
     applyLayerProtocol: [{ required: true, message: '请选择协议类型', trigger: 'change' }],
     authType: [{ required: true, message: '请选择认证方式', trigger: 'change' }],
-    remark: [
-      { validator: validateCommon, trigger: 'blur' },
-      { validator: validateDescLength, trigger: 'blur' }
-    ]
+    remark: [{ validator: validateDescLength, trigger: 'blur' }]
   }
 
   const handleCategoryChange = () => {

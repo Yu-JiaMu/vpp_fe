@@ -24,7 +24,7 @@
         </div> -->
         </el-form-item>
 
-        <el-form-item v-if="fromFunction" label="填写约束" prop="required" required>
+        <el-form-item v-if="isShowRequired" :label="constraintLabel" prop="required" required>
           <el-select
             v-model="form.required"
             class="w-full"
@@ -40,7 +40,7 @@
         </el-form-item>
 
         <!-- 读写类型 -->
-        <el-form-item v-if="!isAddStruct && !fromFunction" label="读写类型" prop="accessMode">
+        <el-form-item v-if="!isAddStruct && !isShowRequired" label="读写类型" prop="accessMode">
           <el-radio-group v-model="form.accessMode" :disabled="isReadOnly || hasRegisterDevice">
             <el-radio v-for="item in ACCESS_MODE_MAP.options" :value="item.value">{{
               item.label
@@ -54,6 +54,7 @@
           :form-ref="formRef"
           prop-path="dataType"
           :tableData="tableData"
+          :track="track"
         />
 
         <el-form-item label="描述" prop="desc">
@@ -98,10 +99,13 @@
       type: String,
       default: ''
     },
-    fromFunction: {
-      // 是否来自功能
-      type: Boolean,
-      default: false
+    track: {
+      // 'normal' | 'function' | 'extended'
+      // normal: 常规属性模式
+      // function: 来自功能的参数模式
+      // extended: 来自拓展字段
+      type: String,
+      default: 'normal'
     },
     currentIndex: {
       type: Number,
@@ -131,6 +135,7 @@
   const rules = {
     name: [
       { required: true, message: '请输入名称', trigger: 'blur' },
+      { validator: validateCommon, trigger: 'blur' },
       { validator: validateNameLength, trigger: 'blur' }
     ],
     identifier: [
@@ -182,18 +187,22 @@
     ],
     accessMode: [{ required: true }],
     required: [{ required: true, message: '请选择约束类型' }],
-    desc: [
-      { validator: validateCommon, trigger: 'blur' },
-      { validator: validateDescLength, trigger: 'blur' }
-    ]
+    desc: [{ validator: validateDescLength, trigger: 'blur' }]
   }
 
   const isAddStruct = computed(() => props.parentType === 'object')
-  const labelName = computed(() => {
-    let label = ''
-    label = isAddStruct.value || props.fromFunction ? '参数名称' : '功能名称'
 
-    return label
+  const isShowRequired = computed(() => ['function', 'extended'].includes(props.track))
+
+  const labelName = computed(() => {
+    if (isAddStruct.value || props.parentType === 'function') {
+      return '参数名称'
+    }
+    return '功能名称'
+  })
+
+  const constraintLabel = computed(() => {
+    return props.track === 'extended' ? '是否必填' : '填写约束'
   })
 
   watch(

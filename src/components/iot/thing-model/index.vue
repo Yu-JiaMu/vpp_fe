@@ -89,7 +89,7 @@
       class="w-full"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" />
+      <el-table-column v-if="isSettingModel" type="selection" />
       <el-table-column prop="type" label="功能类型" width="100" />
       <el-table-column prop="source" label="功能来源" width="100" />
       <el-table-column prop="name" label="功能名称" width="120" />
@@ -119,7 +119,7 @@
               :disabled="hasRegisterDevice"
               type="danger"
               link
-              @click="handleRemove($index)"
+              @click="handleRemove(row, $index)"
             >
               删除
             </el-button>
@@ -299,9 +299,11 @@
   }
 
   const addCustomFunctionPointDialogRef = useTemplateRef('addCustomFunctionPointDialogRef')
+  const originalIdentifier = ref(null) // 保存原始identifier
   const openCustomFunctionDialog = (row, index, type) => {
     isReadOnly.value = type === 'look'
     isEdit.value = type === 'edit'
+    originalIdentifier.value = row?.identifier || null // 保存原始identifier
     addCustomFunctionPointDialogRef.value.open(row, index, type)
   }
 
@@ -315,15 +317,38 @@
   }
 
   /* ====================== 删除 ====================== */
+  const removeFromModelByIdentifier = (model, identifier) => {
+    if (!identifier) return
 
-  const handleRemove = async (index) => {
+    Object.keys(model).forEach((key) => {
+      const list = model[key]
+      if (!Array.isArray(list)) return
+
+      const index = list.findIndex(
+        (item) => item.identifier?.toLocaleLowerCase() === identifier.toLocaleLowerCase()
+      )
+
+      if (index > -1) {
+        list.splice(index, 1)
+      }
+    })
+  }
+
+  const handleRemove = async (row, index) => {
+    const model = thingJson.modules[0]
+
     try {
-      await ElMessageBox.confirm('此操作将删除该物模型，是否继续？', '提示', {
+      await ElMessageBox.confirm('此操作将删除该功能点，是否继续？', '提示', {
         type: 'warning'
       })
 
       isChange.value = true
+
+      // 删除 model 中对应的项
+      removeFromModelByIdentifier(model, row.identifier)
+
       originTableData.value.splice(index, 1)
+
       ElMessage.success('删除成功')
     } catch (err) {}
   }
@@ -334,12 +359,21 @@
       return
     }
 
+    const model = thingJson.modules[0]
+
     try {
-      await ElMessageBox.confirm('此操作将删除该物模型，是否继续？', '提示', {
+      await ElMessageBox.confirm('此操作将批量删除该功能点，是否继续？', '提示', {
         type: 'warning'
       })
 
       isChange.value = true
+
+      // 先删 model
+      selectedItems.value.forEach((item) => {
+        removeFromModelByIdentifier(model, item.identifier)
+      })
+
+      // 再删表格
       originTableData.value = differenceBy(originTableData.value, selectedItems.value, 'id')
 
       tableRef.value?.clearSelection()
@@ -356,13 +390,20 @@
     const model = thingJson.modules[0]
 
     data.forEach((item) => {
-      const exist = originTableData.value.find(
-        (row) => row.identifier.toLocaleLowerCase() === item.identifier.toLocaleLowerCase()
-      )
-      if (exist) return
-
       const key = FUNCTION_MODE_MAP.getItem(item.functionMode).pKey
-      model[key].push(item.originData)
+      const list = model[key]
+
+      const index = list.findIndex(
+        (row) => row.identifier?.toLocaleLowerCase() === item.identifier?.toLocaleLowerCase()
+      )
+
+      if (index > -1) {
+        list.splice(index, 1, item.originData)
+        ElMessage.success('更新成功')
+      } else {
+        list.push(item.originData)
+        ElMessage.success('添加成功')
+      }
     })
 
     originTableData.value = transformThingJsonToTable(thingJson)
@@ -378,15 +419,27 @@
       model[key] = []
     }
 
-    const index = model[key].findIndex(
-      (row) => row.identifier.toLocaleLowerCase() === data.identifier.toLocaleLowerCase()
-    )
+    // 使用原始identifier查找记录（如果有原始identifier，说明是编辑操作）
+    let index = -1
+    if (originalIdentifier.value) {
+      index = model[key].findIndex(
+        (row) => row.identifier.toLocaleLowerCase() === originalIdentifier.value.toLocaleLowerCase()
+      )
+    } else {
+      // 如果没有原始identifier，用新identifier查找（新增操作）
+      index = model[key].findIndex(
+        (row) => row.identifier.toLocaleLowerCase() === data.identifier.toLocaleLowerCase()
+      )
+    }
 
     if (index > -1) {
       model[key][index] = data
     } else {
       model[key].push(data)
     }
+
+    // 清空原始identifier引用
+    originalIdentifier.value = null
 
     originTableData.value = transformThingJsonToTable(thingJson)
   }

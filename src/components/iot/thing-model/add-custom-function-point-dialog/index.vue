@@ -31,14 +31,16 @@
     </div>
     <!-- Footer -->
     <template #footer>
-      <div class="flex justify-center gap-[6px]">
-        <el-button size="large" type="info" class="w-[177px]" v-ripple @click="handleCancel">
-          取消
-        </el-button>
-        <el-button type="primary" class="w-[177px]" v-ripple @click="handleSubmit">
-          确认
-        </el-button>
-      </div>
+      <template v-if="!isReadOnly">
+        <div class="flex justify-center gap-[6px]">
+          <el-button size="large" type="info" class="w-[177px]" v-ripple @click="handleCancel">
+            取消
+          </el-button>
+          <el-button type="primary" class="w-[177px]" v-ripple @click="handleSubmit">
+            确认
+          </el-button>
+        </div>
+      </template>
     </template>
   </el-dialog>
 </template>

@@ -316,10 +316,11 @@ export function validateBankCard(value: string): boolean {
   return sum % 10 === 0
 }
 
-// 计算字符长度：中文2字符，其他1字符
+// 计算字符长度
 export const getByteLength = (str: string) => {
   if (!str) return 0
-  return str.length + (str.match(/[^\x00-\xff]/g) || []).length
+  // return str.length + (str.match(/[^\x00-\xff]/g) || []).length // 中文2字符，其他1字符
+  return str.length
 }
 
 // id校验

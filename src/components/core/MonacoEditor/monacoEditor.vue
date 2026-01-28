@@ -114,6 +114,11 @@
       scrollBeyondLastLine: false,
       theme: props.theme, // 主题色: vs(默认高亮), vs-dark(黑色), hc-black(高亮黑色)
       formatOnPaste: true,
+      quickSuggestions: true, // 是否自动弹提示
+      suggestOnTriggerCharacters: true, // 输入 . { 自动提示
+      stickyScroll: {
+        enabled: false
+      },
       ...(omit(props.options, ['readOnly']) || {})
     })
 

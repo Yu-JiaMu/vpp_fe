@@ -78,13 +78,17 @@
     </el-table>
 
     <!-- 添加功能点 -->
-    <ParamsDialog ref="dialogRef" v-model="originTableData" @submit="handleSubmit()" />
+    <ParamsDialog
+      ref="dialogRef"
+      track="extended"
+      v-model="originTableData"
+      @submit="handleSubmit()"
+    />
   </div>
 </template>
 
 <script setup>
   import { ref, computed, watchEffect, provide } from 'vue'
-  import ParamsDialog from '@/components/iot/thing-model/thing-function/params-dialog.vue'
   import FunctionDefinePreview from '@/components/iot/thing-model/function-define-preview/index.vue'
   import { handleDataType } from '@/utils'
   import { REQUIRED_MAP } from '@/enums'
