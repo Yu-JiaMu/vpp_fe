@@ -190,6 +190,7 @@
         :formRef="formRef"
         :prop-path="`${propPath}.element`"
         :tableData="tableData"
+        :track="track"
       />
     </template>
 
@@ -229,6 +230,10 @@
     propPath: {
       type: String,
       required: true
+    },
+    track: {
+      type: String,
+      default: 'normal'
     }
   })
 
@@ -246,7 +251,7 @@
    * 处理数据类型列表，动态变化
    */
   const dataTypeList = computed(() => {
-    const { parentType } = props
+    const { parentType, track } = props
     let list = DATA_TYPE_MAP.options
     list = list.map((item) => {
       return {
@@ -260,6 +265,20 @@
     }
     if (parentType === 'array') {
       const targets = ['int', 'float', 'text', 'object', 'date']
+      list = list.filter((item) => targets.includes(item.value))
+    }
+    if (track === 'extended') {
+      const targets = [
+        'int',
+        'float',
+        'double',
+        'text',
+        'date',
+        'boolean',
+        'enum',
+        'password',
+        'geo_point'
+      ]
       list = list.filter((item) => targets.includes(item.value))
     }
     return list

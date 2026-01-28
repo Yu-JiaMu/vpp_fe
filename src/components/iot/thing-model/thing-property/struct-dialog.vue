@@ -11,7 +11,7 @@
       :key="`editIndex-${editIndex}`"
       parentType="object"
       :tableData="tableData"
-      :currentIndex="editIndex"
+      :currentRow="currentRow"
     />
     <template #footer>
       <div class="flex justify-center gap-[6px]">
@@ -61,7 +61,9 @@
     emits('submitSuccess')
   }
 
+  const currentRow = ref({})
   const open = (row, index) => {
+    currentRow.value = row
     if (row && index !== undefined) {
       isEdit.value = true
       editIndex.value = index

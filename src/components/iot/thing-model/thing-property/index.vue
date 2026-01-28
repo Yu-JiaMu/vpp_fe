@@ -54,6 +54,7 @@
           :form-ref="formRef"
           prop-path="dataType"
           :tableData="tableData"
+          :track="track"
         />
 
         <el-form-item label="描述" prop="desc">
