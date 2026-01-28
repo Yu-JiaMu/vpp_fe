@@ -338,7 +338,7 @@
     const model = thingJson.modules[0]
 
     try {
-      await ElMessageBox.confirm('此操作将删除该物模型，是否继续？', '提示', {
+      await ElMessageBox.confirm('此操作将删除该功能点，是否继续？', '提示', {
         type: 'warning'
       })
 
@@ -362,7 +362,7 @@
     const model = thingJson.modules[0]
 
     try {
-      await ElMessageBox.confirm('此操作将删除该物模型，是否继续？', '提示', {
+      await ElMessageBox.confirm('此操作将批量删除该功能点，是否继续？', '提示', {
         type: 'warning'
       })
 
