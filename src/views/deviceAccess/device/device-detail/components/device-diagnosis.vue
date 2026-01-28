@@ -8,9 +8,9 @@
         <div class="c-x-z-d">重新诊断</div>
       </div>
     </div>
-    <div class="flex gap-2 cursor-pointer mt-[20px] mb-[20px]">
+    <div class="flex gap-2 mt-[20px] mb-[20px]">
       <div
-        class="tag"
+        class="tag cursor-pointer"
         :class="{ 'active-tag': activeTag === tag.value }"
         v-for="(tag, index) in tagList"
         :key="index"
