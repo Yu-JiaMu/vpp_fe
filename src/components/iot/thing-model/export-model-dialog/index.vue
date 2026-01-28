@@ -56,7 +56,7 @@
   const handleExport = () => {
     if (!editorContent.value) return
 
-    const content = JSON.stringify(editorContent.value, null, 2)
+    const content = editorContent.value
 
     const blob = new Blob([content], {
       type: 'application/json;charset=utf-8'

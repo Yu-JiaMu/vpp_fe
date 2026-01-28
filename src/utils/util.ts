@@ -261,6 +261,8 @@ type BlobPart = BufferSource | Blob | string
 
 // 获取文件后缀方法
 function getExtensionByBlob(blob: Blob, defaultExt = 'xlsx') {
+  console.log(blob.type)
+
   const mime = blob.type
   return MIME_EXTENSION_MAP[mime] || defaultExt
 }
