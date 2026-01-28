@@ -15,12 +15,14 @@
       :currentRow="currentRow"
     />
     <template #footer>
-      <div class="flex justify-center gap-[6px]">
-        <el-button size="large" type="info" class="w-[177px]" v-ripple @click="visible = false">
-          取消
-        </el-button>
-        <el-button type="primary" class="w-[177px]" v-ripple @click="submit"> 确认 </el-button>
-      </div>
+      <template v-if="isEdit">
+        <div class="flex justify-center gap-[6px]">
+          <el-button size="large" type="info" class="w-[177px]" v-ripple @click="visible = false">
+            取消
+          </el-button>
+          <el-button type="primary" class="w-[177px]" v-ripple @click="submit"> 确认 </el-button>
+        </div>
+      </template>
     </template>
   </el-dialog>
 </template>
@@ -76,16 +78,13 @@
 
   const currentRow = ref(null)
   const open = (row, index, type) => {
-    // console.log(row, index)
+    // console.log(row, index, type)
     currentRow.value = row ?? null
     if (type) {
       isEdit.value = type === 'edit'
       isLook.value = type === 'look'
     }
-
     if (row && index !== undefined) {
-      isEdit.value = true
-      editIndex.value = index
       nextTick(() => {
         Object.assign(refForm.value.form, JSON.parse(JSON.stringify(row)))
       })
