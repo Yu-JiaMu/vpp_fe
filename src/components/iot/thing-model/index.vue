@@ -89,7 +89,7 @@
       class="w-full"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" />
+      <el-table-column v-if="isSettingModel" type="selection" />
       <el-table-column prop="type" label="功能类型" width="100" />
       <el-table-column prop="source" label="功能来源" width="100" />
       <el-table-column prop="name" label="功能名称" width="120" />
