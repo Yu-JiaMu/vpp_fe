@@ -64,7 +64,7 @@
       <el-form-item label="时间格式">
         <div class="flex items-center gap-1 mt-1 text-xs text-g-afb2b8">
           <ArtSvgIcon icon="ri:error-warning-line" class="text-sm" />
-          默认格式为String类型的UTC时间戳，单位:秒。
+          默认格式为String类型的UTC时间戳，单位:毫秒。
         </div>
       </el-form-item>
     </template>

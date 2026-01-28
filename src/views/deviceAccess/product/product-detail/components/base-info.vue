@@ -14,7 +14,7 @@
     <!-- 信息表格 -->
     <el-descriptions :column="3" border label-width="133px" class="">
       <el-descriptions-item label="ID">
-        {{ product.id }}
+        {{ product.identifier || product.id }}
       </el-descriptions-item>
 
       <el-descriptions-item label="产品名称">
@@ -82,7 +82,7 @@
       <div class="p-2">
         <el-form ref="formRef" :model="form" :rules="rules" label-width="82px">
           <!-- 上传 -->
-          <el-form-item label="上传">
+          <el-form-item label="上传LOGO">
             <div class="flex items-center gap-4">
               <UploadImg
                 v-model="form.imgUrl"
@@ -225,7 +225,7 @@
       dialogVisible.value = false
       emits('refresh')
     } catch (err) {
-      ElMessage.error(err?.message || '提交失败')
+      console.log(error)
     } finally {
       submitLoading.value = false
     }

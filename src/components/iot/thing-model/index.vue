@@ -474,6 +474,7 @@
 
       ElMessage.success('更新成功')
       handleRefresh()
+      isSettingModel.value = false
     } catch (err) {
       console.log(err)
     }

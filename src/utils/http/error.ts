@@ -118,11 +118,12 @@ const getErrorMessage = (status: number): string => {
  * @param error 错误对象
  * @returns 错误对象
  */
-export function handleError(error: AxiosError<ErrorResponse>): never {
+export function handleError(error: AxiosError<ErrorResponse>): void {
   // 处理取消的请求
   if (error.code === 'ERR_CANCELED') {
-    console.warn('Request cancelled:', error.message)
-    throw new HttpError($t('httpMsg.requestCancelled'), ApiStatus.error)
+    console.warn('重复请求:', error.message)
+    // throw new HttpError($t('httpMsg.requestCancelled'), ApiStatus.error)
+    return
   }
 
   const statusCode = error.response?.status
