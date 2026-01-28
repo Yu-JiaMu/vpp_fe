@@ -8,7 +8,7 @@
       </div>
 
       <!-- 产品 ID -->
-      <div class="mb-5 text-base text-g-505658"> 产品ID为： {{ productId }} </div>
+      <div class="mb-5 text-base text-g-505658"> 产品ID为： {{ identifier || productId }} </div>
 
       <!-- 引导说明 -->
       <div class="mb-5 text-base text-g-505658"> 接下来您可以： </div>
@@ -82,8 +82,10 @@
     })
   }
 
+  const identifier = ref('')
   const open = (data) => {
-    productId.value = data
+    productId.value = data.id
+    identifier.value = data.identifier
     dialogVisible.value = true
   }
 

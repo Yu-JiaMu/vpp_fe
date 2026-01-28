@@ -20,7 +20,7 @@
         <!-- 接入产品 -->
         <template v-if="importType === 'product'">
           <el-form-item label="选择产品" required>
-            <el-select v-model="productId" @change="handleProductSelect">
+            <el-select v-model="productId" filterable @change="handleProductSelect">
               <el-option v-for="item in productList" :label="item.label" :value="item.value" />
             </el-select>
           </el-form-item>
@@ -198,15 +198,20 @@
   }
 
   const getProductList = async () => {
-    const { rows } = await api.apiGetProductList({ pageNum: 1, pageSize: 1000 })
-    if (rows && Array.isArray(rows)) {
-      productList.value = rows
-        .map((item) => ({
-          label: item.name,
-          value: item.id
-        }))
-        .filter((item) => item.value !== props.info.id)
-    }
+    const { rows = [] } = await api.apiGetProductList({
+      pageNum: 1,
+      pageSize: 1000,
+      isAsc: 'desc',
+      orderByColumn: 'updateTime'
+    })
+
+    productList.value = rows
+      .filter((item) => item.enabled && item.id !== props.info.id)
+      .map((item) => ({
+        label: item.name,
+        value: item.id,
+        enabled: item.enabled
+      }))
   }
 
   const getProductDetail = async () => {

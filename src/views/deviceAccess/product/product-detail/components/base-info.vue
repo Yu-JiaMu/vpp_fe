@@ -14,7 +14,7 @@
     <!-- 信息表格 -->
     <el-descriptions :column="3" border label-width="133px" class="">
       <el-descriptions-item label="ID">
-        {{ product.id }}
+        {{ product.identifier || product.id }}
       </el-descriptions-item>
 
       <el-descriptions-item label="产品名称">

@@ -290,7 +290,7 @@
     if (!valid) return
     try {
       const data = await api.apiAddProduct(form)
-      productCreateSuccessRef.value.open(data)
+      productCreateSuccessRef.value.open({ id: data, identifier: form.identifier })
     } catch (error) {
       console.log(error)
     }
