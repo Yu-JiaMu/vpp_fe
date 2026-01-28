@@ -39,7 +39,7 @@
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-export-eye.png" alt="" />
           导出物模型
         </el-button>
-        <el-button text class="!text-g-303537 !ml-0" @click="handleSetModel">
+        <el-button v-if="!isInner" text class="!text-g-303537 !ml-0" @click="handleSetModel">
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-setting-blue.png" alt="" />
           设置物模型
         </el-button>
@@ -163,7 +163,7 @@
   import FunctionDefinePreview from './function-define-preview/index.vue'
   import { ref, computed, watchEffect, provide } from 'vue'
   import { transformThingJsonToTable, transformTableToThingJson } from '@/utils'
-  import { FUNCTION_MODE_MAP } from '@/enums'
+  import { FUNCTION_MODE_MAP, INTERNAL_DEVICE_TYPES } from '@/enums'
   import { differenceBy } from 'lodash-es'
 
   /* ====================== props / emits ====================== */
@@ -274,6 +274,13 @@
     isSettingModel.value = false
   }
 
+  // 产品品类是否是内置物模型，不可修改
+  const isInner = computed(() => {
+    return (
+      props.info.categoryType === INTERNAL_DEVICE_TYPES.values.INNER &&
+      props.module === 'productCategory'
+    )
+  })
   /* ====================== Dialog ====================== */
 
   const exportModelDialogRef = useTemplateRef('exportModelDialogRef')
