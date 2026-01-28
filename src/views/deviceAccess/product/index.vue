@@ -37,8 +37,7 @@
         <el-table-column prop="nodeType" label="节点类型" min-width="100">
           <template #default="{ row }"> {{ NODE_TYPES.getLabel(row.nodeType) }} </template>
         </el-table-column>
-        <el-table-column prop="applyLayerProtocol" label="应用层协议" min-width="120" />
-        <el-table-column prop="dataFormat" label="数据格式" min-width="100" />
+        <el-table-column prop="applyLayerProtocol" label="协议类型" min-width="120" />
         <el-table-column label="启用/禁用" width="120">
           <template #default="{ row }">
             <el-switch v-model="row.enabled" @change="toggleEnable(row)" />
