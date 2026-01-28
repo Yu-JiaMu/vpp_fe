@@ -2,7 +2,7 @@
   <!-- 主弹窗组件 -->
   <el-dialog
     v-model="dialogVisible"
-    title="新增产品品类"
+    :title="formData.id ? '编辑产品品类' : '新增产品品类'"
     width="600px"
     :close-on-click-modal="false"
     :show-close="false"
@@ -187,10 +187,11 @@
       // console.log('表单数据:', JSON.stringify(formData, null, 2))
       if (formData.id) {
         await productCategoryApi.apiProductCategoryEdit({ ...formData })
+        emit('edit-success', { ...formData })
       } else {
         const res = await productCategoryApi.apiProductCategoryAdd({ ...formData })
         formData.id = res || '2014243059751063552'
-        emit('success', { ...formData })
+        emit('addSuccess', { ...formData })
       }
       // 提交成功提示
       ElMessage({
@@ -198,6 +199,7 @@
         type: 'success',
         duration: 2000
       })
+
       // 触发成功事件
       // 关闭弹窗
       emit('update:modelValue', false)

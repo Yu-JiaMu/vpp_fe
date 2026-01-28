@@ -1,8 +1,8 @@
 <template>
   <div class="product-category-detail">
-    <ElCard class="art-table-card" shadow="never">
+    <ElCard class="art-table-card mt20" shadow="never">
       <!-- 设备详情 -->
-      <ArtButtonBack class="mb-2.5 mt20" is-back> {{ productCategoryDetail.name }} </ArtButtonBack>
+      <ArtButtonBack class="mb-2.5" is-back> {{ productCategoryDetail.name }} </ArtButtonBack>
       <el-row class="mt20 product-font">
         <el-col :span="6">
           <span class="mr5">所属行业/场景:</span>
@@ -10,9 +10,24 @@
             >{{ productCategoryDetail.industryCode }}/{{ productCategoryDetail.sceneCode }}</span
           >
         </el-col>
-        <el-col :span="6">
-          <span class="mr5">描述:</span>
-          <span>{{ productCategoryDetail.remark }}</span>
+        <el-col :span="18">
+          <div class="flex">
+            <span class="mr5">描述:</span>
+
+            <el-tooltip
+              class="box-item"
+              effect="dark"
+              :content="productCategoryDetail.remark"
+              placement="top"
+            >
+              <div class="d-h">
+                {{ productCategoryDetail.remark }}
+              </div>
+              <template #content>
+                <div style="max-width: 600px"> {{ productCategoryDetail.remark }} </div>
+              </template>
+            </el-tooltip>
+          </div>
         </el-col>
         <div></div>
       </el-row>
@@ -21,7 +36,7 @@
           <span class="mr5">创建时间:</span>
           <span>{{ productCategoryDetail.createTime }}</span>
         </el-col>
-        <el-col :span="6">
+        <el-col :span="18">
           <span class="mr5">更新时间:</span>
           <span>{{ productCategoryDetail.updateTime }}</span>
         </el-col>
@@ -82,12 +97,14 @@
     border-radius: 6px 6px 0px 0px;
   }
   .art-table-card {
-    margin-top: 0 !important;
+    // margin-top: 0 !important;
     border-radius: 0px 6px 6px 6px !important;
   }
   .product-category-detail {
     .product-font {
-      font-family: Source Han Sans SC;
+      font-family:
+        Source Han Sans SC,
+        Source Han Sans SC-Regular;
       font-size: 16px;
       font-weight: 400;
       color: #303537;
@@ -134,6 +151,12 @@
 
     .base-info-table {
       border: 1px solid var(--default-border);
+    }
+    .d-h {
+      width: 90%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 </style>
