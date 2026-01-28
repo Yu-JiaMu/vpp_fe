@@ -339,7 +339,8 @@ export function validateProductId(rule: any, value: any, callback: any) {
 
 // 名称校验
 export function validateNameLength(rule: any, value: any, callback: any) {
-  if (!value) return callback(new Error('请输入产品名称'))
+  console.log(rule)
+  if (!value) return callback(new Error(rule.message || '请输入产品名称'))
   if (getByteLength(value) > 50) {
     callback(new Error('不能超过50个字符（中文占2位）'))
   } else {

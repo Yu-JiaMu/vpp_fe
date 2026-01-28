@@ -5,6 +5,8 @@
     title="新增产品品类"
     width="600px"
     :close-on-click-modal="false"
+    :show-close="false"
+    :close-on-press-escape="false"
     align-center
   >
     <!-- 表单主体 -->
@@ -65,9 +67,9 @@
             type="textarea"
             :rows="4"
             placeholder="请输入产品品类说明"
-            maxlength="99"
-            show-word-limit
             class="full-width"
+            maxlength="200"
+            show-word-limit
           />
         </el-form-item>
       </el-form>
@@ -85,6 +87,7 @@
 </template>
 
 <script setup>
+  import { validateNameLength, validateCommon, validateDescLength } from '@/utils'
   import { ref, reactive, watch, computed } from 'vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import * as productCategoryApi from '@/api/iot/productCategory.js'
@@ -119,10 +122,15 @@
     industryCode: [{ required: true, message: '请选择行业', trigger: 'change' }],
     sceneCode: [{ required: true, message: '请选择场景', trigger: 'change' }],
     name: [
-      { required: true, message: '请输入产品品类名称', trigger: 'blur' },
-      { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
+      {
+        required: true,
+        validator: validateNameLength,
+        trigger: 'blur',
+        message: '请输入产品品类名称'
+      },
+      { validator: validateCommon, trigger: 'blur' }
     ],
-    remark: [{ max: 99, message: '不能超过 99 个字符', trigger: 'blur' }]
+    remark: [{ validator: validateDescLength, trigger: 'blur' }]
   }
 
   // 通过接口 选项数据
@@ -141,6 +149,7 @@
   }
   function industryCodeChange(e) {
     if (e) {
+      formData.sceneCode = ''
       const children = industryOptions.value.find((item) => item.value === e)?.children || []
       sceneOptions.value = children.map((item) => {
         return {
@@ -175,7 +184,7 @@
       await formRef.value.validate()
 
       // 表单验证通过
-      console.log('表单数据:', JSON.stringify(formData, null, 2))
+      // console.log('表单数据:', JSON.stringify(formData, null, 2))
       if (formData.id) {
         await productCategoryApi.apiProductCategoryEdit({ ...formData })
       } else {
