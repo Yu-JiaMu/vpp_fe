@@ -106,7 +106,7 @@
     createUniqueValidatorByValue,
     getByteLength
   } from '@/utils'
-  import ParamsDialog from './params-dialog.vue'
+  import ParamsDialog from '../params-dialog/index.vue'
   import FunctionDefinePreview from '../function-define-preview/index.vue'
 
   const props = defineProps({

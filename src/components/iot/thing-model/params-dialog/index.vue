@@ -8,11 +8,11 @@
   >
     <ThingProperty
       ref="refForm"
-      fromFunction
       :tableData="modelValue"
       :key="`editIndex-${editIndex}-${paramsType}`"
       :currentIndex="editIndex"
       :currentRow="currentRow"
+      :track="track"
     />
     <template #footer>
       <template v-if="isEdit">
@@ -34,6 +34,11 @@
     paramsType: {
       type: String,
       default: 'input'
+    },
+    track: {
+      // 'function' | 'extended'
+      type: String,
+      default: 'function'
     }
   })
   const visible = ref(false)
@@ -44,13 +49,16 @@
   const editIndex = ref(-1)
 
   const dialogTitle = computed(() => {
+    // 根据 track 确定前缀
+    const prefix = props.track === 'extended' ? '功能点' : '参数'
+
     if (isLook.value) {
-      return '参数查看'
+      return `${prefix}查看`
     }
     if (isEdit.value) {
-      return '参数编辑'
+      return `${prefix}编辑`
     } else {
-      return '参数设置'
+      return `${prefix}设置`
     }
   })
 
@@ -83,13 +91,15 @@
     if (type) {
       isEdit.value = type === 'edit'
       isLook.value = type === 'look'
+    } else {
+      isEdit.value = true
     }
     if (row && index !== undefined) {
+      editIndex.value = index
       nextTick(() => {
         Object.assign(refForm.value.form, JSON.parse(JSON.stringify(row)))
       })
     } else {
-      isEdit.value = false
       editIndex.value = -1
       resetForm()
     }
