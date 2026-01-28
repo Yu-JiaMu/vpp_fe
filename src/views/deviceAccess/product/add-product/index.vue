@@ -185,7 +185,7 @@
       </template>
 
       <div class="col-span-2 flex justify-center gap-5 h-[176px] mt-[120px] rounded-t-md">
-        <el-button size="large" type="info" class="w-80" v-ripple>取消</el-button>
+        <el-button size="large" type="info" class="w-80" v-ripple @click="onCancel">取消</el-button>
         <el-button size="large" type="primary" class="w-80" v-ripple @click="submitForm">
           确认
         </el-button>
@@ -230,6 +230,12 @@
   const productFormRef = ref(null)
   const thingModelRef = useTemplateRef('thingModel')
   const productCreateSuccessRef = useTemplateRef('productCreateSuccess')
+
+  const router = useRouter()
+
+  const onCancel = () => {
+    router.back()
+  }
 
   const isProductSelectVisible = ref(false)
 
