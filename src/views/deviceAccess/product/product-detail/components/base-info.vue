@@ -82,7 +82,7 @@
       <div class="p-2">
         <el-form ref="formRef" :model="form" :rules="rules" label-width="82px">
           <!-- 上传 -->
-          <el-form-item label="上传">
+          <el-form-item label="上传LOGO">
             <div class="flex items-center gap-4">
               <UploadImg
                 v-model="form.imgUrl"
