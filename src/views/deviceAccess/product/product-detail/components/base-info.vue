@@ -225,7 +225,7 @@
       dialogVisible.value = false
       emits('refresh')
     } catch (err) {
-      ElMessage.error(err?.message || '提交失败')
+      console.log(error)
     } finally {
       submitLoading.value = false
     }
