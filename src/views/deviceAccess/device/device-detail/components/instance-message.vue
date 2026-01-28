@@ -1,11 +1,11 @@
 <template>
-  <div class="base-info bg-white base-info-table">
-    <div class="flex justify-between items-center p-5">
+  <div class="bg-white base-info base-info-table">
+    <div class="flex items-center justify-between p-5">
       <div class="font-scBold text-g-131617 flex-c">
         <img src="@/assets/images/icon/icon-info.png" class="w-5 h-5 mr-2.5" alt="" />
         基本信息
       </div>
-      <div class="text-g-303537 flex-c cursor-pointer" @click="handleEdit">
+      <div class="cursor-pointer text-g-303537 flex-c" @click="handleEdit">
         <img src="@/assets/images/icon/icon-edit.png" class="w-5 h-5 mr-1" alt="" />
         编辑
       </div>
@@ -126,12 +126,12 @@
               :rows="5"
               maxlength="200"
             />
-            <div class="w-full text-right text-xs text-gray-400 mt-1">
+            <div class="w-full mt-1 text-xs text-right text-gray-400">
               {{ getByteLength(form.deviceDescription) }}/200
             </div>
           </el-form-item>
 
-          <el-form-item label="位置信息" class="col-span-2 relative">
+          <el-form-item label="位置信息" class="relative col-span-2">
             <div class="map-box">
               <div v-if="form.address">
                 {{ form.address }}
@@ -212,10 +212,7 @@
         trigger: 'change'
       }
     ],
-    description: [
-      { validator: validateCommon, trigger: 'blur' },
-      { validator: validateDescLength, trigger: 'blur' }
-    ]
+    description: [{ validator: validateDescLength, trigger: 'blur' }]
   })
   const form = ref({
     id: '',

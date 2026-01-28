@@ -149,6 +149,7 @@
   const rules = {
     name: [
       { required: true, message: '请输入名称', trigger: 'blur' },
+      { validator: validateCommon, trigger: 'blur' },
       { validator: validateNameLength, trigger: 'blur' }
     ],
     identifier: [
@@ -164,10 +165,7 @@
       }
     ],
     eventType: [{ required: true, message: '请选择事件级别', trigger: 'change' }],
-    desc: [
-      { validator: validateCommon, trigger: 'blur' },
-      { validator: validateDescLength, trigger: 'blur' }
-    ]
+    desc: [{ validator: validateDescLength, trigger: 'blur' }]
   }
 
   const dialogRef = ref()

@@ -134,6 +134,7 @@
   const rules = {
     name: [
       { required: true, message: '请输入名称', trigger: 'blur' },
+      { validator: validateCommon, trigger: 'blur' },
       { validator: validateNameLength, trigger: 'blur' }
     ],
     identifier: [
@@ -185,10 +186,7 @@
     ],
     accessMode: [{ required: true }],
     required: [{ required: true, message: '请选择约束类型' }],
-    desc: [
-      { validator: validateCommon, trigger: 'blur' },
-      { validator: validateDescLength, trigger: 'blur' }
-    ]
+    desc: [{ validator: validateDescLength, trigger: 'blur' }]
   }
 
   const isAddStruct = computed(() => props.parentType === 'object')

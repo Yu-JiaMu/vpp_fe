@@ -9,7 +9,7 @@
       <div class="mb-2.5 text-sm text-g-303537">功能列表</div>
       <el-input
         v-model="keyword"
-        placeholder="请输入物模型名称/标识符进行控索"
+        placeholder="请输入物模型名称/标识符进行搜索"
         clearable
         class="mb-6"
       >
