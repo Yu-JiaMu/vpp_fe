@@ -178,7 +178,7 @@
 
   const edit = (row, index, type) => {
     paramsType.value = type
-    dialogRef.value.open(row, index)
+    dialogRef.value.open(row, index, 'edit')
   }
 
   function remove(index, type) {

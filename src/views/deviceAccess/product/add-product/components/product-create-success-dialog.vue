@@ -17,7 +17,7 @@
       <div class="mb-7">
         <div class="mb-1 text-base font-scMedium text-g-303537"> 1. 定义产品物模型 </div>
         <div class="text-sm text-g-505658 mb-2.5">
-          您需自定义产品物模型，基于品类模板即可快速创建产品。
+          通过定义模型，在平台构建一款设备的抽象模型，使平台理解该款设备支持的功能
         </div>
         <el-button class="plain-btn" @click="handleDefineModel"> 去定义物模型 </el-button>
       </div>
@@ -36,7 +36,7 @@
     <template #footer>
       <div class="flex justify-center gap-[6px]">
         <el-button size="large" type="info" class="w-[177px]" v-ripple @click="onCancel"
-          >取消</el-button
+          >关闭</el-button
         >
         <el-button type="primary" @click="handleViewDetail" class="w-[177px]" v-ripple>
           查看详情

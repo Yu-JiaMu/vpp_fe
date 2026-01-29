@@ -18,7 +18,7 @@
 
     <!-- boolean/enum -->
     <div v-if="['boolean', 'enum'].includes(rowData.define.type)" class="flex flex-wrap gap-2">
-      <el-tag
+      <span
         class="enum-tag"
         v-for="(value, label) in rowData.define.specs"
         :key="value"
@@ -26,7 +26,7 @@
         type="primary"
       >
         {{ label }}-{{ value }}
-      </el-tag>
+      </span>
     </div>
 
     <!-- array -->
@@ -99,7 +99,7 @@
   const levelTagType = (level) => {
     switch (level) {
       case 'info':
-        return 'info'
+        return 'primary'
       case 'warn':
         return 'warning'
       case 'error':

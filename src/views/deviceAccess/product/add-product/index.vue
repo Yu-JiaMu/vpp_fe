@@ -153,21 +153,23 @@
             <el-input v-model="form.productModel" placeholder="请输入" />
           </el-form-item>
 
-          <div class="flex items-end gap-4 mt-4">
-            <UploadImg
-              v-model="form.imgUrl"
-              accept="image/jpg,image/png,image/jpeg"
-              :fileSize="0.5"
-              width="100px"
-              height="100px"
-            >
-              <template #tip>
-                <span class="text-xs text-g-505658"
-                  >支持500k以内的图片；支持jpg、png、jpeg；建议尺寸256x256。</span
-                >
-              </template>
-            </UploadImg>
-          </div>
+          <el-form-item label="LOGO" prop="imgUrl">
+            <div class="flex items-end gap-4">
+              <UploadImg
+                v-model="form.imgUrl"
+                accept="image/jpg,image/png,image/jpeg"
+                :fileSize="0.5"
+                width="100px"
+                height="100px"
+              >
+                <template #tip>
+                  <span class="text-xs text-g-505658"
+                    >支持500k以内的图片；支持jpg、png、jpeg；建议尺寸256x256。</span
+                  >
+                </template>
+              </UploadImg>
+            </div>
+          </el-form-item>
         </div>
 
         <el-form-item label="产品描述" prop="remark">
