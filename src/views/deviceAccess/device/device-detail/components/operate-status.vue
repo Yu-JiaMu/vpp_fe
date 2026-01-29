@@ -1,8 +1,8 @@
 <template>
   <div class="bg-white operate-status">
-    <div class="flex gap-2 cursor-pointer mb20">
+    <div class="flex gap-2 mb20">
       <div
-        class="tag"
+        class="tag cursor-pointer"
         :class="{ 'active-tag': activeTag === tag.value }"
         v-for="(tag, index) in tagList"
         :key="index"
