@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-full bg-white">
+  <div class="min-h-full pb-5 bg-white">
     <!-- 顶部搜索区 -->
     <div class="flex items-center justify-between p-5 search-con">
       <div class="flex flex-wrap items-center">
-        <el-form :model="form" inline class="">
+        <el-form :model="form" inline class="" @keyup.enter="getTableData">
           <el-form-item>
             <el-input
               v-model="form.name"
@@ -165,6 +165,8 @@
 
   /** 获取表格数据（示例 mock） */
   const getTableData = async () => {
+    console.log('搜索')
+
     const queryParams = {
       pageNum: pagination.current,
       pageSize: pagination.size,

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full bg-white">
+  <div class="min-h-full pb-5 bg-white">
     <!-- 顶部搜索区 -->
     <div class="flex items-center justify-between p-5 search-con">
       <div class="flex flex-wrap items-center">
@@ -39,23 +39,21 @@
     </div>
 
     <!-- 表格 -->
-    <div class="bg-white rounded-md">
-      <el-table :data="tableData" border height="520">
-        <el-table-column prop="name" label="属性名称" min-width="140" />
+    <el-table :data="tableData" border height="520">
+      <el-table-column prop="name" label="属性名称" min-width="140" />
 
-        <el-table-column prop="identifier" label="时间" min-width="200" />
+      <el-table-column prop="identifier" label="时间" min-width="200" />
 
-        <el-table-column prop="productName" label="内容" min-width="160" />
+      <el-table-column prop="productName" label="内容" min-width="160" />
 
-        <el-table-column label="操作" fixed="right" width="140">
-          <template #default="{ row }">
-            <el-button link type="primary" @click="openDetailDialog(row)">详情</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <el-table-column label="操作" fixed="right" width="140">
+        <template #default="{ row }">
+          <el-button link type="primary" @click="openDetailDialog(row)">详情</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
 
-      <ArtPagination v-model="pagination" @change="getTableData" />
-    </div>
+    <ArtPagination v-model="pagination" @change="getTableData" />
 
     <!-- 绑定弹窗 -->
     <el-dialog v-model="dialogVisible" title="详情" width="742px">
