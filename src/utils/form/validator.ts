@@ -342,7 +342,7 @@ export function validateNameLength(rule: any, value: any, callback: any) {
   console.log(rule)
   if (!value) return callback(new Error(rule.message || '请输入产品名称'))
   if (getByteLength(value) > 50) {
-    callback(new Error('不能超过50个字符（中文占2位）'))
+    callback(new Error('不能超过50个字符'))
   } else {
     callback()
   }
@@ -361,7 +361,7 @@ export function validateCommon(rule: any, value: any, callback: any) {
 // 描述校验
 export function validateDescLength(rule: any, value: any, callback: any) {
   if (value && getByteLength(value) > 200) {
-    callback(new Error('描述不能超过200个字符（中文占2位）'))
+    callback(new Error('描述不能超过200个字符'))
   } else {
     callback()
   }
