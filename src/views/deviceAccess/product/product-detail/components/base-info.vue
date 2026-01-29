@@ -86,7 +86,7 @@
             <div class="flex items-center gap-4">
               <UploadImg
                 v-model="form.imgUrl"
-                accept="image/*"
+                accept="image/jpg,image/png,image/jpeg"
                 :fileSize="0.5"
                 width="100px"
                 height="100px"

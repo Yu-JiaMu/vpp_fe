@@ -132,7 +132,7 @@
       label: '产品ID',
       key: 'identifier',
       type: 'input',
-      placeholder: '请输入产品标识符',
+      placeholder: '请输入产品ID',
       clearable: true
     },
     {
@@ -268,10 +268,12 @@
     getTableData()
   } */
 
-  onMounted(() => {
+  onActivated(() => {
     initProductCategoryList()
     getTableData()
   })
+
+  onMounted(() => {})
 </script>
 
 <style lang="scss" scoped>

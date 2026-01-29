@@ -156,7 +156,7 @@
           <div class="flex items-end gap-4 mt-4">
             <UploadImg
               v-model="form.imgUrl"
-              accept="image/*"
+              accept="image/jpg,image/png,image/jpeg"
               :fileSize="0.5"
               width="100px"
               height="100px"
@@ -272,7 +272,8 @@
     networkWay: [{ required: true, message: '请选择联网方式', trigger: 'change' }],
     applyLayerProtocol: [{ required: true, message: '请选择协议类型', trigger: 'change' }],
     authType: [{ required: true, message: '请选择认证方式', trigger: 'change' }],
-    remark: [{ validator: validateDescLength, trigger: 'blur' }]
+    remark: [{ validator: validateDescLength, trigger: 'blur' }],
+    dataFormat: [{ required: true, message: '请选择数据格式', trigger: 'change' }]
   }
 
   const handleCategoryChange = () => {

@@ -136,8 +136,14 @@
   let pendingFile
 
   const handleFileChange = (file) => {
+    const pass = beforeUpload(file.raw)
+
+    if (!pass) {
+      uploadRef.value?.clearFiles()
+      return
+    }
+
     pendingFile = file
-    console.log('file', file)
   }
 
   const uploadRef = useTemplateRef('uploadRef')

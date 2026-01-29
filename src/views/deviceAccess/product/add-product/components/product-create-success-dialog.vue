@@ -35,12 +35,7 @@
     <!-- 底部按钮 -->
     <template #footer>
       <div class="flex justify-center gap-[6px]">
-        <el-button
-          size="large"
-          type="info"
-          class="w-[177px]"
-          v-ripple
-          @click="dialogVisible = false"
+        <el-button size="large" type="info" class="w-[177px]" v-ripple @click="onCancel"
           >取消</el-button
         >
         <el-button type="primary" @click="handleViewDetail" class="w-[177px]" v-ripple>
@@ -87,6 +82,13 @@
     productId.value = data.id
     identifier.value = data.identifier
     dialogVisible.value = true
+  }
+
+  const onCancel = () => {
+    dialogVisible.value = false
+    router.replace({
+      name: 'product'
+    })
   }
 
   defineExpose({ open })
