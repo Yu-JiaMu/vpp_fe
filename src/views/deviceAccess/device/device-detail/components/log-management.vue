@@ -70,7 +70,6 @@
 
 <script setup>
   import { NODE_TYPES, LOG_TYPES, DATE_PICKER_DEFAULT_TIME } from '@/enums'
-  import { formatTime } from '@/utils'
   import * as api from '@/api/iot'
 
   const router = useRouter()
@@ -98,6 +97,7 @@
     current: 1,
     total: 0
   })
+
   /** 表格数据 */
   const tableData = ref([])
 
@@ -118,7 +118,6 @@
 
     const response = await api.apiDevLog(queryParams)
     if (response) {
-      // 后端返回数据按惯例为 { rows, total }
       tableData.value = response.rows || []
       pagination.total = response.total || 0
     } else {
