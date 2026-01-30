@@ -134,11 +134,15 @@
 <script setup>
   import { NODE_TYPES, DEVICE_STATUS_TYPES } from '@/enums'
   import BindDeviceDialog from './bind-device-dialog.vue'
+  import * as api from '@/api/iot'
 
   const router = useRouter()
+  const route = useRoute()
 
   /** 查询条件 */
   const form = reactive({
+    isAsc: 'desc',
+    orderByColumn: 'updateTime',
     name: '',
     productName: '',
     devState: '',
@@ -163,33 +167,20 @@
   /** 勾选 */
   const selectedRows = ref([])
 
-  /** 获取表格数据（示例 mock） */
   const getTableData = async () => {
     console.log('搜索')
 
     const queryParams = {
       pageNum: pagination.current,
       pageSize: pagination.size,
+      parentId: route.query.id,
       ...form
     }
-    // 实际项目：这里换成接口
-    /*  const response = await api.apiGetProductList(queryParams)
-      if (response) {
-        tableData.value = response.rows
-        pagination.total = response.total || 0
-      } */
-    tableData.value = Array.from({ length: 10 }).map((_, i) => ({
-      id: i + '',
-      name: '属性',
-      identifier: '195460491876864',
-      productName: 'ADW300计量表',
-      devState: i % 2 === 0 ? 'online' : 'offline',
-      nodeType: 'SUB',
-      devEnable: true,
-      lastOnlineTime: '2025-08-12 15:34:51',
-      createTime: '2025-08-12 15:34:51'
-    }))
-    page.total = 658
+    const response = await api.apiGetDeviceList(queryParams)
+    if (response) {
+      tableData.value = response.rows
+      pagination.total = response.total || 0
+    }
   }
 
   const handleReset = () => {

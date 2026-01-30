@@ -55,8 +55,13 @@ export function apiDevBatchRegister(params) {
 export function apiDevDetail(deviceId) {
   return request.get(`/stage-api/model/device/${deviceId}`)
 }
-//编辑
 
+//编辑
 export function apiDevEdit(params) {
   return request.put(`/stage-api/model/device/edit`, params)
+}
+
+// 获取设备日志
+export function apiDevLog(params) {
+  return request.post(`/stage-api/model/device/log`, params)
 }

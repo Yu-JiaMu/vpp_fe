@@ -549,7 +549,7 @@
     router.push({ name: 'DeviceRegister', query: { registerType: type } })
   }
 
-  onMounted(() => {
+  onActivated(() => {
     getStatistics()
     loadColumnSettings()
     getProduceList()

@@ -466,7 +466,7 @@
   }
 
   // 页面加载时获取数据
-  onMounted(() => {
+  onActivated(() => {
     getIndustryList()
     getTableData()
   })

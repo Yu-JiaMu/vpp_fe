@@ -81,7 +81,7 @@
 
 <script setup>
   /** 弹窗显示 */
-  const dialogVisible = ref(true)
+  const dialogVisible = ref(false)
 
   /** 查询条件 */
   const form = reactive({

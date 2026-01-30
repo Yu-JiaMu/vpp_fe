@@ -128,3 +128,15 @@ export const INTERNAL_DEVICE_TYPES = createEnum({
   INNER: { label: '内置', value: 'inner' },
   DEFINE: { label: '自定义', value: 'define' }
 })
+
+// 日志类型
+export const LOG_TYPES = createEnum({
+  PROPERTY_REPORT: { label: '属性上报', value: 'PROPERTY_REPORT' },
+  PROPERTY_SET: { label: '属性设置', value: 'PROPERTY_SET' },
+  EVENT_REPORT: { label: '事件上报', value: 'EVENT_REPORT' },
+  FUNCTION_CALL: { label: '功能调用', value: 'FUNCTION_CALL' },
+  FUNCTION_RESPONSE: { label: '功能响应', value: 'FUNCTION_RESPONSE' },
+  DEVICE_ONLINE: { label: '设备上线', value: 'DEVICE_ONLINE' },
+  DEVICE_OFFLINE: { label: '设备离线', value: 'DEVICE_OFFLINE' },
+  OTHER: { label: '其他', value: 'OTHER' }
+})
