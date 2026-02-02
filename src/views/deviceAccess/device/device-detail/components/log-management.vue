@@ -1,18 +1,18 @@
 <template>
-  <div class="min-h-full bg-white">
+  <div class="min-h-full pb-5 bg-white">
     <!-- 顶部搜索区 -->
     <div class="flex items-center justify-between p-5 search-con">
       <div class="flex flex-wrap items-center">
         <el-form :model="form" inline class="">
           <el-form-item>
             <el-select
-              v-model="form.devState"
-              placeholder="请选择状态"
+              v-model="form.logType"
+              placeholder="请选择类型"
               clearable
               style="width: 200px"
             >
               <el-option
-                v-for="item in DEVICE_STATUS_TYPES.options"
+                v-for="item in LOG_TYPES.options"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -22,11 +22,13 @@
 
           <el-form-item>
             <el-date-picker
-              v-model="form.value1"
-              type="datetimerange"
+              v-model="form.dateRange"
+              type="daterange"
               range-separator="到"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
+              :default-time="DATE_PICKER_DEFAULT_TIME"
+              value-format="YYYY-MM-DD HH:mm:ss"
             />
           </el-form-item>
 
@@ -39,23 +41,25 @@
     </div>
 
     <!-- 表格 -->
-    <div class="bg-white rounded-md">
-      <el-table :data="tableData" border height="520">
-        <el-table-column prop="name" label="属性名称" min-width="140" />
+    <el-table :data="tableData" border height="520" show-overflow-tooltip>
+      <el-table-column prop="name" label="类型" min-width="140">
+        <template #default="{ row }">
+          {{ LOG_TYPES.getLabel(row.logType) }}
+        </template>
+      </el-table-column>
 
-        <el-table-column prop="identifier" label="时间" min-width="200" />
+      <el-table-column prop="ts" label="时间" min-width="200" />
 
-        <el-table-column prop="productName" label="内容" min-width="160" />
+      <el-table-column prop="logContent" label="内容" min-width="160" />
 
-        <el-table-column label="操作" fixed="right" width="140">
-          <template #default="{ row }">
-            <el-button link type="primary" @click="openDetailDialog(row)">详情</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <el-table-column label="操作" fixed="right" width="140">
+        <template #default="{ row }">
+          <el-button link type="primary" @click="openDetailDialog(row)">详情</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
 
-      <ArtPagination v-model="pagination" @change="getTableData" />
-    </div>
+    <ArtPagination v-model="pagination" @change="getTableData" />
 
     <!-- 绑定弹窗 -->
     <el-dialog v-model="dialogVisible" title="详情" width="742px">
@@ -65,18 +69,27 @@
 </template>
 
 <script setup>
-  import { NODE_TYPES, DEVICE_STATUS_TYPES } from '@/enums'
+  import { NODE_TYPES, LOG_TYPES, DATE_PICKER_DEFAULT_TIME } from '@/enums'
+  import * as api from '@/api/iot'
 
   const router = useRouter()
+
+  const props = defineProps({
+    deviceDetail: {
+      type: Object,
+      default: () => ({})
+    }
+  })
 
   const dialogVisible = ref(false)
 
   /** 查询条件 */
   const form = reactive({
-    name: '',
-    productName: '',
-    devState: '',
-    nodeType: ''
+    // 默认按设备上报时间倒序
+    isAsc: 'desc',
+    orderByColumn: 'ts',
+    logType: '',
+    dateRange: null
   })
 
   const pagination = reactive({
@@ -84,56 +97,46 @@
     current: 1,
     total: 0
   })
+
   /** 表格数据 */
   const tableData = ref([])
 
-  /** 分页 */
-  const page = reactive({
-    current: 1,
-    size: 10,
-    total: 0
-  })
-
-  /** 获取表格数据（示例 mock） */
   const getTableData = async () => {
+    // 拆分日期范围到 startTime / endTime
+    const [startTime, endTime] = Array.isArray(form.dateRange) ? form.dateRange : [null, null]
+
     const queryParams = {
+      deviceIdentifier: props.deviceDetail?.identifier,
       pageNum: pagination.current,
       pageSize: pagination.size,
-      ...form
+      isAsc: form.isAsc,
+      orderByColumn: form.orderByColumn,
+      logType: form.logType,
+      startTime,
+      endTime
     }
-    // 实际项目：这里换成接口
-    /*  const response = await api.apiGetProductList(queryParams)
-      if (response) {
-        tableData.value = response.rows
-        pagination.total = response.total || 0
-      } */
-    tableData.value = Array.from({ length: 10 }).map((_, i) => ({
-      id: i + '',
-      name: '属性',
-      identifier: '195460491876864',
-      productName: 'ADW300计量表',
-      devState: i % 2 === 0 ? 'online' : 'offline',
-      nodeType: 'SUB',
-      devEnable: true,
-      lastOnlineTime: '2025-08-12 15:34:51',
-      createTime: '2025-08-12 15:34:51'
-    }))
-    page.total = 658
+
+    const response = await api.apiDevLog(queryParams)
+    if (response) {
+      tableData.value = response.rows || []
+      pagination.total = response.total || 0
+    } else {
+      tableData.value = []
+      pagination.total = 0
+    }
   }
 
   const handleReset = () => {
     Object.assign(form, {
-      name: '',
-      productName: '',
-      devState: '',
-      nodeType: ''
+      logType: '',
+      dateRange: null
     })
     getTableData()
   }
 
   const editorContent = ref('')
   const openDetailDialog = (item) => {
-    editorContent.value = item.name
+    editorContent.value = item.logContent || JSON.stringify(item, null, 2)
     dialogVisible.value = true
   }
 

@@ -33,8 +33,8 @@
       >
         <el-table-column prop="name" label="产品品类" min-width="140">
           <template #default="{ row }">
-            <div class="flex-c">
-              <span>{{ row.name }}</span>
+            <div class="flex-c w-[160px]">
+              <div class="max-w-[112px] truncate">{{ row.name }}</div>
               <span @click="thingModelRef.open(row)">
                 <ArtSvgIcon
                   icon="ri:error-warning-line"

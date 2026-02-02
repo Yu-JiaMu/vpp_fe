@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-md thing-model">
+  <div class="pb-5 bg-white rounded-md thing-model">
     <!-- 顶部搜索区 -->
     <div class="flex items-center justify-between p-5 search-con">
       <div class="flex items-center gap-2.5">

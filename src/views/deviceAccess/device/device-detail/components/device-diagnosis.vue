@@ -1,16 +1,16 @@
 <template>
-  <div class="device-diagnosis bg-white">
+  <div class="bg-white device-diagnosis">
     <div class="network-diagnosis-container">
       <!-- 头部状态区域 -->
       <div class="status-header">
         <!-- <img src="@/assets/images/deviceAccess/15.png" class="w-[100%] h-[100%]" /> -->
         <img src="@/assets/images/deviceAccess/16.png" class="w-[100%] h-[100%]" />
-        <div class="c-x-z-d">重新诊断</div>
+        <div class="c-x-z-d" @click="startCheck">重新诊断</div>
       </div>
     </div>
     <div class="flex gap-2 mt-[20px] mb-[20px]">
       <div
-        class="tag cursor-pointer"
+        class="cursor-pointer tag"
         :class="{ 'active-tag': activeTag === tag.value }"
         v-for="(tag, index) in tagList"
         :key="index"
@@ -19,17 +19,18 @@
       >
     </div>
     <template v-if="activeTag === 'connectionStatus'">
-      <div class="flex justify-between items-center">
+      <div class="flex items-center justify-between">
         <div class="font-scBold text-g-131617 flex-c">
           <img src="@/assets/images/icon/icon-info.png" class="w-5 h-5 mr-2.5" alt="" />
           基本信息
         </div>
       </div>
       <div
-        class="flex justify-between items-center l-j-info"
+        class="flex items-center justify-between l-j-info"
         v-for="(item, index) in infoList"
         :key="index"
       >
+        {{ item }}
         <div class="flex items-center gap-5">
           <img src="@/assets/images/deviceAccess/17.png" class="w-[40px] h-[40px]" />
           <!-- <img src="@/assets/images/deviceAccess/18.png" class="w-[40px] h-[40px]" /> -->
@@ -92,6 +93,9 @@
 </template>
 
 <script setup>
+  import * as api from '@/api/iot'
+  import { useFetchSSE } from '@/hooks'
+
   const tagList = ref([
     {
       label: '连接状态',
@@ -109,6 +113,15 @@
   }
   const infoList = ref([1, 2, 3])
   const editorContent = ref('')
+
+  async function startCheck() {
+    const { stop, onMessage } = useFetchSSE(
+      `/stage-api/model/device/checker/check?deviceIdentifier=d01`
+    )
+    onMessage((data) => {
+      console.log('data', data)
+    })
+  }
 </script>
 
 <style scoped lang="scss">

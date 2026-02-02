@@ -22,3 +22,9 @@ export enum TableSizeEnum {
   SMALL = 'small',
   LARGE = 'large'
 }
+
+// 默认的起始与结束时刻 当日零点，到第二天23点59分59秒
+export const DATE_PICKER_DEFAULT_TIME = [
+  new Date(2000, 1, 1, 0, 0, 0),
+  new Date(2000, 2, 1, 23, 59, 59)
+]

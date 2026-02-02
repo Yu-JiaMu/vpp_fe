@@ -6,45 +6,63 @@ interface UseUploadBeforeOptions {
   accept: string
 }
 
-export function useUploadBefore(options: UseUploadBeforeOptions) {
-  const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
-    const sizeOk = rawFile.size / 1024 / 1024 < options.fileSize
-
-    // 将 accept 字符串拆分成允许的类型列表
-    const acceptTypes = options.accept.split(',').map((type) => type.trim())
-
-    // 检查文件类型
-    const typeOk = acceptTypes.some((type) => {
+function formatAcceptText(accept: string) {
+  return accept
+    .split(',')
+    .map((type) => type.trim())
+    .map((type) => {
       if (type.startsWith('.')) {
-        // 处理文件扩展名如 .jpg, .png
+        return type.replace('.', '')
+      }
+      if (type.includes('/')) {
+        // image/jpeg 或 image/*
+        return type.split('/')[1].replace('*', '')
+      }
+      return type
+    })
+    .filter(Boolean)
+    .join('、')
+}
+
+export function useUploadBefore(options: UseUploadBeforeOptions) {
+  const acceptTypes = options.accept.split(',').map((type) => type.trim())
+
+  const acceptText = formatAcceptText(options.accept)
+  console.log('上传限制')
+
+  const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
+    // 1️⃣ 大小校验
+    const sizeOk = rawFile.size / 1024 / 1024 < options.fileSize
+    if (!sizeOk) {
+      ElMessage.warning(`上传失败，文件大小不能超过 ${options.fileSize}MB`)
+      return false
+    }
+
+    // console.log('232324', rawFile.type, acceptTypes)
+
+    // 2️⃣ 类型校验
+    const typeOk = acceptTypes.some((type) => {
+      // .jpg .png
+      if (type.startsWith('.')) {
         return rawFile.name.toLowerCase().endsWith(type.toLowerCase())
       }
-      // 处理通配符如 image/*
+
+      // image/*
       if (type.includes('*')) {
-        const pattern = type.replace('*', '')
-        return rawFile.type.startsWith(pattern)
+        const prefix = type.replace('*', '')
+        return rawFile.type.startsWith(prefix)
       }
-      // 处理精确 MIME 类型如 image/jpeg
+
+      // image/jpeg
       return rawFile.type === type
     })
 
     if (!typeOk) {
-      ElMessage({
-        message: '上传文件不符合所需的格式！',
-        type: 'warning'
-      })
+      ElMessage.warning(`上传失败，请重新选择 ${acceptText} 格式上传`)
+      return false
     }
 
-    if (!sizeOk) {
-      setTimeout(() => {
-        ElMessage({
-          message: `上传文件大小不能超过 ${options.fileSize}M！`,
-          type: 'warning'
-        })
-      }, 0)
-    }
-
-    return typeOk && sizeOk
+    return true
   }
 
   return beforeUpload

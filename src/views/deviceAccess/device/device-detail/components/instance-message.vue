@@ -262,7 +262,6 @@
       return ElMessage.warning('仅支持中文、英文字母、数字、短划线、下划线、@')
     }
     if (value && getByteLength(value) > 50) {
-      // callback(new Error('描述不能超过200个字符（中文占2位）'))
       return ElMessage.warning('描述不能超过50个字符）')
     }
     item.flag = false

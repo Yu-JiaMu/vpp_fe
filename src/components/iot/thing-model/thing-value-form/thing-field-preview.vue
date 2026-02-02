@@ -1,7 +1,9 @@
 <template>
   <div class="text-sm leading-6 text-gray-800">
     <!-- enum -->
-    <el-tag v-if="type === 'enum'" size="small">{{ fieldValue }} - {{ enumLabel }} </el-tag>
+    <span v-if="type === 'enum'" class="enum-tag" size="small"
+      >{{ fieldValue }} - {{ enumLabel }}
+    </span>
 
     <!-- boolean -->
     <el-tag v-else-if="type === 'boolean'" size="small" :type="booleanTagType">

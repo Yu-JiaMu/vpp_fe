@@ -139,3 +139,26 @@
   background-color: #303537;
   color: #ffffff;
 }
+
+.enum-tag {
+  background-color: #eefeff;
+  border-color: #38ecf2;
+  color: #505658;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  vertical-align: middle;
+  padding: 0 7px;
+  height: 20px;
+  font-size: 12px;
+  line-height: 1;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 4px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  --el-icon-size: 14px;
+  --el-tag-bg-color: #eefeff;
+  --el-tag-border-color: #38ecf2;
+  --el-tag-hover-color: #eefeff;
+}

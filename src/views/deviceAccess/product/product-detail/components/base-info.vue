@@ -14,15 +14,21 @@
     <!-- 信息表格 -->
     <el-descriptions :column="3" border label-width="133px" class="">
       <el-descriptions-item label="ID">
-        {{ product.identifier || product.id }}
+        <el-tooltip :content="product.identifier || product.id" placement="top">
+          <div class="max-w-[220px] truncate">{{ product.identifier || product.id }}</div>
+        </el-tooltip>
       </el-descriptions-item>
 
       <el-descriptions-item label="产品名称">
-        {{ product.name }}
+        <el-tooltip :content="product.name" placement="top">
+          <div class="max-w-[200px] truncate">{{ product.name }}</div>
+        </el-tooltip>
       </el-descriptions-item>
 
       <el-descriptions-item label="产品品类">
-        {{ product.productCategoryName }}
+        <el-tooltip :content="product.productCategoryName" placement="top">
+          <div class="max-w-[160px] truncate">{{ product.productCategoryName }}</div>
+        </el-tooltip>
       </el-descriptions-item>
 
       <el-descriptions-item label="节点类型">
@@ -46,11 +52,15 @@
       </el-descriptions-item>
 
       <el-descriptions-item label="产品厂商">
-        {{ product.manufactory }}
+        <el-tooltip :content="product.manufactory" placement="top">
+          <div class="max-w-[160px] truncate"> {{ product.manufactory }}</div>
+        </el-tooltip>
       </el-descriptions-item>
 
       <el-descriptions-item label="产品型号">
-        {{ product.productModel }}
+        <el-tooltip :content="product.productModel" placement="top">
+          <div class="max-w-[160px] truncate">{{ product.productModel }}</div>
+        </el-tooltip>
       </el-descriptions-item>
 
       <el-descriptions-item label="创建时间">
@@ -86,7 +96,7 @@
             <div class="flex items-center gap-4">
               <UploadImg
                 v-model="form.imgUrl"
-                accept="image/*"
+                accept="image/jpg,image/png,image/jpeg"
                 :fileSize="0.5"
                 width="100px"
                 height="100px"
