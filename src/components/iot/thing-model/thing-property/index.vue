@@ -132,6 +132,24 @@
     }
   })
 
+  const EXTENDED_RESERVED_KEYS = ['identifier', 'name', 'required']
+  const validateExtendedIdentifier = (rule, value, callback) => {
+    // 仅在 extended 模式下校验
+    if (props.track !== 'extended') {
+      return callback()
+    }
+
+    if (!value) {
+      return callback()
+    }
+
+    if (EXTENDED_RESERVED_KEYS.includes(value)) {
+      return callback(new Error('该标识符为系统保留关键字，请更换'))
+    }
+
+    callback()
+  }
+
   const rules = {
     name: [
       { required: true, message: '请输入名称', trigger: 'blur' },
@@ -140,6 +158,10 @@
     ],
     identifier: [
       { required: true, message: '请输入标识符', trigger: 'blur' },
+      {
+        validator: validateExtendedIdentifier,
+        trigger: 'blur'
+      },
       { validator: validateIdentifier, trigger: 'blur' },
       {
         validator: createUniqueValidatorByValue(
