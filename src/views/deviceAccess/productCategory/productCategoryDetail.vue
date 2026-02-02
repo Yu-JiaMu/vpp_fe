@@ -153,7 +153,7 @@
       border: 1px solid var(--default-border);
     }
     .d-h {
-      width: 90%;
+      max-width: 90%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
