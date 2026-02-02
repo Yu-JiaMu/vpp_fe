@@ -88,8 +88,8 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="industryCode" label="所属行业" />
-        <el-table-column prop="sceneCode" label="所属场景" />
+        <el-table-column prop="industry" label="所属行业" />
+        <el-table-column prop="scene" label="所属场景" />
         <el-table-column prop="updateTime" label="更新时间" sortable="custom" />
         <el-table-column fixed="right" label="操作">
           <template #default="{ row }">
@@ -421,10 +421,10 @@
   const dialogVisible = ref(false)
   const openDialog = async (type = 'add', data = null) => {
     dialogVisible.value = true
-    if (type === 'add') return
     await nextTick()
+    if (type === 'add') return
     if (productCategoryDialogRef.value && productCategoryDialogRef.value.initFormData) {
-      productCategoryDialogRef.value.initFormData(data)
+      await productCategoryDialogRef.value.initFormData(data)
     }
   }
 
