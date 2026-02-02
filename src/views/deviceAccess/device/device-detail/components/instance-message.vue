@@ -13,7 +13,7 @@
     <!-- 信息表格 -->
     <el-descriptions :column="3" border label-width="133px" class="">
       <el-descriptions-item label="设备ID">
-        {{ deviceDetail.id }}
+        {{ deviceDetail.identifier }}
       </el-descriptions-item>
 
       <el-descriptions-item label="设备名称">
@@ -273,12 +273,15 @@
       form,
       pick(props.deviceDetail, ['id', 'name', 'tagArray', 'remark', 'address', 'lng', 'lat'])
     )
-    tagList.value = form.tagArray.map((item) => {
-      return {
-        value: item,
-        flag: false
-      }
-    })
+    if (form.tagArray?.length > 0) {
+      tagList.value = form.tagArray.map((item) => {
+        return {
+          value: item,
+          flag: false
+        }
+      })
+    }
+
     dialogVisible.value = true
     await nextTick()
     createMap()

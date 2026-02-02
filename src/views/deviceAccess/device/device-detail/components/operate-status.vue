@@ -14,13 +14,14 @@
     <template v-if="activeTag === 'attributeData'">
       <div class="flex gap-2.5">
         <el-input
-          v-model="form.name"
+          v-model="form.searchIdentifier"
           placeholder="请输入属性名称"
           :prefix-icon="Search"
           style="width: 248px"
+          clearable
         />
-        <el-button @click="handleSearch"> 搜索 </el-button>
-        <ArtResetBtn class="!ml-0" @click="handleReset" />
+        <el-button @click="onSearch"> 搜索 </el-button>
+        <ArtResetBtn class="!ml-0" @click="onReset" />
       </div>
       <div class="flex items-center justify-end gap-8 search-box">
         <el-switch v-model="form.refresh" active-text="实时刷新" />
@@ -47,11 +48,11 @@
       <template v-if="activeIcon === 'table'">
         <el-table :data="tableData" border show-overflow-tooltip style="width: 100%">
           <el-table-column prop="name" label="属性名称" width="400" />
-          <el-table-column prop="content" label="值" width="400" />
-          <el-table-column prop="updateTime" label="更新时间" width="400" />
+          <el-table-column prop="val" label="值" width="400" />
+          <el-table-column prop="ts" label="更新时间" width="400" />
           <el-table-column label="操作">
             <template #default="{ row, $index }">
-              <el-button type="primary" link> 详情 </el-button>
+              <el-button type="primary" link @click="handleDetail(row)"> 详情 </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -59,20 +60,20 @@
       <template v-if="activeIcon === 'card'">
         <div class="card-container mt20">
           <!-- 卡片1：电压 -->
-          <div class="card" v-for="item in 20">
+          <div class="card" v-for="(item, index) in tableData" :key="index">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <div class="kuai"></div>
-                <span class="text-[15px]">电压</span>
+                <span class="text-[15px]">{{ item.name }}</span>
               </div>
               <img src="@/assets/images/deviceAccess/13.png" alt="" class="w-[14px] h-[16px]" />
             </div>
             <div class="content-font mt-[4px] mb-[15px] flex items-end">
               <div class="flex items-center gap-2 mr-[4px]">
                 <div class="kuai" style="opacity: 0"></div>
-                <span class="text-5xl">220</span>
+                <span class="text-5xl">{{ item.val }}</span>
               </div>
-              <span class="text-[22px]">KWH</span>
+              <span class="text-[22px]">{{ item.unit }}</span>
             </div>
             <div class="flex items-center gap-2">
               <div class="kuai"></div>
@@ -80,12 +81,12 @@
             </div>
             <div class="flex items-center gap-2">
               <div class="kuai" style="opacity: 0"></div>
-              <span class="text-[15px]">2025-09-23</span>
+              <span class="text-[15px]">{{ item.ts }}</span>
             </div>
           </div>
         </div>
       </template>
-      <ArtPagination v-model="pagination" @change="pageChange" />
+      <!-- <ArtPagination v-model="pagination" @change="pageChange" /> -->
     </template>
     <!-- 查看详情弹窗 -->
     <el-dialog
@@ -95,36 +96,43 @@
       :show-close="false"
       width="742"
       :close-on-click-modal="false"
+      :close-on-press-escape="false"
     >
-      <div class="flex items-center justify-between">
-        <el-radio-group v-model="timeDateType" text-color="#fff" fill="#38ECF2">
+      <div class="flex items-center">
+        <el-radio-group
+          class="w-[341px]"
+          @change="timeDateTypeChange"
+          v-model="timeDateType"
+          text-color="#fff"
+          fill="#38ECF2"
+        >
           <el-radio-button label="今日" value="today" />
           <el-radio-button label="最近一周" value="week" />
           <el-radio-button label="最近一个月" value="month" />
         </el-radio-group>
-        <div style="width: 300px">
-          <el-date-picker
-            v-model="datetime"
-            type="datetimerange"
-            start-placeholder="开始时间"
-            end-placeholder="结束时间"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            clearable
-            style="width: 100%"
-            @change="dateTimeChange"
-          />
-          <!--  :default-time="['00:00:00', '23:59:59']" -->
-        </div>
+        <el-date-picker
+          v-model="datetime"
+          type="datetimerange"
+          start-placeholder="开始时间"
+          end-placeholder="结束时间"
+          value-format="YYYY-MM-DD HH:mm:ss"
+          clearable
+          class="flex-1"
+          @change="dateTimeChange"
+          :default-time="DATE_PICKER_DEFAULT_TIME"
+          readonly
+        />
+        <!--  :default-time="['00:00:00', '23:59:59']" -->
       </div>
       <el-tabs v-model="tabsActive" class="mt20" @tab-click="handleTabsClick">
         <el-tab-pane label="列表" name="first">
-          <el-table :data="tabsTableData" border style="width: 100%">
-            <el-table-column prop="time" label="时间" width="400" />
-            <el-table-column prop="time" label="值" />
+          <el-table :data="dialogTableData" border style="width: 100%">
+            <el-table-column prop="ts" label="时间" width="400" />
+            <el-table-column prop="val" label="值" />
           </el-table>
           <ArtPagination
-            v-model="pagination"
-            @change="pageChange"
+            v-model="dialogPagination"
+            @change="getDialogTableData"
             layout="prev, pager, next, jumper"
           />
         </el-tab-pane>
@@ -163,13 +171,23 @@
     </el-dialog>
     <!-- 事件 -->
     <template v-if="activeTag === 'eventManage'">
-      <el-table :data="eventTableData" border style="width: 100%">
+      <el-table :data="tableData" border style="width: 100%" show-overflow-tooltip>
         <el-table-column prop="name" label="事件名称" width="300" />
-        <el-table-column prop="name" label="事件级别" width="300" />
-        <el-table-column prop="name" label="更新事件" width="400" />
-        <el-table-column prop="name" label="输出参数" />
+        <el-table-column prop="eventType" label="事件级别" width="300" />
+        <el-table-column prop="ts" label="更新时间" width="400" />
+        <el-table-column prop="val" label="输出参数" min-width="100" />
+        <el-table-column label="操作" fixed="right" width="140">
+          <template #default="{ row }">
+            <el-button link type="primary" @click="openDetailDialog(row)">详情</el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </template>
+    <ArtPagination v-model="pagination" @change="getTableData" />
+    <!-- 绑定弹窗 -->
+    <el-dialog v-model="CSdialogVisible" title="详情" width="742px">
+      <MonacoEditor v-model="editorContent" theme="vs" class="h-[378px]" lang="json" readOnly />
+    </el-dialog>
   </div>
 </template>
 
@@ -179,6 +197,15 @@
   import img2 from '@/assets/images/deviceAccess/10.png'
   import img3 from '@/assets/images/deviceAccess/11.png'
   import img4 from '@/assets/images/deviceAccess/12.png'
+  import * as deviceApi from '@/api/iot'
+  import { DATE_PICKER_DEFAULT_TIME } from '@/enums'
+  import dayjs from 'dayjs'
+  const props = defineProps({
+    deviceDetail: {
+      type: Object,
+      default: () => {}
+    }
+  })
   const tagList = ref([
     {
       label: '属性数据',
@@ -197,8 +224,8 @@
 
   //属性数据
   const form = reactive({
-    name: '',
-    refresh: true
+    searchIdentifier: ''
+    // refresh: true
   })
 
   const iconList = ref([
@@ -219,40 +246,191 @@
   const hanldeIconClick = (icon) => {
     activeIcon.value = icon.value
   }
-  const handleSearch = () => {
-    console.log('搜索')
+  const onReset = () => {
+    form.searchIdentifier = ''
+    pagination.current = 1
+    getTableData()
   }
-  const handleReset = () => {
-    console.log('重置')
+  const onSearch = () => {
+    pagination.current = 1
+    getTableData()
   }
-  const tableData = ref([
-    {
-      name: '大家的',
-      content: '100kv',
-      updateTime: '2025-08-12   15:34:51'
+  const tableData = ref([])
+  const handleQueryParams = () => {
+    const queryParams = {
+      pageNum: pagination.current,
+      pageSize: pagination.size,
+      ...Object.keys(form).reduce((acc, key) => {
+        if (form[key] !== '' && form[key] !== undefined && form[key] !== null) {
+          acc[key] = form[key]
+        }
+        return acc
+      }, {})
     }
-  ])
+    queryParams.deviceIdentifier = props.deviceDetail.identifier
+    return queryParams
+  }
+  const getTableData = async () => {
+    const url =
+      activeTag.value === 'attributeData' ? `data/snapshot/property` : `data/snapshot/event`
+    try {
+      const QueryParamsRes = handleQueryParams()
+      const response = await deviceApi.apiOperateStatusList(url, QueryParamsRes)
+      if (response) {
+        tableData.value = response.rows
+        pagination.total = response.total || 0
+      }
+    } catch (error) {
+      console.error('列表失败:', error)
+      ElMessage.error('设备列表失败')
+    }
+  }
+  //切换时搜索参数
+  const initQueryParams = async () => {
+    pagination.size = 10
+    pagination.current = 1 // 修正属性名
+  }
   //分页数据
   const pagination = reactive({
     size: 10,
     current: 1,
     total: 100
   })
-  const pageChange = async (e) => {
-    console.log(e, 'current-page 或 page-size 更改时触发')
-  }
+  // 更好的做法是同时监听 activeTag 和 activeIcon
+  watch(
+    () => activeTag.value,
+    (newTag) => {
+      initQueryParams()
+      getTableData()
+    },
+    { immediate: false }
+  )
+
   //弹窗数据
-  const dialogVisible = ref(true)
-  const timeDateType = ref('today')
+  const getTimeRange = (type = 'today', includeToday = true) => {
+    const now = dayjs()
+    let start, end
+
+    switch (type) {
+      case 'today':
+        // 今天
+        start = now.startOf('day')
+        end = now.endOf('day')
+        break
+
+      case 'week':
+        // 最近一周
+        if (includeToday) {
+          // 包含今天：从7天前到今天
+          start = now.subtract(6, 'day').startOf('day')
+          end = now.endOf('day')
+        } else {
+          // 不包含今天：从7天前到昨天
+          start = now.subtract(7, 'day').startOf('day')
+          end = now.subtract(1, 'day').endOf('day')
+        }
+        break
+
+      case 'month':
+        // 最近一个月
+        if (includeToday) {
+          // 包含今天：从30天前到今天
+          start = now.subtract(29, 'day').startOf('day')
+          end = now.endOf('day')
+        } else {
+          // 不包含今天：从30天前到昨天
+          start = now.subtract(30, 'day').startOf('day')
+          end = now.subtract(1, 'day').endOf('day')
+        }
+        break
+
+      default:
+        // 默认今天
+        start = now.startOf('day')
+        end = now.endOf('day')
+    }
+
+    return [start.format('YYYY-MM-DD HH:mm:ss'), end.format('YYYY-MM-DD HH:mm:ss')]
+  }
+  const dialogVisible = ref(false)
+  const handleDetail = async (row) => {
+    dialogForm.deviceIdentifier = props.deviceDetail.identifier
+    dialogForm.pointIdentifier = row.identifier
+    // timeDateTypeChange(timeDateType.value)
+    await getDialogTableData()
+    dialogVisible.value = true
+  }
+
+  const timeDateType = ref('')
+  const timeDateTypeChange = (e) => {
+    const timeDateTypeArr = getTimeRange(e)
+    datetime.value = timeDateTypeArr
+    dialogForm.startTime = timeDateTypeArr[0]
+    dialogForm.endTime = timeDateTypeArr[1]
+    dialogPagination.current = 1
+    getDialogTableData()
+  }
+  const dialogForm = reactive({
+    deviceIdentifier: '',
+    pointIdentifier: '',
+    startTime: '',
+    endTime: ''
+  })
+
   const datetime = ref('')
   const dateTimeChange = async (e) => {
     console.log(datetime.value, e, 'current-page 或 page-size 更改时触发')
+    if (e) {
+      dialogForm.startTime = e[0]
+      dialogForm.endTime = e[1]
+    } else {
+      dialogForm.startTime = ''
+      dialogForm.endTime = ''
+    }
+    dialogPagination.current = 1
+    getDialogTableData()
   }
+
   //弹窗列表
   const tabsActive = ref('first')
-  const tabsTableData = ref([])
+  const dialogTableData = ref([])
+  const dialogPagination = reactive({
+    size: 10,
+    current: 1,
+    total: 100
+  })
+  const initDialogPagination = () => {
+    dialogPagination.size = 10
+    dialogPagination.current = 1
+  }
+  const handleDialogFormQueryParams = () => {
+    const queryParams = {
+      pageNum: dialogPagination.current,
+      pageSize: dialogPagination.size,
+      ...Object.keys(dialogForm).reduce((acc, key) => {
+        if (dialogForm[key] !== '' && dialogForm[key] !== undefined && dialogForm[key] !== null) {
+          acc[key] = dialogForm[key]
+        }
+        return acc
+      }, {})
+    }
+    return queryParams
+  }
+  const getDialogTableData = async () => {
+    try {
+      const QueryParamsRes = handleDialogFormQueryParams()
+      const response = await deviceApi.apiHistoryPropertyList(QueryParamsRes)
+      if (response) {
+        dialogTableData.value = response.rows
+        dialogPagination.total = response.total || 0
+      }
+    } catch (error) {
+      console.error('列表失败:', error)
+      ElMessage.error('设备列表失败')
+    }
+  }
   const handleTabsClick = async () => {}
-
+  //属性数据结束
   //弹窗图表
   const TJZQ = ref('')
   const ZQlist = [
@@ -261,13 +439,16 @@
       value: 'ss'
     }
   ]
-
-  //事件
-  const eventTableData = ref([
-    {
-      name: '几点几分'
-    }
-  ])
+  //事件详情
+  const CSdialogVisible = ref(false)
+  const editorContent = ref('')
+  const openDetailDialog = (item) => {
+    editorContent.value = item.val || JSON.stringify(item, null, 2)
+    CSdialogVisible.value = true
+  }
+  onMounted(() => {
+    getTableData()
+  })
 </script>
 
 <style lang="scss" scoped>

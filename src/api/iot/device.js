@@ -65,3 +65,11 @@ export function apiDevEdit(params) {
 export function apiDevLog(params) {
   return request.post(`/stage-api/model/device/log`, params)
 }
+//运行状态 属性列表
+export function apiOperateStatusList(url, params) {
+  return request.post('/stage-api/model/device/' + url, params)
+}
+//查询历史数据
+export function apiHistoryPropertyList(params) {
+  return request.post('/stage-api/model/device/data/history/property', params)
+}

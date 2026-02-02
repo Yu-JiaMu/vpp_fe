@@ -153,11 +153,11 @@
       clearable: true
     },
     {
-      label: '品类类型',
+      label: '品类类别',
       key: 'categoryType',
       type: 'select',
       props: {
-        placeholder: '请选择品类类型',
+        placeholder: '请选择品类类别',
         filterable: true,
         options: INTERNAL_DEVICE_TYPES.options,
         clearable: true
