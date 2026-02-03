@@ -23,8 +23,9 @@
         <el-button @click="onSearch"> 搜索 </el-button>
         <ArtResetBtn class="!ml-0" @click="onReset" />
       </div>
+      <!-- 修改这里：去掉倒计时显示 -->
       <div class="flex items-center justify-end gap-8 search-box">
-        <el-switch v-model="form.refresh" active-text="实时刷新" />
+        <el-switch v-model="form.refresh" active-text="实时刷新" @change="handleRefreshChange" />
         <div class="flex items-center icon-box">
           <div
             class="cursor-pointer icon-item"
@@ -66,7 +67,11 @@
                 <div class="kuai"></div>
                 <span class="text-[15px]">{{ item.name }}</span>
               </div>
-              <img src="@/assets/images/deviceAccess/13.png" alt="" class="w-[14px] h-[16px]" />
+              <img
+                src="@/assets/images/deviceAccess/13.png"
+                @click="handleDetail(item)"
+                class="w-[14px] h-[16px] cursor-pointer"
+              />
             </div>
             <div class="content-font mt-[4px] mb-[15px] flex items-end">
               <div class="flex items-center gap-2 mr-[4px]">
@@ -120,7 +125,6 @@
           class="flex-1"
           @change="dateTimeChange"
           :default-time="DATE_PICKER_DEFAULT_TIME"
-          readonly
         />
         <!--  :default-time="['00:00:00', '23:59:59']" -->
       </div>
@@ -136,7 +140,7 @@
             layout="prev, pager, next, jumper"
           />
         </el-tab-pane>
-        <el-tab-pane label="图表" name="second">
+        <!-- <el-tab-pane label="图表" name="second">
           <div class="w-[300px]">
             <ArtSelectPrepend>
               <template #label> 统计周期 </template>
@@ -150,20 +154,15 @@
               </el-select>
             </ArtSelectPrepend>
           </div>
-        </el-tab-pane>
+        </el-tab-pane> -->
       </el-tabs>
       <!-- 底部按钮 -->
       <template #footer>
         <div class="flex justify-center gap-[6px]">
-          <el-button
-            size="large"
-            type="info"
-            class="w-[177px]"
-            v-ripple
-            @click="dialogVisible = false"
+          <el-button size="large" type="info" class="w-[177px]" v-ripple @click="handleCancel"
             >取消</el-button
           >
-          <el-button type="primary" class="w-[177px]" v-ripple @click="dialogVisible = false">
+          <el-button type="primary" class="w-[177px]" v-ripple @click="handleCancel">
             确认
           </el-button>
         </div>
@@ -200,12 +199,15 @@
   import * as deviceApi from '@/api/iot'
   import { DATE_PICKER_DEFAULT_TIME } from '@/enums'
   import dayjs from 'dayjs'
+  import { onUnmounted, onDeactivated, onActivated } from 'vue'
+
   const props = defineProps({
     deviceDetail: {
       type: Object,
       default: () => {}
     }
   })
+
   const tagList = ref([
     {
       label: '属性数据',
@@ -222,10 +224,12 @@
     console.log(activeTag.value)
   }
 
-  //属性数据
+  // 属性数据 - 简化后的代码
   const form = reactive({
-    searchIdentifier: ''
-    // refresh: true
+    searchIdentifier: '',
+    refresh: false, // 实时刷新开关状态，默认关闭
+    autoRefreshTimer: null, // 定时器ID
+    isRefreshing: false // 防止重复请求
   })
 
   const iconList = ref([
@@ -270,11 +274,16 @@
     queryParams.deviceIdentifier = props.deviceDetail.identifier
     return queryParams
   }
-  const getTableData = async () => {
-    const url =
-      activeTag.value === 'attributeData' ? `data/snapshot/property` : `data/snapshot/event`
+  const getTableData = async (showLoading = true) => {
+    // 如果正在刷新中，则跳过
+    if (form.isRefreshing) return
+
+    form.isRefreshing = true
+
     try {
       const QueryParamsRes = handleQueryParams()
+      const url =
+        activeTag.value === 'attributeData' ? `data/snapshot/property` : `data/snapshot/event`
       const response = await deviceApi.apiOperateStatusList(url, QueryParamsRes)
       if (response) {
         tableData.value = response.rows
@@ -283,8 +292,50 @@
     } catch (error) {
       console.error('列表失败:', error)
       ElMessage.error('设备列表失败')
+    } finally {
+      form.isRefreshing = false
     }
   }
+
+  // 处理实时刷新开关变化
+  const handleRefreshChange = (value) => {
+    if (value) {
+      // 开启实时刷新
+      startAutoRefresh()
+    } else {
+      // 关闭实时刷新
+      stopAutoRefresh()
+    }
+  }
+
+  // 开始自动刷新
+  const startAutoRefresh = () => {
+    // 先停止现有的定时器
+    stopAutoRefresh()
+
+    // 立即获取一次数据
+    getTableData()
+
+    // 设置30秒定时器
+    form.autoRefreshTimer = setInterval(() => {
+      // 只有在当前标签页是属性数据且刷新开关开启时才刷新
+      if (form.refresh && activeTag.value === 'attributeData') {
+        getTableData(false) // 自动刷新不显示loading
+      }
+    }, 30000) // 30秒 = 30000毫秒
+
+    console.log('开启自动刷新，每30秒请求一次')
+  }
+
+  // 停止自动刷新
+  const stopAutoRefresh = () => {
+    if (form.autoRefreshTimer) {
+      clearInterval(form.autoRefreshTimer)
+      form.autoRefreshTimer = null
+      console.log('停止自动刷新')
+    }
+  }
+
   //切换时搜索参数
   const initQueryParams = async () => {
     pagination.size = 10
@@ -296,15 +347,84 @@
     current: 1,
     total: 100
   })
-  // 更好的做法是同时监听 activeTag 和 activeIcon
+  // 监听标签切换
   watch(
     () => activeTag.value,
     (newTag) => {
+      if (newTag === 'attributeData' && form.refresh) {
+        // 切换到属性数据标签且实时刷新开启时，重新开始刷新
+        startAutoRefresh()
+      } else {
+        // 切换到其他标签时，停止刷新
+        stopAutoRefresh()
+      }
+
       initQueryParams()
       getTableData()
     },
     { immediate: false }
   )
+
+  // 监听搜索条件变化
+  watch(
+    () => form.searchIdentifier,
+    () => {
+      // 搜索条件变化时重置到第一页
+      pagination.current = 1
+    }
+  )
+
+  // 监听视图切换
+  watch(
+    () => activeIcon.value,
+    () => {
+      pagination.current = 1
+      getTableData()
+    }
+  )
+
+  // 页面可见性变化处理
+  const handleVisibilityChange = () => {
+    if (document.hidden) {
+      // 页面隐藏时暂停刷新
+      if (form.refresh && form.autoRefreshTimer) {
+        clearInterval(form.autoRefreshTimer)
+        form.autoRefreshTimer = null
+      }
+    } else {
+      // 页面显示时恢复刷新
+      if (form.refresh && activeTag.value === 'attributeData') {
+        startAutoRefresh()
+      }
+    }
+  }
+
+  // 组件生命周期
+  onMounted(() => {
+    getTableData()
+    // 监听页面可见性变化
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+  })
+
+  onUnmounted(() => {
+    // 组件销毁时清理定时器
+    stopAutoRefresh()
+    // 移除事件监听
+    document.removeEventListener('visibilitychange', handleVisibilityChange)
+  })
+
+  // 如果使用 Vue Router 的 keep-alive
+  onDeactivated(() => {
+    // 组件失活时停止刷新
+    stopAutoRefresh()
+  })
+
+  onActivated(() => {
+    // 组件激活时，如果刷新开关开启，重新开始刷新
+    if (form.refresh && activeTag.value === 'attributeData') {
+      startAutoRefresh()
+    }
+  })
 
   //弹窗数据
   const getTimeRange = (type = 'today', includeToday = true) => {
@@ -357,11 +477,15 @@
     dialogForm.deviceIdentifier = props.deviceDetail.identifier
     dialogForm.pointIdentifier = row.identifier
     // timeDateTypeChange(timeDateType.value)
+    const timeDateTypeArr = getTimeRange()
+    datetime.value = timeDateTypeArr
+    dialogForm.startTime = timeDateTypeArr[0]
+    dialogForm.endTime = timeDateTypeArr[1]
     await getDialogTableData()
     dialogVisible.value = true
   }
 
-  const timeDateType = ref('')
+  const timeDateType = ref('today')
   const timeDateTypeChange = (e) => {
     const timeDateTypeArr = getTimeRange(e)
     datetime.value = timeDateTypeArr
@@ -377,7 +501,7 @@
     endTime: ''
   })
 
-  const datetime = ref('')
+  const datetime = ref([])
   const dateTimeChange = async (e) => {
     console.log(datetime.value, e, 'current-page 或 page-size 更改时触发')
     if (e) {
@@ -387,6 +511,7 @@
       dialogForm.startTime = ''
       dialogForm.endTime = ''
     }
+    timeDateType.value = ''
     dialogPagination.current = 1
     getDialogTableData()
   }
@@ -399,9 +524,14 @@
     current: 1,
     total: 100
   })
-  const initDialogPagination = () => {
+  const initDialogData = () => {
     dialogPagination.size = 10
     dialogPagination.current = 1
+    timeDateType.value = ''
+    datetime.value = []
+    Object.keys(dialogForm).forEach((key) => {
+      dialogForm[key] = ''
+    })
   }
   const handleDialogFormQueryParams = () => {
     const queryParams = {
@@ -430,7 +560,11 @@
     }
   }
   const handleTabsClick = async () => {}
-  //属性数据结束
+  const handleCancel = async () => {
+    dialogVisible.value = false
+    initDialogData()
+  }
+
   //弹窗图表
   const TJZQ = ref('')
   const ZQlist = [
@@ -439,6 +573,7 @@
       value: 'ss'
     }
   ]
+  //属性数据结束
   //事件详情
   const CSdialogVisible = ref(false)
   const editorContent = ref('')
@@ -472,18 +607,11 @@
     .search-box {
       padding-right: 65px;
       .icon-box {
-        // border: 1px solid #298af9;
         .icon-item {
           img {
             width: 30px;
             height: 25px;
           }
-        }
-        .active-icon-border {
-          border: 1px solid #298af9;
-        }
-        .active-icon {
-          color: #298af9 !important;
         }
       }
     }

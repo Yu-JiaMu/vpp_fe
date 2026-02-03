@@ -69,7 +69,7 @@
 
   const componentsMap = {
     instanceMessage: defineAsyncComponent(() => import('./components/instance-message.vue')),
-    operateStatus: defineAsyncComponent(() => import('./components/operate-status.vue')),
+    operateStatus: defineAsyncComponent(() => import('./components/operate-status/index.vue')),
     deviceFunction: defineAsyncComponent(() => import('./components/device-function/index.vue')),
     deviceDiagnosis: defineAsyncComponent(() => import('./components/device-diagnosis.vue')),
     logManagement: defineAsyncComponent(() => import('./components/log-management.vue')),

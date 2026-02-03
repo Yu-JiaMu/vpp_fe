@@ -70,9 +70,9 @@
             {{ INTERNAL_DEVICE_TYPES.getLabel(row.categoryType) }}
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="产品品类">
+        <el-table-column prop="name" label="产品品类" min-width="120">
           <template #default="{ row }">
-            <div class="flex cursor-pointer flex-cz-center text-theme">
+            <span class="cursor-pointer text-theme">
               <span class="mr5" @click="handleDetail(row)">{{ row.name }}</span>
               <template v-if="!row.thingModelStatus">
                 <el-tooltip
@@ -84,7 +84,7 @@
                   <el-icon :size="18"><Warning /></el-icon>
                 </el-tooltip>
               </template>
-            </div>
+            </span>
           </template>
         </el-table-column>
 
