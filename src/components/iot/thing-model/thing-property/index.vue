@@ -132,7 +132,7 @@
     }
   })
 
-  const EXTENDED_RESERVED_KEYS = ['identifier', 'name', 'required']
+  const EXTENDED_RESERVED_KEYS = ['identifier', 'name', 'required', 'dataType']
   const validateExtendedIdentifier = (rule, value, callback) => {
     // 仅在 extended 模式下校验
     if (props.track !== 'extended') {

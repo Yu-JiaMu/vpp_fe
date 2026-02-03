@@ -25,8 +25,8 @@
               style="width: 116px"
               @change="form.key = ''"
             >
-              <el-option label="设备名称" value="deviceName" />
-              <el-option label="设备ID" value="industryCode" />
+              <el-option label="设备名称" value="name" />
+              <el-option label="设备ID" value="identifier" />
             </el-select>
           </template>
         </el-input>
@@ -38,23 +38,26 @@
       <!-- 表格 -->
       <el-table
         :data="tableData"
+        show-overflow-tooltip
         border
         height="360"
         @selection-change="handleSelectionChange"
         class="w-full"
+        v-loading="loading"
       >
         <el-table-column type="selection" width="50" />
 
         <el-table-column prop="name" label="设备名称" min-width="160" />
 
-        <el-table-column prop="id" label="设备ID" min-width="220" />
+        <el-table-column prop="identifier" label="设备ID" min-width="220" />
 
-        <el-table-column prop="product" label="所属产品" min-width="160" />
+        <el-table-column prop="productName" label="所属产品" min-width="160" />
 
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="devState" label="状态" width="100">
           <template #default="{ row }">
-            <span class="text-green-600" v-if="row.status === '在线'"> 在线 </span>
-            <span class="text-gray-400" v-else> 离线 </span>
+            <el-tag :type="DEVICE_STATUS_TYPES.getItem(row.devState)?.tag">{{
+              DEVICE_STATUS_TYPES.getLabel(row.devState)
+            }}</el-tag>
           </template>
         </el-table-column>
       </el-table>
@@ -80,12 +83,20 @@
 </template>
 
 <script setup>
+  import * as api from '@/api/iot'
+  import { NODE_TYPES, DEVICE_STATUS_TYPES } from '@/enums'
+  import { ElMessage } from 'element-plus'
+
+  const route = useRoute()
+
+  const emits = defineEmits(['refresh'])
+
   /** 弹窗显示 */
   const dialogVisible = ref(false)
 
   /** 查询条件 */
   const form = reactive({
-    mode: 'deviceName',
+    mode: 'name',
     key: ''
   })
 
@@ -95,28 +106,11 @@
     total: 0
   })
 
-  /** 表格数据（示例） */
-  const tableData = ref([
-    {
-      name: 'AI中心-顶楼-电表1',
-      id: '33014a27b4eeb480',
-      product: 'ADW300计量电表',
-      status: '在线'
-    },
-    {
-      name: 'AI中心-顶楼-电表2',
-      id: '33014a27b4eeb481',
-      product: 'ADW300计量电表',
-      status: '在线'
-    }
-  ])
+  /** 表格数据 */
+  const tableData = ref([])
 
-  /** 分页 */
-  const page = reactive({
-    pageNum: 1,
-    pageSize: 10,
-    total: 16
-  })
+  /** 加载状态 */
+  const loading = ref(false)
 
   /** 选中行 */
   const selectedRows = ref([])
@@ -125,46 +119,77 @@
     selectedRows.value = rows
   }
 
+  /** 获取设备列表数据 */
+  const getDeviceList = async () => {
+    try {
+      loading.value = true
+      const queryParams = {
+        nodeType: NODE_TYPES.values.SUB_DEVICE,
+        isAsc: 'desc',
+        orderByColumn: 'updateTime',
+        pageNum: pagination.current,
+        pageSize: pagination.size
+      }
+
+      // 添加搜索条件
+      if (form.key.trim()) {
+        queryParams[form.mode] = form.key
+      }
+
+      const response = await api.apiGetDeviceList(queryParams)
+      if (response && response.rows) {
+        // 映射API返回字段到表格显示字段
+        tableData.value = response.rows
+        pagination.total = response.total || 0
+      }
+    } catch (error) {
+      ElMessage.error('获取设备列表失败')
+      console.error(error)
+    } finally {
+      loading.value = false
+    }
+  }
+
   /** 搜索 */
   const handleSearch = () => {
-    console.log('搜索条件', query)
-    if (!form.key.trim()) {
-      filteredList.value = props.productCategoryList
-      return
-    }
-
-    const keyword = form.key.toLowerCase()
+    pagination.current = 1
+    getDeviceList()
   }
 
   /** 重置 */
   const handleReset = () => {
-    query.deviceName = ''
-    handleSearch()
-  }
-
-  /** 分页切换 */
-  const handlePageChange = (val) => {
-    page.pageNum = val
-    handleSearch()
+    form.key = ''
+    form.mode = 'name'
+    pagination.current = 1
+    getDeviceList()
   }
 
   /** 取消 */
   const handleCancel = () => {
-    visible.value = false
+    dialogVisible.value = false
   }
 
   /** 确认绑定 */
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!selectedRows.value.length) {
       ElMessage.warning('请选择要绑定的设备')
       return
     }
     console.log('绑定设备', selectedRows.value)
-    visible.value = false
+    await api.apiDevBatchBind({
+      parentId: route.query.id,
+      childIds: selectedRows.value.map((item) => item.id)
+    })
+    ElMessage.success('绑定成功')
+    dialogVisible.value = false
+    emits('refresh')
   }
 
   const open = (row) => {
     dialogVisible.value = true
+    selectedRows.value = []
+    pagination.current = 1
+    getDeviceList()
   }
 
   defineExpose({ open })

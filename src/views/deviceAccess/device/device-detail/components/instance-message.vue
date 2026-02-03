@@ -191,7 +191,7 @@
       default: () => {}
     }
   })
-  const emit = defineEmits(['eidtSuccess'])
+  const emit = defineEmits(['refresh'])
   // const deviceDetail = ref({
   //   deviceId: '1955073219080001',
   //   deviceName: '计量电表001',
@@ -319,7 +319,7 @@
     await api.apiDevEdit(params)
     dialogVisible.value = false
     ElMessage.success('编辑成功')
-    emit('eidtSuccess')
+    emit('refresh')
   }
   //地图
   // 创建地图

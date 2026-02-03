@@ -14,22 +14,22 @@
         </div>
       </div>
 
-      <!-- 右侧执行结果 -->
-      <div class="bg-white h-fit rounded-md border border-[#EEEFF1] flex-1">
-        <div class="text-g-303537 border-b border-[#EEEFF1] px-5 py-4.5 font-scBold">执行结果</div>
-        <div
-          class="text-g-505658 whitespace-pre-line px-5 py-4.5 max-h-[500px] min-h-25 overflow-y-auto"
-        >
-          {{ result }}
-        </div>
-      </div>
+      <!-- 执行结果 -->
+      <ExecuteResult :result="result" />
     </div>
   </div>
 </template>
 
 <script setup>
+  import * as api from '@/api/iot'
   import FunctionList from './function-list.vue'
+  import ExecuteResult from './execute-result.vue'
+
   const props = defineProps({
+    deviceDetail: {
+      type: Object,
+      default: () => {}
+    },
     functions: {
       type: Array,
       default: () => [],
@@ -82,10 +82,19 @@
   }
 
   async function handleExecute() {
-    emits('execute', request)
+    try {
+      const data = await api.apiDevExecute({
+        deviceIdentifier: props.deviceDetail.identifier,
+        functionIdentifier: activeFunction.value.identifier,
+        inputParameters: JSON.parse(editorContent.value)
+      })
+      console.log(data)
 
-    // mock 执行结果
-    result.value = JSON.stringify(request, null, 2)
+      // mock
+      result.value = JSON.stringify(data, null, 2)
+    } catch (error) {
+      result.value = JSON.stringify(error.message, null, 2)
+    }
   }
 </script>
 

@@ -66,10 +66,27 @@ export function apiDevEdit(params) {
 export function apiDevLog(params) {
   return request.post(`/stage-api/model/device/log`, params)
 }
+
+// 批量绑定设备
+export function apiDevBatchBind(params) {
+  return request.post(`/stage-api/model/device/bind/${params.parentId}`, params.childIds)
+}
+
+// 批量解绑设备
+export function apiDevBatchUnbind(params) {
+  return request.post(`/stage-api/model/device/unbind`, params.childIds)
+}
+
+// 执行设备功能
+export function apiDevExecute(params) {
+  return request.post(`/stage-api/model/device/function`, params)
+}
+
 //运行状态 属性列表
 export function apiOperateStatusList(url, params) {
   return request.post('/stage-api/model/device/' + url, params)
 }
+
 //查询历史数据
 export function apiHistoryPropertyList(params) {
   return request.post('/stage-api/model/device/data/history/property', params)

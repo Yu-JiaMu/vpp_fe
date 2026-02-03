@@ -44,7 +44,14 @@
     </el-table>
 
     <!-- 添加功能点 -->
-    <el-dialog v-model="dialogVisible" align-center title="编辑" :show-close="false" width="598">
+    <el-dialog
+      v-model="dialogVisible"
+      align-center
+      title="编辑"
+      :close-on-click-modal="false"
+      :show-close="false"
+      width="598"
+    >
       <ThingValueForm ref="valueFormRef" :schema="schema" />
       <!-- 底部按钮 -->
       <template #footer>
