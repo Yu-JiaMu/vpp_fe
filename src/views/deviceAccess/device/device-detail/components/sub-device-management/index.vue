@@ -83,7 +83,13 @@
 
     <!-- 表格 -->
     <div class="bg-white rounded-md">
-      <el-table :data="tableData" border height="520" @selection-change="handleSelectionChange">
+      <el-table
+        :data="tableData"
+        border
+        show-overflow-tooltip
+        height="520"
+        @selection-change="handleSelectionChange"
+      >
         <el-table-column type="selection" width="50" />
 
         <el-table-column prop="name" label="设备名称" min-width="140" />
@@ -127,7 +133,7 @@
     </div>
 
     <!-- 绑定弹窗 -->
-    <BindDeviceDialog ref="bindDeviceDialogRef" />
+    <BindDeviceDialog ref="bindDeviceDialogRef" @refresh="getTableData" />
   </div>
 </template>
 
@@ -235,7 +241,7 @@
         // 调用API移除设备
         const ids = selectedRows.value.map((item) => item.id)
         // 实际项目：这里换成接口
-        // await api.batchRemoveDevices({ ids })
+        await api.apiDevBatchUnbind({ childIds: ids })
         console.log('批量移除设备:', ids)
         ElMessage.success('批量移除成功')
         selectedRows.value = []
@@ -254,9 +260,7 @@
       type: 'warning'
     })
       .then(async () => {
-        // 调用API移除设备
-        // 实际项目：这里换成接口
-        // await api.removeDevice({ id: row.id })
+        await api.apiDevBatchUnbind({ childIds: [row.id] })
         console.log('移除设备:', row.id)
         ElMessage.success('移除成功')
         getTableData()

@@ -57,7 +57,7 @@
 
 <script setup>
   import { defineAsyncComponent, computed, ref, onMounted } from 'vue'
-  import { useRoute } from 'vue-router'
+  import { useRoute, onBeforeRouteUpdate } from 'vue-router'
   import * as api from '@/api/iot'
   import { NODE_TYPES, DEVICE_STATUS_TYPES } from '@/enums'
 
@@ -110,6 +110,14 @@
       activeTab.value = visibleTabs.value[0]?.value
     }
   }
+
+  // 当路由 query.id 发生变化时刷新数据（解决 keep-alive 或同 route 不重新 mount 的情况）
+  onBeforeRouteUpdate((to, from) => {
+    if (to.query.id && to.query.id !== from.query.id) {
+      activeTab.value = TABS[0].value
+      getDeviceDetail(to.query.id)
+    }
+  })
 
   onMounted(() => {
     if (route.query.id) {

@@ -65,3 +65,13 @@ export function apiDevEdit(params) {
 export function apiDevLog(params) {
   return request.post(`/stage-api/model/device/log`, params)
 }
+
+// 批量绑定设备
+export function apiDevBatchBind(params) {
+  return request.post(`/stage-api/model/device/bind/${params.parentId}`, params.childIds)
+}
+
+// 批量解绑设备
+export function apiDevBatchUnbind(params) {
+  return request.post(`/stage-api/model/device/unbind`, params.childIds)
+}
