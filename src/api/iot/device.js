@@ -43,9 +43,10 @@ export function apiDevUpdateExpandInfo(params) {
 }
 
 //批量注册 下载模板
-export function apiDevdownloadExcelTemplate() {
-  return request.get(`/stage-api/model/device/download/excel/template`, '', {
+export function apiDevdownloadExcelTemplate(params) {
+  return request.post(`/stage-api/model/device/download/excel/template`, params, {
     responseType: 'blob'
+    // 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
   })
 }
 export function apiDevBatchRegister(params) {

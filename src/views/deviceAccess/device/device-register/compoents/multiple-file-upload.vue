@@ -72,7 +72,7 @@
   import { useUploadBefore } from '@/components/core/Upload/composables/useUploadBefore'
   import { ElMessage, genFileId } from 'element-plus'
   const downloadDevTemplate = async () => {
-    const result = await api.apiDevdownloadExcelTemplate()
+    const result = await api.apiDevdownloadExcelTemplate(productIds.value)
     downloadFile(result, '多产品注册模板', 'xlsx')
   }
   const beforeUpload = useUploadBefore({
@@ -101,9 +101,15 @@
     devEnable: true
   })
   const submitForm = async () => {
-    console.log(form)
+    console.log(form, 'formformformform')
     emit('sumbitForm', form)
   }
+  const productIds = ref([])
+  const setProductIds = async (ids) => {
+    productIds.value = ids
+    console.log(productIds.value, 'productIds.valueproductIds.value')
+  }
+  defineExpose({ setProductIds })
 </script>
 
 <style lang="scss" scoped>
