@@ -124,11 +124,11 @@
     name: [
       {
         required: true,
-        validator: validateNameLength,
         trigger: 'blur',
         message: '请输入产品品类名称'
       },
-      { validator: validateCommon, trigger: 'blur' }
+      { validator: validateCommon, trigger: 'blur' },
+      { validator: validateNameLength, trigger: 'blur' }
     ],
     remark: [{ validator: validateDescLength, trigger: 'blur' }]
   }
@@ -190,7 +190,7 @@
         emit('edit-success', { ...formData })
       } else {
         const res = await productCategoryApi.apiProductCategoryAdd({ ...formData })
-        formData.id = res || '2014243059751063552'
+        formData.id = res
         emit('addSuccess', { ...formData })
       }
       // 提交成功提示
@@ -250,6 +250,21 @@
       formData[key] = ''
     })
   }
+  //编辑或趋势场景
+  const getSceneCode = async (industryCode) => {
+    if (!industryCode) return
+    await getIndustryList()
+    console.log(industryOptions.value, 'sss')
+    const children =
+      industryOptions.value.find((item) => item.value === industryCode)?.children || []
+    sceneOptions.value = children.map((item) => {
+      return {
+        label: item.label,
+        value: item.code
+      }
+    })
+    console.log(sceneOptions.value)
+  }
   //编辑时初始化表单数据
   const initFormData = (data) => {
     formData.id = data.id
@@ -257,7 +272,7 @@
     formData.sceneCode = data.sceneCode || ''
     formData.name = data.name || ''
     formData.remark = data.remark || ''
-    industryCodeChange(formData.industryCode)
+    getSceneCode(formData.industryCode)
   }
   // 暴露方法给父组件
   defineExpose({

@@ -70,9 +70,9 @@
             {{ INTERNAL_DEVICE_TYPES.getLabel(row.categoryType) }}
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="产品品类">
+        <el-table-column prop="name" label="产品品类" min-width="120">
           <template #default="{ row }">
-            <div class="flex cursor-pointer flex-cz-center text-theme">
+            <span class="cursor-pointer text-theme">
               <span class="mr5" @click="handleDetail(row)">{{ row.name }}</span>
               <template v-if="!row.thingModelStatus">
                 <el-tooltip
@@ -84,12 +84,12 @@
                   <el-icon :size="18"><Warning /></el-icon>
                 </el-tooltip>
               </template>
-            </div>
+            </span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="industryCode" label="所属行业" />
-        <el-table-column prop="sceneCode" label="所属场景" />
+        <el-table-column prop="industry" label="所属行业" />
+        <el-table-column prop="scene" label="所属场景" />
         <el-table-column prop="updateTime" label="更新时间" sortable="custom" />
         <el-table-column fixed="right" label="操作">
           <template #default="{ row }">
@@ -153,11 +153,11 @@
       clearable: true
     },
     {
-      label: '品类类型',
+      label: '品类类别',
       key: 'categoryType',
       type: 'select',
       props: {
-        placeholder: '请选择品类类型',
+        placeholder: '请选择品类类别',
         filterable: true,
         options: INTERNAL_DEVICE_TYPES.options,
         clearable: true
@@ -421,10 +421,10 @@
   const dialogVisible = ref(false)
   const openDialog = async (type = 'add', data = null) => {
     dialogVisible.value = true
-    if (type === 'add') return
     await nextTick()
+    if (type === 'add') return
     if (productCategoryDialogRef.value && productCategoryDialogRef.value.initFormData) {
-      productCategoryDialogRef.value.initFormData(data)
+      await productCategoryDialogRef.value.initFormData(data)
     }
   }
 

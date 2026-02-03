@@ -26,18 +26,24 @@
   const nextStep = async (productId) => {
     productIds.value = productId
     activeStep.value = 2
+    await nextTick()
+    if (multipleFileUpload.value) {
+      multipleFileUpload.value.setProductIds(productIds.value)
+    }
   }
   //上一步
   const previousStep = async () => {
     activeStep.value = 1
   }
   const sumbitForm = async (submitData) => {
-    const data = {
-      ...submitData,
-      productIds: productIds.value
-    }
-    await api.apiDevBatchRegister(data)
-    ElMessage.success('创建成功')
+    const formData = new FormData()
+    formData.append('file', submitData.pendingFile.raw)
+    formData.append('devEnable', true)
+    formData.append('productIds', productIds.value)
+    console.log(formData)
+    // return
+    await api.apiDevBatchRegister(formData)
+    ElMessage.success('批量导入成功')
     router.back()
   }
 </script>

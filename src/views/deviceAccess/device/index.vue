@@ -135,9 +135,9 @@
 
         <!-- 设备ID列 -->
         <el-table-column
-          prop="id"
+          prop="identifier"
           label="设备ID"
-          v-if="visibleColumns.includes('id')"
+          v-if="visibleColumns.includes('identifier')"
           width="200"
         />
 
@@ -322,7 +322,7 @@
     },
     {
       label: '设备ID',
-      key: 'id',
+      key: 'identifier',
       type: 'input',
       placeholder: '请输入设备id',
       clearable: true
@@ -388,7 +388,7 @@
   // 所有列配置
   const allColumns = reactive([
     { prop: 'name', label: '设备名称', visible: true },
-    { prop: 'id', label: '设备ID', visible: true },
+    { prop: 'identifier', label: '设备ID', visible: true },
     { prop: 'productId', label: '所属产品', visible: true },
     { prop: 'devState', label: '状态', visible: true },
     { prop: 'nodeType', label: '节点类型', visible: true },

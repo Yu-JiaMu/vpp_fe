@@ -6,9 +6,7 @@
       <el-row class="mt20 product-font">
         <el-col :span="6">
           <span class="mr5">所属行业/场景:</span>
-          <span
-            >{{ productCategoryDetail.industryCode }}/{{ productCategoryDetail.sceneCode }}</span
-          >
+          <span>{{ productCategoryDetail.industry }}-{{ productCategoryDetail.scene }}</span>
         </el-col>
         <el-col :span="18">
           <div class="flex">
@@ -153,7 +151,7 @@
       border: 1px solid var(--default-border);
     }
     .d-h {
-      width: 90%;
+      max-width: 90%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;

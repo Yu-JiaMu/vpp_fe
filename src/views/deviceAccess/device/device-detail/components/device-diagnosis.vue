@@ -2,11 +2,26 @@
   <div class="bg-white device-diagnosis">
     <div class="network-diagnosis-container">
       <!-- 头部状态区域 -->
-      <div class="status-header">
-        <!-- <img src="@/assets/images/deviceAccess/15.png" class="w-[100%] h-[100%]" /> -->
-        <img src="@/assets/images/deviceAccess/16.png" class="w-[100%] h-[100%]" />
-        <div class="c-x-z-d" @click="startCheck">重新诊断</div>
-      </div>
+      <!-- 连接中 -->
+      <template v-if="approved === '连接中'">
+        <div class="status-header">
+          <img src="@/assets/images/deviceAccess/21.png" class="w-[100%] h-[100%]" />
+        </div>
+      </template>
+      <!-- 连接状态正常 -->
+      <template v-else-if="approved === '连接正常'">
+        <div class="status-header">
+          <img src="@/assets/images/deviceAccess/16.png" class="w-[100%] h-[100%]" />
+          <div class="c-x-z-d-z-c" @click="removeCheck">重新诊断</div>
+        </div>
+      </template>
+      <!-- 连接状态异常 -->
+      <template v-else-if="approved === '连接异常'">
+        <div class="status-header">
+          <img src="@/assets/images/deviceAccess/15.png" class="w-[100%] h-[100%]" />
+          <div class="c-x-z-d" @click="removeCheck">重新诊断</div>
+        </div>
+      </template>
     </div>
     <div class="flex gap-2 mt-[20px] mb-[20px]">
       <div
@@ -29,20 +44,22 @@
         class="flex items-center justify-between l-j-info"
         v-for="(item, index) in infoList"
         :key="index"
+        :class="{ 'opacity-1': index === infoList.length - 1 }"
       >
-        {{ item }}
         <div class="flex items-center gap-5">
-          <img src="@/assets/images/deviceAccess/17.png" class="w-[40px] h-[40px]" />
-          <!-- <img src="@/assets/images/deviceAccess/18.png" class="w-[40px] h-[40px]" /> -->
+          <img
+            src="@/assets/images/deviceAccess/17.png"
+            v-if="item.approved"
+            class="w-[40px] h-[40px]"
+          />
+          <img src="@/assets/images/deviceAccess/18.png" v-else class="w-[40px] h-[40px]" />
           <div class="flex flex-col">
-            <span class="text-[15px] text-[#303537] font-bold">网络组建</span>
-            <span class="text-[13px] text-[#505658] font-normal"
-              >诊断网络组件配置是否正确，配置错误将导致设备连接失败。</span
-            >
+            <span class="text-[15px] text-[#303537] font-bold">{{ item.childTitle }}</span>
+            <span class="text-[13px] text-[#505658] font-normal">{{ item.childContent }}</span>
           </div>
         </div>
-        <span class="text-[15px] text-[#2ECB63] font-medium">正常</span>
-        <!-- <span class="text-[15px] text-[#F8345C] font-medium">错误</span> -->
+        <span class="text-[15px] text-[#2ECB63] font-medium" v-if="item.approved">正常</span>
+        <span class="text-[15px] text-[#F8345C] font-medium" v-else>错误</span>
       </div>
     </template>
     <template v-if="activeTag === 'notification'">
@@ -95,33 +112,70 @@
 <script setup>
   import * as api from '@/api/iot'
   import { useFetchSSE } from '@/hooks'
-
+  const props = defineProps({
+    deviceDetail: {
+      type: Object,
+      default: () => {}
+    }
+  })
   const tagList = ref([
     {
       label: '连接状态',
       value: 'connectionStatus'
-    },
-    {
-      label: '消息通知',
-      value: 'notification'
     }
+    // {
+    //   label: '消息通知',
+    //   value: 'notification'
+    // }
   ])
   const activeTag = ref('connectionStatus')
   const handleTagClick = (tag) => {
     activeTag.value = tag.value
     console.log(activeTag.value)
   }
-  const infoList = ref([1, 2, 3])
+  const infoList = ref([])
   const editorContent = ref('')
-
+  //状态连接是否异常 true正常 false异常
+  const approved = ref('连接中')
+  //是否连接状态中
+  // const childCheckNumObj = reactive({
+  //   childCheckTotal: 10,
+  //   childCheckNum: 1
+  // })
   async function startCheck() {
     const { stop, onMessage } = useFetchSSE(
-      `/stage-api/model/device/checker/check?deviceIdentifier=d01`
+      '/stage-api/model/device/checker/check?deviceIdentifier=' + props.deviceDetail.identifier
     )
     onMessage((data) => {
+      // childCheckNumObj.childCheckTotal = data.childCheckTotal
+      // childCheckNumObj.childCheckNum = data.childCheckNum
       console.log('data', data)
+      const keyList = []
+      Object.keys(data).forEach((key) => {
+        keyList.push(key)
+      })
+      if (keyList.length === 2) {
+        // if()
+        if (data.approved) {
+          approved.value = '连接正常'
+        } else {
+          approved.value = '连接异常'
+        }
+      }
+      // infoList.value = []
+      infoList.value.push(data)
+      // console.log(infoList.value)
     })
   }
+  const removeCheck = async () => {
+    approved.value = '连接中'
+    infoList.value = []
+    startCheck()
+  }
+  onMounted(() => {
+    console.log(props.deviceDetail)
+    startCheck()
+  })
 </script>
 
 <style scoped lang="scss">
@@ -146,6 +200,22 @@
           Source Han Sans SC-Medium;
         font-weight: 500;
         color: #f8345c;
+        cursor: pointer;
+        position: absolute;
+        right: 40px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      .c-x-z-d-z-c {
+        background: #ffffff;
+        border-radius: 2px;
+        padding: 6px 24px;
+        font-size: 14px;
+        font-family:
+          Source Han Sans SC,
+          Source Han Sans SC-Medium;
+        font-weight: 500;
+        color: #0bced5;
         cursor: pointer;
         position: absolute;
         right: 40px;
@@ -204,6 +274,9 @@
     // 第二个
     .card-list:nth-child(2) {
       --card-line-color: #f8345c;
+    }
+    .opacity-1 {
+      display: none;
     }
   }
   // 第一个

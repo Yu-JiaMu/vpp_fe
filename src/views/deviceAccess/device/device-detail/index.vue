@@ -22,7 +22,9 @@
           </div>
         </div>
 
-        <div class="text-sm text-g-505658"> <span>设备ID：</span>{{ deviceDetail.id }} </div>
+        <div class="text-sm text-g-505658">
+          <span>设备ID：</span>{{ deviceDetail.identifier }}
+        </div>
         <div class="text-sm text-g-505658">
           <span>所属产品：</span>
           <span class="underline text-primary">{{ deviceDetail.productName }}</span>
@@ -67,7 +69,7 @@
 
   const componentsMap = {
     instanceMessage: defineAsyncComponent(() => import('./components/instance-message.vue')),
-    operateStatus: defineAsyncComponent(() => import('./components/operate-status.vue')),
+    operateStatus: defineAsyncComponent(() => import('./components/operate-status/index.vue')),
     deviceFunction: defineAsyncComponent(() => import('./components/device-function/index.vue')),
     deviceDiagnosis: defineAsyncComponent(() => import('./components/device-diagnosis.vue')),
     logManagement: defineAsyncComponent(() => import('./components/log-management.vue')),

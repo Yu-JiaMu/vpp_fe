@@ -43,9 +43,10 @@ export function apiDevUpdateExpandInfo(params) {
 }
 
 //批量注册 下载模板
-export function apiDevdownloadExcelTemplate() {
-  return request.get(`/stage-api/model/device/download/excel/template`, '', {
+export function apiDevdownloadExcelTemplate(params) {
+  return request.post(`/stage-api/model/device/download/excel/template`, params, {
     responseType: 'blob'
+    // 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
   })
 }
 export function apiDevBatchRegister(params) {
@@ -79,4 +80,14 @@ export function apiDevBatchUnbind(params) {
 // 执行设备功能
 export function apiDevExecute(params) {
   return request.post(`/stage-api/model/device/function`, params)
+}
+
+//运行状态 属性列表
+export function apiOperateStatusList(url, params) {
+  return request.post('/stage-api/model/device/' + url, params)
+}
+
+//查询历史数据
+export function apiHistoryPropertyList(params) {
+  return request.post('/stage-api/model/device/data/history/property', params)
 }
