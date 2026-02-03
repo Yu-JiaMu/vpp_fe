@@ -80,7 +80,8 @@
   /**
    * 重置表单
    */
-  function reset() {
+  async function reset() {
+    await new Promise((r) => requestAnimationFrame(r))
     Object.keys(formModel).forEach((key) => {
       formModel[key] = null
     })

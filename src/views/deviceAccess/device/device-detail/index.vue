@@ -50,7 +50,7 @@
       :is="activeComponent"
       v-if="activeComponent"
       :deviceDetail="deviceDetail"
-      @eidt-success="getDeviceDetail(deviceDetail.id)"
+      @refresh="getDeviceDetail(deviceDetail.id)"
     />
   </div>
 </template>

@@ -75,3 +75,8 @@ export function apiDevBatchBind(params) {
 export function apiDevBatchUnbind(params) {
   return request.post(`/stage-api/model/device/unbind`, params.childIds)
 }
+
+// 执行设备功能
+export function apiDevExecute(params) {
+  return request.post(`/stage-api/model/device/function`, params)
+}

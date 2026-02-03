@@ -19,18 +19,26 @@
       </div>
     </div>
 
-    <SimpleMode v-if="activeTag === 'simple'" :functions="functions" @execute="handleExecute" />
+    <SimpleMode v-if="activeTag === 'simple'" :functions="functions" :deviceDetail="deviceDetail" />
 
-    <AdvancedMode v-else :functions="functions" @execute="handleExecute" />
+    <AdvancedMode v-else :functions="functions" :deviceDetail="deviceDetail" />
   </div>
 </template>
 
 <script setup>
   import AdvancedMode from './advanced-mode.vue'
   import SimpleMode from './simple-mode.vue'
-  import thingJson from '@/components/iot/thing-model/thing.json'
 
-  const functions = ref(thingJson.modules[0].functions)
+  const props = defineProps({
+    deviceDetail: {
+      type: Object,
+      default: () => {}
+    }
+  })
+
+  const functions = computed(() => {
+    return props.deviceDetail?.thingModelJson?.modules[0]?.functions ?? []
+  })
 
   const tagList = ref([
     {
@@ -48,13 +56,7 @@
     activeTag.value = tag.value
   }
 
-  const tableData = ref([
-    {
-      name: 's'
-    }
-  ])
-
-  function handleExecute(payload) {
+  async function handleExecute(payload) {
     console.log('最终提交参数', payload)
   }
 </script>

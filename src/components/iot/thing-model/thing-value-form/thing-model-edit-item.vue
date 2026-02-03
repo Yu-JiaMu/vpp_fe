@@ -93,8 +93,14 @@
   />
 
   <!-- json修改弹窗 -->
-  <el-dialog v-model="jsonEditDialogVisible" title="编辑" width="742px" append-to-body>
-    <MonacoEditor v-model="editorContent" theme="vs-dark" class="h-[378px]" lang="json" />
+  <el-dialog
+    v-model="jsonEditDialogVisible"
+    title="编辑"
+    width="742px"
+    append-to-body
+    :close-on-click-modal="false"
+  >
+    <MonacoEditor v-model="editorContent" theme="vs" class="h-[378px]" lang="json" />
     <template #footer>
       <div class="flex justify-center gap-[6px]">
         <el-button

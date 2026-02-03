@@ -85,11 +85,14 @@
   /**
    * 代码格式化
    */
-  const editorFormat = () => {
+  const editorFormat = async () => {
     if (!instance) return
-    setTimeout(() => {
-      instance.getAction('editor.action.formatDocument')?.run()
-    }, 300)
+
+    instance.updateOptions({ readOnly: false })
+    await new Promise((r) => requestAnimationFrame(r))
+    await instance.getAction('editor.action.formatDocument')?.run()
+    instance.updateOptions({ readOnly: props.readOnly })
+
     if (props.hasOwnProperty('readOnly')) {
       setTimeout(() => {
         instance.updateOptions({
