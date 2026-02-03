@@ -77,7 +77,7 @@
       <div class="p-2">
         <el-form ref="reviceFormRef" :model="form" :rules="rules" label-width="82px">
           <el-form-item label="设备ID">
-            <el-input v-model="form.id" placeholder="请输入设备ID" disabled />
+            <el-input v-model="form.identifier" placeholder="请输入设备ID" disabled />
           </el-form-item>
           <!-- 设备名称 -->
           <el-form-item label="设备名称" prop="name" required>
@@ -230,6 +230,7 @@
   })
   const form = reactive({
     id: '',
+    identifier: '',
     name: '',
     remark: '',
     // tagList: [],
@@ -271,7 +272,16 @@
     input.value = ''
     Object.assign(
       form,
-      pick(props.deviceDetail, ['id', 'name', 'tagArray', 'remark', 'address', 'lng', 'lat'])
+      pick(props.deviceDetail, [
+        'id',
+        'identifier',
+        'name',
+        'tagArray',
+        'remark',
+        'address',
+        'lng',
+        'lat'
+      ])
     )
     if (form.tagArray?.length > 0) {
       tagList.value = form.tagArray.map((item) => {
@@ -298,6 +308,7 @@
     if (!valid) return
     const params = {
       id: form.id,
+      devIdentifier: form.identifier,
       name: form.name,
       remark: form.remark,
       tags: tagList.value.map((tag) => tag.value),
