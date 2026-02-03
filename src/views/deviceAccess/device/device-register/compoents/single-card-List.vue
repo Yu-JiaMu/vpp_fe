@@ -34,7 +34,12 @@
         />
         <div class="device-icon-container">
           <img v-if="item.imgUrl" :src="item.imgUrl" alt="" class="w-[100%] h-[100%]" />
-          <img src="@/assets/images/user/avatar.webp" alt="" v-else class="w-[100%] h-[100%]" />
+          <img
+            src="@/assets/images/icon/icon-empty-pic.webp"
+            alt=""
+            v-else
+            class="w-[100%] h-[100%]"
+          />
         </div>
         <div class="device-info flex-1">
           <div class="devive-title flex flex-cz-center">

@@ -218,11 +218,11 @@
     name: [
       {
         required: true,
-        validator: validateNameLength,
         trigger: 'blur',
         message: '请输入设备名称'
       },
-      { validator: validateCommon, trigger: 'blur' }
+      { validator: validateCommon, trigger: 'blur' },
+      { validator: validateNameLength, trigger: 'blur' }
     ],
     // deviceGroup: [{ type: 'array', required: false, message: '请选择所属分组', trigger: 'change' }],
     devEnable: [

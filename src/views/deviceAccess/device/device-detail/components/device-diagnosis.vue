@@ -187,7 +187,7 @@
       height: 3px;
     }
     .status-header {
-      min-height: 94px;
+      // min-height: 94px;
       position: relative;
 
       .c-x-z-d {
