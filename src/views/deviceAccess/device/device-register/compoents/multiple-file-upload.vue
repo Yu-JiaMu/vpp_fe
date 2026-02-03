@@ -35,9 +35,23 @@
           <div>（格式：xlsx）</div>
         </div>
       </el-upload>
-      <div class="flex justify-end items-center">
-        <el-switch v-model="form.devEnable" />
-        <span class="ml-[10px] text-[14px] text-[#192936]">导入并启用</span>
+      <div class="flex items-center" :class="exportSuccess ? 'justify-between' : 'justify-end'">
+        <div class="flex items-center" v-if="exportNum.successNum || exportNum.failNum">
+          <div class="export-success mr-[20px] flex items-center">
+            <el-icon class="mr-[2px]"><CircleCheck /></el-icon>
+            导入完成
+          </div>
+          <span class="text-[#192936] font-[Source Han Sans SC] font-normal mr-[5px]"
+            >导入成功：{{ exportNum.successNum }}个</span
+          >
+          <span class="text-[#192936] font-[Source Han Sans SC] font-normal"
+            >导入失败：{{ exportNum.failNum }}个</span
+          >
+        </div>
+        <div>
+          <el-switch v-model="form.devEnable" />
+          <span class="ml-[10px] text-[14px] text-[#192936]">导入并启用</span>
+        </div>
       </div>
     </div>
     <div class="file-upload-box">
@@ -109,7 +123,22 @@
     productIds.value = ids
     console.log(productIds.value, 'productIds.valueproductIds.value')
   }
-  defineExpose({ setProductIds })
+  const exportNum = reactive({
+    successNum: 0,
+    failNum: 0
+  })
+  const setExportNum = (data) => {
+    exportNum.successNum = data.successCount
+    exportNum.failNum = data.failCount
+  }
+  const exportSuccess = computed(() => {
+    if (exportNum.successNum || exportNum.failNum) {
+      return true
+    } else {
+      return false
+    }
+  })
+  defineExpose({ setProductIds, setExportNum })
 </script>
 
 <style lang="scss" scoped>
@@ -169,6 +198,17 @@
         // border: 1px solid #5b77ff;
         border-radius: 6px;
       }
+    }
+    .export-success {
+      background: #dcffe8;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-family:
+        Source Han Sans SC,
+        Source Han Sans SC-Regular;
+      font-weight: 400;
+      color: #2ecb63;
     }
   }
 </style>
