@@ -171,7 +171,7 @@
         resetForm()
       } else {
         // 弹窗打开关闭时，做逻辑处理
-        // getIndustryList()
+        getIndustryList()
         // getSceneList()
       }
     }
