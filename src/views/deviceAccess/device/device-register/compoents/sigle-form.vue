@@ -200,7 +200,8 @@
   import { Search } from '@element-plus/icons-vue'
   import * as api from '@/api/iot'
   import ExpandInfo from './expand-info.vue'
-  import dayjs from 'dayjs'
+  // import dayjs from 'dayjs'
+
   const form = reactive({
     devIdentifier: '',
     name: '',
