@@ -45,7 +45,7 @@
     v-else-if="type === 'date'"
     v-model="modelValue"
     type="date"
-    value-format="YYYY-MM-DD"
+    value-format="x"
     placeholder="请选择时间"
     clearable
     style="width: 208px"

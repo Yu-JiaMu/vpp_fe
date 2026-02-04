@@ -23,7 +23,7 @@
         </div>
         <div class="text-sm text-g-505658">
           设备数量：
-          <span class="underline text-primary" @click="handleViewDevices">
+          <span class="underline cursor-pointer text-primary" @click="handleViewDevices">
             {{ product.deviceCount }}
           </span>
         </div>
@@ -70,6 +70,7 @@
   import ExtendedField from './components/extended-field/index.vue'
 
   const route = useRoute()
+  const router = useRouter()
 
   const activeTab = ref('info')
 
@@ -114,6 +115,12 @@
 
   const handleViewDevices = () => {
     console.log('查看设备列表')
+    router.push({
+      name: 'Device',
+      query: {
+        productId: product.value.id
+      }
+    })
   }
 
   const getDetail = async () => {

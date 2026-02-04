@@ -768,7 +768,7 @@ function createJsonRule(
 }
 
 // 经纬度校验（geo_point）
-function createGeoPointRule(name: string): FormItemRule {
+export function createGeoPointRule(name: string): FormItemRule {
   return {
     trigger: 'blur',
     validator(_, value, cb) {
