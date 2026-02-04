@@ -27,6 +27,8 @@
         :label="item.name"
         :prop="`expandData.${item.identifier}`"
         :rules="getFloatRules(item)"
+        :step="0.1"
+        :precision="2"
       >
         <el-input-number
           v-model="expandData[item.identifier]"
@@ -96,7 +98,7 @@
           v-model="expandData[item.identifier]"
           type="date"
           :placeholder="`请选择${item.name}`"
-          value-format="YYYY-MM-DD"
+          value-format="x"
           style="width: 100%"
         />
       </el-form-item>
@@ -161,10 +163,10 @@
 
       <!-- 默认文本输入框（string类型） -->
       <el-form-item
-        v-else
+        v-else-if="item.dataType.type === 'geo_point'"
         :label="item.name"
         :prop="`expandData.${item.identifier}`"
-        :rules="getDefaultRules(item)"
+        :rules="getGeoPointRules(item)"
       >
         <el-input
           v-model="expandData[item.identifier]"
@@ -344,9 +346,9 @@
           }
 
           // 验证必须为小数
-          if (Number.isInteger(currentValue)) {
-            return callback(new Error(`${name}必须为小数`))
-          }
+          // if (Number.isInteger(currentValue)) {
+          //   return callback(new Error(`${name}必须为小数`))
+          // }
 
           // 验证范围
           if (specs.min !== undefined && currentValue < specs.min) {
@@ -363,9 +365,9 @@
           }
 
           // 验证必须为小数
-          if (Number.isInteger(currentValue)) {
-            return callback(new Error(`${name}必须为小数`))
-          }
+          // if (Number.isInteger(currentValue)) {
+          //   return callback(new Error(`${name}必须为小数`))
+          // }
 
           // 验证范围
           if (specs.min !== undefined && currentValue < specs.min) {
@@ -416,6 +418,17 @@
             if (!regex.test(currentValue)) {
               return callback(new Error(specs.patternMessage || `${name}格式不正确`))
             }
+          }
+          break
+        case 'geo_point':
+          const geoPointRegex = /^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/
+          // if (typeof currentValue !== 'number' || isNaN(currentValue)) {
+          //   return callback(new Error(`${name}必须为数字`))
+          // }
+          if (!geoPointRegex.test(currentValue)) {
+            return callback(
+              new Error(`${name}格式错误：请使用"经度,纬度"格式，如：116.397128,39.916527`)
+            )
           }
           break
       }
@@ -552,7 +565,15 @@
       }
     ]
   }
-
+  const getGeoPointRules = (item) => {
+    return [
+      {
+        required: item.required,
+        trigger: ['blur', 'change'],
+        validator: getCommonValidator(item)
+      }
+    ]
+  }
   const getDefaultRules = (item) => {
     return [
       {
