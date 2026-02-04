@@ -430,9 +430,25 @@
               new Error(`${name}格式错误：请使用"经度,纬度"格式，如：116.397128,39.916527`)
             )
           }
+          // 分割经纬度
+          const [lngStr, latStr] = currentValue.split(',').map((v) => v.trim())
+          const longitude = parseFloat(lngStr)
+          const latitude = parseFloat(latStr)
+          // 验证经度范围 (-180 到 180)
+          if (longitude < -180 || longitude > 180) {
+            return callback(new Error(`经度范围错误：必须在-180到180之间`))
+            // return {
+            //   valid: false,
+            //   message: '经度范围错误：必须在-180到180之间'
+            // }
+          }
+
+          // 验证纬度范围 (-90 到 90)
+          if (latitude < -90 || latitude > 90) {
+            return callback(new Error(`纬度范围错误：必须在-90到90之间`))
+          }
           break
       }
-
       callback()
     }
   }
