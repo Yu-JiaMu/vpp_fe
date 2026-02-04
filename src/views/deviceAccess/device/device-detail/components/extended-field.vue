@@ -20,7 +20,15 @@
     </div>
 
     <!-- 表格 -->
-    <el-table ref="tableRef" :data="tableData" border show-overflow-tooltip stripe class="w-full">
+    <el-table
+      ref="tableRef"
+      :data="tableData"
+      border
+      height="520"
+      show-overflow-tooltip
+      stripe
+      class="w-full"
+    >
       <el-table-column type="selection" width="55" />
       <el-table-column prop="name" label="功能名称" width="120" />
       <el-table-column prop="identifier" label="标识符" width="160" />
