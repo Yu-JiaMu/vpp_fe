@@ -304,7 +304,7 @@
   })
   const form = reactive({
     isAsc: 'desc',
-    orderByColumn: 'createTime',
+    orderByColumn: '',
     name: '',
     id: '',
     productId: '',
@@ -494,7 +494,6 @@
     await deviceApi.apiDevUpdateStatus(type, deviceIds)
     ElMessage.success('状态修改成功')
     getTableData()
-    tableRef.value?.clearSort()
   }
   //批量导出
   const batchExport = async () => {
@@ -502,9 +501,9 @@
       ElMessage.warning('请选择操作的设备')
       return
     }
-    const QueryParamsRes = handleQueryParams()
-    const result = await deviceApi.apiDevExport(QueryParamsRes)
-    tableRef.value?.clearSort()
+    // const QueryParamsRes = handleQueryParams()
+    const deviceIds = selectedRows.value.map((item) => item.id)
+    const result = await deviceApi.apiDevExport(deviceIds)
     downloadFile(result, '设备列表', 'xlsx')
   }
   //批量删除
@@ -517,7 +516,6 @@
     await deviceApi.apiDevDelete(deviceIds)
     ElMessage.success('状态修改成功')
     getTableData()
-    tableRef.value?.clearSort()
   }
   // 操作按钮处理函数
   const handleDetail = (row) => {

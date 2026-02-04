@@ -38,13 +38,16 @@
   const sumbitForm = async (submitData) => {
     const formData = new FormData()
     formData.append('file', submitData.pendingFile.raw)
-    formData.append('devEnable', true)
+    formData.append('devEnable', submitData.devEnable)
     formData.append('productIds', productIds.value)
     console.log(formData)
     // return
-    await api.apiDevBatchRegister(formData)
+    const data = await api.apiDevBatchRegister(formData)
+    if (multipleFileUpload.value) {
+      multipleFileUpload.value.setExportNum(data)
+    }
     ElMessage.success('批量导入成功')
-    router.back()
+    // router.back()
   }
 </script>
 
