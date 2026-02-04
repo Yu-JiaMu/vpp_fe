@@ -19,9 +19,15 @@
       </div>
     </div>
 
-    <SimpleMode v-if="activeTag === 'simple'" :functions="functions" :deviceDetail="deviceDetail" />
+    <template v-if="functions.length">
+      <SimpleMode
+        v-if="activeTag === 'simple'"
+        :functions="functions"
+        :deviceDetail="deviceDetail"
+      />
 
-    <AdvancedMode v-else :functions="functions" :deviceDetail="deviceDetail" />
+      <AdvancedMode v-else :functions="functions" :deviceDetail="deviceDetail" />
+    </template>
   </div>
 </template>
 
