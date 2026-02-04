@@ -58,9 +58,9 @@
       title="编辑"
       :close-on-click-modal="false"
       :show-close="false"
-      width="598"
+      width="672px"
     >
-      <ThingValueForm ref="valueFormRef" :schema="schema" />
+      <ThingValueForm ref="valueFormRef" :schema="schema" @submit="handleSubmit" />
       <!-- 底部按钮 -->
       <template #footer>
         <div class="flex justify-center gap-[6px]">

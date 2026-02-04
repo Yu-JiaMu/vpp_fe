@@ -220,6 +220,12 @@
 
   function manageDevices(row) {
     console.log('管理设备', row)
+    router.push({
+      name: 'Device',
+      query: {
+        productId: row.id
+      }
+    })
   }
 
   async function deleteProduct(row) {

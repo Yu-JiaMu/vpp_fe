@@ -1,6 +1,12 @@
 <template>
   <div class="thing-value-form">
-    <el-form ref="formRef" :model="formModel" :rules="rules" label-position="top">
+    <el-form
+      ref="formRef"
+      :model="formModel"
+      :rules="rules"
+      label-position="top"
+      @keyup.enter="submit"
+    >
       <el-table :data="schema" border>
         <el-table-column prop="name" label="参数名称" width="180" />
         <el-table-column prop="dataType.type" label="输入类型" width="120" />
@@ -29,6 +35,8 @@
       default: () => []
     }
   })
+
+  const emits = defineEmits(['submit'])
 
   const formRef = ref()
 
@@ -86,6 +94,10 @@
       formModel[key] = null
     })
     formRef.value?.clearValidate()
+  }
+
+  function submit() {
+    emits('submit')
   }
 
   defineExpose({

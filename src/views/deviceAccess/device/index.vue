@@ -289,7 +289,10 @@
   import { NODE_TYPES, DEVICE_STATUS_TYPES } from '@/enums'
   import { downloadFile } from '@/utils'
   import { ElMessageBox } from 'element-plus'
+
   const router = useRouter()
+  const route = useRoute()
+
   // 这是一个静态展示组件，不需要响应式数据
   // 只包含图片中展示的卡片列表
   const staticstics = reactive({})
@@ -547,7 +550,22 @@
     router.push({ name: 'DeviceRegister', query: { registerType: type } })
   }
 
+  watch(
+    () => form.productId,
+    (val) => {
+      router.replace({
+        query: {
+          ...route.query,
+          productId: val || undefined
+        }
+      })
+    }
+  )
+
   onActivated(() => {
+    if (route.query.productId) {
+      form.productId = route.query.productId
+    }
     getStatistics()
     loadColumnSettings()
     getProduceList()

@@ -17,6 +17,10 @@
       >{{ prettyJson }}
     </pre>
 
+    <span v-else-if="type === 'date'">
+      {{ formatTime(displayValue, 'YYYY-MM-DD') }}
+    </span>
+
     <!-- 其他类型 -->
     <span v-else>
       {{ displayValue }}
@@ -26,6 +30,7 @@
 
 <script setup>
   import { computed } from 'vue'
+  import { formatTime } from '@/utils'
 
   const props = defineProps({
     item: {
