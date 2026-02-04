@@ -27,7 +27,9 @@
         </div>
         <div class="text-sm text-g-505658">
           <span>所属产品：</span>
-          <span class="underline text-primary">{{ deviceDetail.productName }}</span>
+          <span class="underline cursor-pointer text-primary" @click="handleViewProduct">{{
+            deviceDetail.productName
+          }}</span>
         </div>
       </div>
     </div>
@@ -64,6 +66,8 @@
   import { NODE_TYPES, DEVICE_STATUS_TYPES } from '@/enums'
 
   const route = useRoute()
+  const router = useRouter()
+
   const deviceDetail = ref({})
   const activeTab = ref('instanceMessage')
 
@@ -111,6 +115,15 @@
     if (!visibleTabs.value.find((t) => t.value === activeTab.value)) {
       activeTab.value = visibleTabs.value[0]?.value
     }
+  }
+
+  const handleViewProduct = () => {
+    router.push({
+      name: 'productDetail',
+      query: {
+        id: deviceDetail.value.productId
+      }
+    })
   }
 
   // 当路由 query.id 发生变化时刷新数据（解决 keep-alive 或同 route 不重新 mount 的情况）
