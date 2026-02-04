@@ -88,7 +88,13 @@
         </div>
       </div>
 
-      <template v-if="formShowMore.TZShowMore">
+      <template
+        v-if="
+          formShowMore.TZShowMore &&
+          productDetail.expandInfoList &&
+          productDetail.expandInfoList.length > 0
+        "
+      >
         <!-- <el-form-item label="详细地址" class="col-span-2">
           <el-input v-model="form.xxdz" placeholder="请输入详细地址" />
         </el-form-item> -->
@@ -329,6 +335,7 @@
     productId.value = productId
     const result = await api.apiGetProductDetail(id)
     productDetail.value = result
+    // productDetail.value.expandInfoList = []
     if (productDetail.value.expandInfoList?.length > 0) {
       // 处理初始值
       form.expandInfo = result.expandInfoList.map((item) => {
