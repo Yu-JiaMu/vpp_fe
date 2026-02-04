@@ -96,7 +96,7 @@
   const originTableData = ref([])
 
   const handleReset = () => {
-    form.value.identifier = ''
+    form.value.name = ''
     handleSearch()
   }
 
