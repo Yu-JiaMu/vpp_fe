@@ -204,8 +204,20 @@
   }
 
   /** 启用禁用 */
-  const toggleEnable = (row) => {
-    console.log('切换状态', row)
+  const toggleEnable = async (row) => {
+    const action = row.devEnable ? '启用' : '禁用'
+    try {
+      await ElMessageBox.confirm(`请确认${action}该设备吗？`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+
+      await api.apiDevEdit({ id: row.id, devEnable: row.devEnable })
+      ElMessage.success('更新成功')
+    } catch (error) {
+      row.devEnable = !row.devEnable
+    }
   }
 
   const bindDeviceDialogRef = useTemplateRef('bindDeviceDialogRef')
