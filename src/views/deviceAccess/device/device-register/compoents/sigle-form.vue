@@ -200,6 +200,7 @@
   import { Search } from '@element-plus/icons-vue'
   import * as api from '@/api/iot'
   import ExpandInfo from './expand-info.vue'
+  import dayjs from 'dayjs'
   const form = reactive({
     devIdentifier: '',
     name: '',
@@ -290,7 +291,11 @@
     try {
       // 验证表单
       await formRef.value.validate()
-
+      form.expandInfo.forEach((item) => {
+        if (item.dataType.type === 'date') {
+          item[item.identifier] = dayjs(item[item.identifier]).valueOf()
+        }
+      })
       // 这里 form 已经包含了正确的格式
       const submitData = {
         devIdentifier: form.devIdentifier ? form.devIdentifier : undefined,
