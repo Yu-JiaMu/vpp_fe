@@ -21,6 +21,7 @@
 </template>
 
 <script setup>
+  import { watch } from 'vue'
   import * as api from '@/api/iot'
   import FunctionList from './function-list.vue'
   import ExecuteResult from './execute-result.vue'
@@ -41,17 +42,25 @@
 
   const editorContent = ref('')
   /**
-   * 当前激活的 function
+   * 当前激活的 function（响应 props.functions 变化）
    */
-  const activeFunction = ref(props.functions[0])
+  const activeFunction = ref()
+  watch(
+    () => props.functions,
+    (fns) => {
+      activeFunction.value = fns?.[0] ?? null
+    },
+    { immediate: true }
+  )
 
   function init() {
-    let input = activeFunction.value.input
-    let res = {}
+    const input = activeFunction.value?.input ?? []
+    const res = {}
     input.forEach((item) => {
-      if (['int', 'float', 'double'].includes(item.dataType.type)) {
+      const type = item?.dataType?.type
+      if (['int', 'float', 'double'].includes(type)) {
         res[item.identifier] = item[item.identifier] ?? 0
-      } else if (item.dataType.type === 'boolean') {
+      } else if (type === 'boolean') {
         res[item.identifier] = item[item.identifier] ?? false
       } else {
         res[item.identifier] = item[item.identifier] ?? ''
@@ -93,7 +102,13 @@
       // mock
       result.value = JSON.stringify(data, null, 2)
     } catch (error) {
-      result.value = JSON.stringify(error.message, null, 2)
+      result.value = JSON.stringify(
+        {
+          message: error.message
+        },
+        null,
+        2
+      )
     }
   }
 </script>

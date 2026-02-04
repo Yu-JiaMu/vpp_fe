@@ -21,6 +21,7 @@
 </template>
 
 <script setup>
+  import { watch } from 'vue'
   import * as api from '@/api/iot'
   import ExecuteResult from './execute-result.vue'
   import FunctionList from './function-list.vue'
@@ -38,7 +39,16 @@
 
   const emits = defineEmits(['execute'])
 
-  const activeFunction = ref(props.functions[0])
+  // 当前激活的 function（响应 props.functions 变化）
+  const activeFunction = ref()
+  watch(
+    () => props.functions,
+    (fns) => {
+      activeFunction.value = fns?.[0] ?? null
+    },
+    { immediate: true }
+  )
+
   const valueFormRef = ref()
   const result = ref('')
 
@@ -58,6 +68,8 @@
    * 执行
    */
   async function handleExecute() {
+    if (!valueFormRef.value) return
+
     const valid = await valueFormRef.value?.validate()
     if (!valid) return
 
@@ -82,7 +94,13 @@
       // mock
       result.value = JSON.stringify(data, null, 2)
     } catch (error) {
-      result.value = JSON.stringify(error.message, null, 2)
+      result.value = JSON.stringify(
+        {
+          message: error.message
+        },
+        null,
+        2
+      )
     }
   }
 </script>
