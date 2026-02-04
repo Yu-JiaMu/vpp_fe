@@ -129,7 +129,7 @@
         orderByColumn: 'updateTime',
         pageNum: pagination.current,
         pageSize: pagination.size,
-        unBind: false
+        unBind: true
       }
 
       // 添加搜索条件
