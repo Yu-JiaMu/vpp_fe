@@ -576,7 +576,6 @@
 <style lang="scss" scoped>
   .device-statistics-simple {
     padding: 20px;
-    background-color: #f0f2f5; /* 浅灰色背景 */
     min-height: calc(100vh - 40px);
     box-sizing: border-box;
 
