@@ -453,6 +453,7 @@
         productCategorySuccessDialogRef.value.setId(formData.id)
       }
       // 刷新表格数据
+      pagination.current = 1
       getTableData()
     } catch (error) {
       console.error('新增失败:', error)
