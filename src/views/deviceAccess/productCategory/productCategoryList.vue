@@ -109,7 +109,7 @@
       ref="productCategoryDialogRef"
       v-model="dialogVisible"
       @add-success="handleSuccess"
-      @edit-success="getTableData"
+      @edit-success="handleEditSuccess"
     />
 
     <!-- 成功弹窗 -->
@@ -460,7 +460,11 @@
       ElMessage.error('新增失败，请稍后重试')
     }
   }
-
+  const handleEditSuccess = async () => {
+    // 刷新表格数据
+    pagination.current = 1
+    getTableData()
+  }
   const handleConfirm = () => {
     console.log('确认操作')
     showSuccessDialog.value = false
