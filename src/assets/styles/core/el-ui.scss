@@ -108,9 +108,14 @@ body {
 }
 
 // 修改 el-select 高度
-.el-select--default {
-  .el-select__wrapper {
-    min-height: var(--el-component-custom-height) !important;
+body {
+  .el-select--default {
+    .el-select__wrapper {
+      min-height: var(--el-component-custom-height);
+    }
+  }
+  .el-select-dropdown {
+    max-width: 300px;
   }
 }
 
