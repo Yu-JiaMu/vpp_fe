@@ -345,7 +345,7 @@
       map.value.addMarker([form.lng, form.lat])
       map.value.setCenter([form.lng, form.lat])
     }
-    await mapClickAddMarker(aMap)
+    await mapClickAddMarker()
     await getAddress()
   }
   const getAddress = async () => {
@@ -364,18 +364,32 @@
     form.address = ''
   }
   //监听地图点击事件
-  const mapClickAddMarker = async (aMap) => {
+  const mapClickAddMarker = async () => {
     console.log('执行几次')
-    const res = await map.value.handleClickMapAddMarker(aMap)
-    form.lng = res.lng
-    form.lat = res.lat
-    form.address = res.address
+    await map.value.handleClickMapAddMarker({
+      once: false, // 设置为持续监听
+      getAddress: true, // 自动获取地址
+      markerTitle: '选择的位置',
+      onClick: (data) => {
+        // 每次点击都会执行这个回调
+        console.log('地图点击数据:', data)
+        form.lng = data.lng
+        form.lat = data.lat
+        form.address = data.address
+      }
+    })
   }
   watch(
     () => dialogVisible.value,
     (newValue) => {
       if (!newValue) {
-        map.value.destroy()
+        // 停止监听
+        map.value.stopMapClickListening()
+        // 销毁地图
+        if (map.value) {
+          map.value.destroy()
+          map.value = null
+        }
       }
     }
   )

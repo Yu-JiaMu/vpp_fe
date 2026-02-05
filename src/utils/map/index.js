@@ -16,7 +16,11 @@ class SimpleAMapService {
     this.map = null
     this.loaded = false
     this.loadingPromise = null
+
+    // 新增属性用于存储最后添加的标记
+    this._lastMarker = null
   }
+
   // 初始化安全配置
   initSecurityConfig() {
     if (this.options.securityJsCode) {
@@ -25,6 +29,7 @@ class SimpleAMapService {
       }
     }
   }
+
   // 加载高德地图API
   async loadAMapAPI() {
     if (this.loaded) {
@@ -79,6 +84,7 @@ class SimpleAMapService {
     })
     return this.loadingPromise
   }
+
   // 创建地图
   async createMap(containerId, options = {}) {
     try {
@@ -133,13 +139,17 @@ class SimpleAMapService {
   async addMarker(lnglat, title = '', options = {}) {
     if (!this.map) return null
     const marker = new this.AMap.Marker({
-      position: lnglat, //Array.isArray(lnglat) ? new this.AMap.LngLat(lnglat[0], lnglat[1]) : lnglat,
+      position: lnglat,
       title: title,
       icon: options.icon || 'https://webapi.amap.com/theme/v1.3/markers/n/mark_r.png',
       offset: new this.AMap.Pixel(-13, -30),
       ...options
     })
     this.map.add(marker)
+
+    // 保存最后添加的标记
+    this._lastMarker = marker
+
     // 添加信息窗口
     if (title) {
       const infoWindow = new this.AMap.InfoWindow({
@@ -168,12 +178,15 @@ class SimpleAMapService {
     }
     return iconMap[type] || iconMap.station
   }
+
   // 清空标记
   clearMarkers() {
     if (this.map) {
       this.map.clearMap()
     }
+    this._lastMarker = null
   }
+
   // 定位到指定坐标
   setCenter(lnglat) {
     if (this.map) {
@@ -181,7 +194,7 @@ class SimpleAMapService {
     }
   }
 
-  //获取当前定位
+  // 获取当前定位
   async getLocationAddress() {
     if (!this.AMap) {
       await this.loadAMapAPI()
@@ -197,12 +210,12 @@ class SimpleAMapService {
       // 使用高德地图的地理定位插件
       this.AMap.plugin('AMap.Geolocation', () => {
         const geolocation = new this.AMap.Geolocation({
-          enableHighAccuracy: true, // 是否使用高精度定位
-          timeout: 10000, // 超时时间，单位毫秒
-          GeoLocationFirst: true, // 是否在用户同意后获取
-          zoomToAccuracy: true, // 定位成功后是否自动调整地图视野到定位点
-          useNative: true, // 是否使用原生定位
-          showButton: false, // 不显示定位按钮
+          enableHighAccuracy: true,
+          timeout: 10000,
+          GeoLocationFirst: true,
+          zoomToAccuracy: true,
+          useNative: true,
+          showButton: false,
           ...this.options.geolocationOptions
         })
 
@@ -213,7 +226,7 @@ class SimpleAMapService {
             success: true,
             position: [data.position.lng, data.position.lat],
             address: data.formattedAddress || '未知地址',
-            accuracy: data.accuracy, // 精度
+            accuracy: data.accuracy,
             info: data.info || '定位成功',
             data: data
           })
@@ -222,22 +235,17 @@ class SimpleAMapService {
         // 绑定定位失败事件
         geolocation.on('error', (error) => {
           console.error('定位失败:', error)
-
-          // 尝试使用浏览器原生定位作为备选方案
           if (error.info === 'PERMISSION_DENIED') {
-            // this.fallbackToBrowserGeolocation().then(resolve).catch(reject)
             reject({
               success: false,
               error: '定位失败',
               info: error.info || '未知错误'
-              // message: this.getGeolocationErrorMessage(error.info)
             })
           } else {
             reject({
               success: false,
               error: '定位失败',
               info: error.info || '未知错误'
-              // message: this.getGeolocationErrorMessage(error.info)
             })
           }
         })
@@ -247,6 +255,7 @@ class SimpleAMapService {
       })
     })
   }
+
   // 获取当前位置（简化的定位方法，用于地图初始化）
   async getCurrentPosition() {
     try {
@@ -303,24 +312,21 @@ class SimpleAMapService {
           },
           {
             enableHighAccuracy: true,
-            timeout: 5000, // 缩短超时时间，避免地图初始化过慢
+            timeout: 5000,
             maximumAge: 30000
           }
         )
       })
     }
   }
-  //输入提示
+
+  // 输入提示
   async getSearchAddressList(inputId, options = {}) {
-    // if (!this.AMap) {
-    //   await this.loadAMapAPI()
-    // }
     return new Promise((resolve, reject) => {
       try {
-        //输入提示
         const autoOptions = {
           input: inputId,
-          city: options.city || '成都' // 根据图片，默认城市为成都
+          city: options.city || '成都'
         }
         this.AMap.plugin(['AMap.AutoComplete'], () => {
           const auto = new this.AMap.AutoComplete(autoOptions)
@@ -347,22 +353,20 @@ class SimpleAMapService {
       }
     })
   }
-  //逆地理编码（坐标 -> 地址）
+
+  // 逆地理编码（坐标 -> 地址）
   async getCoordinatesToAddress(lnglat) {
     if (!this.AMap) {
       await this.loadAMapAPI()
     }
 
     return new Promise((resolve, reject) => {
-      // 加载 Geocoder 插件
       this.AMap.plugin('AMap.Geocoder', () => {
         try {
-          // 创建 Geocoder 实例
           const geocoder = new this.AMap.Geocoder({
             city: '全国'
           })
 
-          // 调用逆地理编码
           geocoder.getAddress(lnglat, (status, result) => {
             if (status === 'complete' && result.regeocode) {
               const address = result.regeocode.formattedAddress
@@ -379,16 +383,23 @@ class SimpleAMapService {
       })
     })
   }
-  //点击地图标点
-  async handleClickMapAddMarker(map) {
-    if (!map) {
+
+  // 点击地图标点 - 修改后的版本，可以重复调用获取地址
+  async handleClickMapAddMarker(options = {}) {
+    if (!this.map) {
       console.warn('地图未初始化，请先创建地图')
       return
     }
-    return new Promise(async (resolve, reject) => {
+
+    return new Promise((resolve, reject) => {
       try {
+        // 清除之前的事件监听器
+        if (this._mapClickHandler) {
+          this.map.off('click', this._mapClickHandler)
+        }
+
         // 定义点击事件处理函数
-        const mapClickHandler = async (event) => {
+        this._mapClickHandler = async (event) => {
           const lng = event.lnglat.getLng()
           const lat = event.lnglat.getLat()
           const position = [lng, lat]
@@ -399,40 +410,101 @@ class SimpleAMapService {
           this.clearMarkers()
 
           // 添加新标记
-          this.addMarker(position, '点击位置')
+          this.addMarker(position, options.markerTitle || '点击位置')
 
           // 自动定位到标记位置
           this.setCenter(position)
-          const address = await this.getCoordinatesToAddress(position)
-          console.log(address)
-          resolve({
+
+          // 获取地址
+          let address = null
+          if (options.getAddress !== false) {
+            try {
+              address = await this.getCoordinatesToAddress(position)
+              console.log('获取到地址:', address)
+            } catch (error) {
+              console.warn('获取地址失败:', error)
+              address = '未知位置'
+            }
+          }
+
+          // 返回结果
+          const result = {
             lng: lng,
             lat: lat,
             lnglat: position,
             address: address,
             success: true
+          }
+
+          // 返回结果给调用者
+          if (options.once) {
+            // 一次性监听，返回结果后停止监听
+            this.map.off('click', this._mapClickHandler)
+            resolve(result)
+          } else {
+            // 持续监听，通过回调返回结果
+            if (typeof options.onClick === 'function') {
+              options.onClick(result)
+            }
+          }
+        }
+
+        // 绑定点击事件
+        this.map.on('click', this._mapClickHandler)
+
+        console.log('地图点击监听已启用')
+
+        // 如果是一次性监听，设置超时
+        if (options.once && options.timeout) {
+          setTimeout(() => {
+            this.map.off('click', this._mapClickHandler)
+            reject(new Error('选择超时，请在' + options.timeout / 1000 + '秒内点击地图'))
+          }, options.timeout)
+        } else if (!options.once) {
+          // 持续监听，立即返回成功
+          resolve({
+            success: true,
+            listening: true,
+            stop: () => {
+              this.map.off('click', this._mapClickHandler)
+            }
           })
         }
-        // 移除之前的事件监听器
-        // map.off('click', mapClickHandler)
-        // 绑定点击事件
-        map.on('click', mapClickHandler)
-        console.log('地图点击监听已启用')
-        // 返回坐标信息
       } catch (error) {
+        console.error('启用地图点击监听失败:', error)
         reject(error)
       }
     })
   }
+
+  // 停止地图点击监听
+  stopMapClickListening() {
+    if (this.map && this._mapClickHandler) {
+      this.map.off('click', this._mapClickHandler)
+      this._mapClickHandler = null
+      console.log('地图点击监听已停止')
+    }
+  }
+
   // 销毁地图
   destroy() {
+    // 停止所有监听
+    this.stopMapClickListening()
+
+    // 销毁地图实例
     if (this.map) {
       this.map.destroy()
       this.map = null
     }
+
+    // 清理其他属性
     this.AMap = null
     this.loaded = false
     this.loadingPromise = null
+    this._lastMarker = null
+
+    console.log('地图已销毁')
   }
 }
+
 export default SimpleAMapService
