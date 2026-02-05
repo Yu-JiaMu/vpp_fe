@@ -83,7 +83,7 @@
           >
             拓展字段
             <ArtSvgIcon
-              :icon="formShowMore.TZShowMore ? 'ri:arrow-up-s-line' : 'ri:arrow-down-s-line'"
+              :icon="formShowMore.TZShowMore ? 'ri:arrow-down-s-line' : 'ri:arrow-up-s-line'"
               class="ml-1 text-[18px]"
             />
           </div>
@@ -116,7 +116,7 @@
           >
             更多配置
             <ArtSvgIcon
-              :icon="formShowMore.GDShowMore ? 'ri:arrow-up-s-line' : 'ri:arrow-down-s-line'"
+              :icon="formShowMore.GDShowMore ? 'ri:arrow-down-s-line' : 'ri:arrow-up-s-line'"
               class="ml-1 text-[18px]"
             />
           </div>
@@ -124,7 +124,7 @@
         </div>
       </div>
       <template v-if="formShowMore.GDShowMore">
-        <el-form-item label="产品描述" prop="remark">
+        <el-form-item label="描述" prop="remark">
           <el-input
             v-model="form.remark"
             type="textarea"
