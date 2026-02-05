@@ -31,7 +31,7 @@
             <slot :name="item.key" :item="item" :modelValue="modelValue">
               <component
                 :is="getComponent(item)"
-                v-model="modelValue[item.key]"
+                v-model.trim="modelValue[item.key]"
                 v-bind="getProps(item)"
               >
                 <!-- 下拉选择 -->

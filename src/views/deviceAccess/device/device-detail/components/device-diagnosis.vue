@@ -143,9 +143,10 @@
   //   childCheckNum: 1
   // })
   async function startCheck() {
-    const { stop, onMessage } = useFetchSSE(
+    const { stop, onMessage, onError } = useFetchSSE(
       '/stage-api/model/device/checker/check?deviceIdentifier=' + props.deviceDetail.identifier
     )
+
     onMessage((data) => {
       // childCheckNumObj.childCheckTotal = data.childCheckTotal
       // childCheckNumObj.childCheckNum = data.childCheckNum
@@ -165,6 +166,10 @@
       // infoList.value = []
       infoList.value.push(data)
       // console.log(infoList.value)
+    })
+
+    onError((err) => {
+      console.log('err', err)
     })
   }
   const removeCheck = async () => {

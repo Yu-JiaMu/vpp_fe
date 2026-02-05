@@ -6,7 +6,7 @@
         <el-form :model="form" inline class="" @keyup.enter="getTableData">
           <el-form-item>
             <el-input
-              v-model="form.name"
+              v-model.trim="form.name"
               placeholder="请输入设备名称"
               clearable
               style="width: 200px"
@@ -15,7 +15,7 @@
 
           <el-form-item>
             <el-input
-              v-model="form.productName"
+              v-model.trim="form.productName"
               placeholder="请输入产品名称"
               clearable
               style="width: 200px"

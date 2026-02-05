@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between p-5 search-con">
       <div class="flex items-center gap-2.5">
         <el-input
-          v-model="form.identifier"
+          v-model.trim="form.identifier"
           placeholder="请输入标识符"
           clearable
           class="input-with-prepend"
