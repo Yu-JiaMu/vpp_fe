@@ -12,7 +12,7 @@
       <!-- 搜索区域 -->
       <div class="flex items-center gap-3 mb-4">
         <el-input
-          v-model="form.key"
+          v-model.trim="form.key"
           placeholder="请输入搜索内容"
           class="input-with-select !w-[248px]"
           clearable

@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between p-5 search-con">
       <div class="flex items-center gap-2.5">
         <el-input
-          v-model="form.name"
+          v-model.trim="form.name"
           placeholder="请输入功能名称搜索"
           clearable
           class="input-with-prepend"
