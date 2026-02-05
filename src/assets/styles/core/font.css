@@ -1,35 +1,399 @@
 @font-face {
-  font-family: 'Source Han Sans SC-Bold';
-  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Bold.otf')
-    format('truetype');
-  font-weight: normal;
+  font-family: 'Source Han Sans SC-Light';
   font-style: normal;
+  font-weight: 300;
   font-display: swap;
-}
-
-@font-face {
-  font-family: 'Source Han Sans SC-Regular';
-  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Regular.otf')
-    format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Source Han Sans SC-Medium';
-  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Medium.otf')
-    format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Light-latin-ui.woff2')
+    format('woff2');
+  unicode-range: U+0020-007E;
 }
 
 @font-face {
   font-family: 'Source Han Sans SC-Light';
-  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Light.otf')
-    format('truetype');
-  font-weight: normal;
   font-style: normal;
+  font-weight: 300;
   font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Light-cn-core-1.woff2')
+    format('woff2');
+  unicode-range: U+4E00-4F7F;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Light';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Light-cn-core-2.woff2')
+    format('woff2');
+  unicode-range: U+4F80-50FF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Light';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Light-cn-core-3.woff2')
+    format('woff2');
+  unicode-range: U+5100-527F;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Light';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Light-cn-core-4.woff2')
+    format('woff2');
+  unicode-range: U+5280-53FF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Light';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Light-cn-mid-1.woff2')
+    format('woff2');
+  unicode-range: U+5400-5FFF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Light';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Light-cn-mid-2.woff2')
+    format('woff2');
+  unicode-range: U+6000-6FFF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Light';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Light-cn-tail-1.woff2')
+    format('woff2');
+  unicode-range: U+7000-7FFF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Light';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Light-cn-tail-2.woff2')
+    format('woff2');
+  unicode-range: U+8000-9FFF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Light';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Light-rare.woff2')
+    format('woff2');
+  unicode-range: U+3400-4DBF, U+20000-2EBEF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Regular';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Regular-latin-ui.woff2')
+    format('woff2');
+  unicode-range: U+0020-007E;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Regular';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Regular-cn-core-1.woff2')
+    format('woff2');
+  unicode-range: U+4E00-4F7F;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Regular';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Regular-cn-core-2.woff2')
+    format('woff2');
+  unicode-range: U+4F80-50FF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Regular';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Regular-cn-core-3.woff2')
+    format('woff2');
+  unicode-range: U+5100-527F;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Regular';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Regular-cn-core-4.woff2')
+    format('woff2');
+  unicode-range: U+5280-53FF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Regular';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Regular-cn-mid-1.woff2')
+    format('woff2');
+  unicode-range: U+5400-5FFF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Regular';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Regular-cn-mid-2.woff2')
+    format('woff2');
+  unicode-range: U+6000-6FFF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Regular';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Regular-cn-tail-1.woff2')
+    format('woff2');
+  unicode-range: U+7000-7FFF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Regular';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Regular-cn-tail-2.woff2')
+    format('woff2');
+  unicode-range: U+8000-9FFF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Regular';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Regular-rare.woff2')
+    format('woff2');
+  unicode-range: U+3400-4DBF, U+20000-2EBEF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Medium';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Medium-latin-ui.woff2')
+    format('woff2');
+  unicode-range: U+0020-007E;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Medium';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Medium-cn-core-1.woff2')
+    format('woff2');
+  unicode-range: U+4E00-4F7F;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Medium';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Medium-cn-core-2.woff2')
+    format('woff2');
+  unicode-range: U+4F80-50FF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Medium';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Medium-cn-core-3.woff2')
+    format('woff2');
+  unicode-range: U+5100-527F;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Medium';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Medium-cn-core-4.woff2')
+    format('woff2');
+  unicode-range: U+5280-53FF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Medium';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Medium-cn-mid-1.woff2')
+    format('woff2');
+  unicode-range: U+5400-5FFF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Medium';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Medium-cn-mid-2.woff2')
+    format('woff2');
+  unicode-range: U+6000-6FFF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Medium';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Medium-cn-tail-1.woff2')
+    format('woff2');
+  unicode-range: U+7000-7FFF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Medium';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Medium-cn-tail-2.woff2')
+    format('woff2');
+  unicode-range: U+8000-9FFF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Medium';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Medium-rare.woff2')
+    format('woff2');
+  unicode-range: U+3400-4DBF, U+20000-2EBEF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Bold';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Bold-latin-ui.woff2')
+    format('woff2');
+  unicode-range: U+0020-007E;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Bold';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Bold-cn-core-1.woff2')
+    format('woff2');
+  unicode-range: U+4E00-4F7F;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Bold';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Bold-cn-core-2.woff2')
+    format('woff2');
+  unicode-range: U+4F80-50FF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Bold';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Bold-cn-core-3.woff2')
+    format('woff2');
+  unicode-range: U+5100-527F;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Bold';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Bold-cn-core-4.woff2')
+    format('woff2');
+  unicode-range: U+5280-53FF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Bold';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Bold-cn-mid-1.woff2')
+    format('woff2');
+  unicode-range: U+5400-5FFF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Bold';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Bold-cn-mid-2.woff2')
+    format('woff2');
+  unicode-range: U+6000-6FFF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Bold';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Bold-cn-tail-1.woff2')
+    format('woff2');
+  unicode-range: U+7000-7FFF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Bold';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Bold-cn-tail-2.woff2')
+    format('woff2');
+  unicode-range: U+8000-9FFF;
+}
+
+@font-face {
+  font-family: 'Source Han Sans SC-Bold';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/font/SourceHanSansSC/SourceHanSansSC-Bold-rare.woff2')
+    format('woff2');
+  unicode-range: U+3400-4DBF, U+20000-2EBEF;
 }
