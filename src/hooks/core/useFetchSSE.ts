@@ -68,7 +68,7 @@ export function useFetchSSE(initialUrl?: string, options: UseSSEStreamOptions = 
         },
         signal: controller.signal
       })
-      console.log(res)
+      // console.log(res)
 
       // 1. HTTP 层
       if (!res.ok || !res.body) {
