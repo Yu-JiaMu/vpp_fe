@@ -2,6 +2,7 @@
 const key = 'a9f1840ab6ebfb81e17f611ca72572d2'
 const securityJsCode = '522054ec0e1ef9da651e7975e9235abf'
 import AMapLoader from '@amap/amap-jsapi-loader'
+
 class SimpleAMapService {
   constructor(options = {}) {
     this.options = {
@@ -376,6 +377,51 @@ class SimpleAMapService {
           reject('地理编码器初始化失败: ' + error.message)
         }
       })
+    })
+  }
+  //点击地图标点
+  async handleClickMapAddMarker(map) {
+    if (!map) {
+      console.warn('地图未初始化，请先创建地图')
+      return
+    }
+    return new Promise(async (resolve, reject) => {
+      try {
+        // 定义点击事件处理函数
+        const mapClickHandler = async (event) => {
+          const lng = event.lnglat.getLng()
+          const lat = event.lnglat.getLat()
+          const position = [lng, lat]
+
+          console.log('地图点击位置:', { lng, lat })
+
+          // 清除上一次的标记
+          this.clearMarkers()
+
+          // 添加新标记
+          this.addMarker(position, '点击位置')
+
+          // 自动定位到标记位置
+          this.setCenter(position)
+          const address = await this.getCoordinatesToAddress(position)
+          console.log(address)
+          resolve({
+            lng: lng,
+            lat: lat,
+            lnglat: position,
+            address: address,
+            success: true
+          })
+        }
+        // 移除之前的事件监听器
+        // map.off('click', mapClickHandler)
+        // 绑定点击事件
+        map.on('click', mapClickHandler)
+        console.log('地图点击监听已启用')
+        // 返回坐标信息
+      } catch (error) {
+        reject(error)
+      }
     })
   }
   // 销毁地图

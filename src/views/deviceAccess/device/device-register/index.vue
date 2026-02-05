@@ -32,7 +32,7 @@
       value: 'single'
     },
     {
-      label: '多个注册',
+      label: '批量注册',
       value: 'multiple'
     }
   ]

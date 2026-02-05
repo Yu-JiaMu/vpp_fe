@@ -13,15 +13,20 @@
     <!-- 信息表格 -->
     <el-descriptions :column="3" border label-width="133px" class="">
       <el-descriptions-item label="设备ID">
-        {{ deviceDetail.identifier }}
+        <el-tooltip :content="deviceDetail.identifier || deviceDetail.id" placement="top">
+          <div class="max-w-[200px] truncate">{{ deviceDetail.identifier || deviceDetail.id }}</div>
+        </el-tooltip>
       </el-descriptions-item>
 
       <el-descriptions-item label="设备名称">
-        {{ deviceDetail.name }}
+        <!-- {{ deviceDetail.name }} -->
+        <el-tooltip :content="deviceDetail.name" placement="top">
+          <div class="max-w-[200px] truncate">{{ deviceDetail.name }}</div>
+        </el-tooltip>
       </el-descriptions-item>
 
       <el-descriptions-item label="设备品类">
-        {{ deviceDetail.productName }}
+        {{ deviceDetail.nodeType }}
       </el-descriptions-item>
 
       <el-descriptions-item label="固件版本">
@@ -44,23 +49,28 @@
         {{ deviceDetail.updateTime }}
       </el-descriptions-item>
 
-      <el-descriptions-item label="最后上线时间">
+      <el-descriptions-item label="最后在线时间">
         {{ deviceDetail.lastOnlineTime }}
       </el-descriptions-item>
 
       <el-descriptions-item label="设备标签" :span="2">
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2 max-w-[400px]">
           <el-tag type="primary" v-for="(tag, index) in deviceDetail.tagArray || []" :key="index">{{
             tag
           }}</el-tag>
         </div>
       </el-descriptions-item>
 
-      <el-descriptions-item label="设备描述" :span="1">
-        {{ deviceDetail.remark }}
+      <el-descriptions-item label="设备描述" :span="2">
+        <!-- {{ deviceDetail.remark }}绝地反击地方设计师大家发动 -->
+        <el-tooltip :content="deviceDetail.remark" placement="top">
+          <div class="max-w-[400px] truncate">{{ deviceDetail.remark }}</div>
+        </el-tooltip>
       </el-descriptions-item>
-      <el-descriptions-item label="位置信息" :span="4">
-        {{ deviceDetail.address }}
+      <el-descriptions-item label="位置信息">
+        <el-tooltip :content="deviceDetail.address" placement="top">
+          <div class="max-w-[400px] truncate">{{ deviceDetail.address }}</div>
+        </el-tooltip>
       </el-descriptions-item>
     </el-descriptions>
     <!-- 基本信息编辑弹窗 -->
@@ -328,12 +338,14 @@
   const createMap = async () => {
     console.log(form, 'console.log(form)')
     map.value = new newMap()
-    await map.value.createMap('instance-map')
+    const aMap = await map.value.createMap('instance-map')
+    console.log(map.value.map, 'aMap')
     if (form.lng && form.lat) {
       console.log(form, 'console.log(form)')
       map.value.addMarker([form.lng, form.lat])
       map.value.setCenter([form.lng, form.lat])
     }
+    await mapClickAddMarker(aMap)
     await getAddress()
   }
   const getAddress = async () => {
@@ -350,6 +362,14 @@
     form.lng = ''
     form.lat = ''
     form.address = ''
+  }
+  //监听地图点击事件
+  const mapClickAddMarker = async (aMap) => {
+    console.log('执行几次')
+    const res = await map.value.handleClickMapAddMarker(aMap)
+    form.lng = res.lng
+    form.lat = res.lat
+    form.address = res.address
   }
   watch(
     () => dialogVisible.value,

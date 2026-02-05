@@ -135,12 +135,17 @@
 
         <!-- 设备名称列 -->
         <el-table-column
-          prop="name"
           label="设备名称"
           v-if="visibleColumns.includes('name')"
           width="200"
-        />
-
+          fixed="left"
+        >
+          <template #default="{ row }">
+            <span class="cursor-pointer text-theme" @click.prevent="handleDetail(row)">{{
+              row.name
+            }}</span>
+          </template>
+        </el-table-column>
         <!-- 设备ID列 -->
         <el-table-column
           prop="identifier"
@@ -319,7 +324,7 @@
   })
   const form = reactive({
     isAsc: 'desc',
-    orderByColumn: '',
+    orderByColumn: 'createTime',
     name: '',
     id: '',
     productId: '',
