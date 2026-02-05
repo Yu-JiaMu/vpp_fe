@@ -85,7 +85,8 @@
   import { NODE_TYPES } from '@/enums'
   const router = useRouter()
   const form = reactive({
-    name: ''
+    name: '',
+    enabled: true
   })
   const formItems = computed(() => [
     {

@@ -72,7 +72,10 @@
         </el-form-item>
       </template> -->
       <!-- 拓展字段 -->
-      <div class="col-span-2 my-4">
+      <div
+        class="col-span-2"
+        v-if="productDetail.expandInfoList && productDetail.expandInfoList.length > 0"
+      >
         <div class="relative flex items-center">
           <div
             class="flex-shrink bg-white p-2.5 text-g-4 font-scBold text-sm cursor-pointer rounded-[20px]"
@@ -105,7 +108,7 @@
         />
       </template>
       <!-- 更多配置 -->
-      <div class="col-span-2 my-4">
+      <div class="col-span-2">
         <div class="relative flex items-center">
           <div
             class="flex-shrink bg-white p-2.5 text-g-4 font-scBold text-sm cursor-pointer rounded-[20px]"

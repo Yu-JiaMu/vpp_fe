@@ -12,6 +12,8 @@
           <div class="card-label-simple">设备数</div>
         </div>
         <div class="card-value-simple">{{ staticstics.deviceNum || 0 }}</div>
+        <!-- 蓝色下划线 -->
+        <div class="active-underline"></div>
       </div>
 
       <!-- 直连设备数卡片（默认选中样式） -->
@@ -32,6 +34,8 @@
           <div class="card-label-simple">直连网关数</div>
         </div>
         <div class="card-value-simple">{{ staticstics.directGatewayNum || 0 }}</div>
+        <!-- 蓝色下划线 -->
+        <div class="active-underline"></div>
       </div>
 
       <!-- 网关子设备数卡片 -->
@@ -41,6 +45,8 @@
           <div class="card-label-simple">网关子设备数</div>
         </div>
         <div class="card-value-simple">{{ staticstics.gatewaySubDeviceNum || 0 }}</div>
+        <!-- 蓝色下划线 -->
+        <div class="active-underline"></div>
       </div>
 
       <!-- 在线设备数卡片 -->
@@ -50,6 +56,8 @@
           <div class="card-label-simple">在线设备数（{{ onlineDeviceBFB }}）</div>
         </div>
         <div class="card-value-simple">{{ staticstics.onlineDeviceNum || 0 }}</div>
+        <!-- 蓝色下划线 -->
+        <div class="active-underline"></div>
       </div>
     </div>
     <ElCard class="art-table-card" shadow="never">
@@ -396,7 +404,7 @@
   const allColumns = reactive([
     { prop: 'name', label: '设备名称', visible: true },
     { prop: 'identifier', label: '设备ID', visible: true },
-    { prop: 'productId', label: '所属产品', visible: true },
+    { prop: 'productName', label: '所属产品', visible: true },
     { prop: 'devState', label: '状态', visible: true },
     { prop: 'nodeType', label: '节点类型', visible: true },
     { prop: 'parentDevice', label: '上级节点设备', visible: true },
@@ -607,7 +615,7 @@
         .card-header-simple {
           display: flex;
           align-items: center;
-          margin-bottom: 12px;
+          margin-bottom: 8px;
 
           .label-block {
             width: 8px;
@@ -650,7 +658,7 @@
           font-weight: 400;
           color: #303537;
           margin-top: auto; /* 将数字推到卡片底部 */
-          padding-top: 20px;
+          // padding-top: 20px;
           margin-left: 10px;
         }
 
@@ -662,7 +670,11 @@
           height: 3px;
           background-color: #38ecf2; /* 蓝色下划线 */
           border-radius: 0 0 8px 8px;
+          opacity: 0;
         }
+      }
+      .stat-card-simple:hover .active-underline {
+        opacity: 1 !important;
       }
     }
   }

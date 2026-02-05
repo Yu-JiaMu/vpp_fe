@@ -73,7 +73,6 @@
         :label="item.name"
         :prop="`expandData.${item.identifier}`"
         :rules="getTextRules(item)"
-        class="col-span-2"
       >
         <el-input
           v-model="expandData[item.identifier]"
