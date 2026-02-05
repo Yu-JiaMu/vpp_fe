@@ -303,7 +303,11 @@
     })
   }
   const onlineDeviceBFB = computed(() => {
-    return ((staticstics.onlineDeviceNum / staticstics.deviceNum) * 100).toFixed(2) + '%'
+    if (!staticstics.onlineDeviceNum || !staticstics.deviceNum) {
+      return '0%'
+    } else {
+      return ((staticstics.onlineDeviceNum / staticstics.deviceNum) * 100).toFixed(2) + '%'
+    }
   })
   const form = reactive({
     isAsc: 'desc',
