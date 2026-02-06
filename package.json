@@ -8,7 +8,9 @@
   },
   "scripts": {
     "dev": "vite --open",
+		"prebuild": "node ./bump-version.js",
     "build": "vue-tsc --noEmit && vite build",
+		"prebuild:test": "node ./bump-version.js",
     "build:test": "vite build --mode test",
     "serve": "vite preview",
     "lint": "eslint",

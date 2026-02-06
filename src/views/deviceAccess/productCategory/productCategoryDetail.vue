@@ -46,7 +46,7 @@
         :key="item.value"
         class="tab-item w-[135px] flex-cc cursor-pointer"
         :class="{ active: activeTab === item.value }"
-        @click="activeTab = item.value"
+        @click="handleTabClick(item.value)"
       >
         <div class="tab-btn w-[118px] h-8 rounded-sm">{{ item.label }}</div>
       </div>
@@ -58,13 +58,19 @@
       :info="productCategoryDetail"
       :thingJson="productCategoryDetail.thingModelJson"
       @refresh="getProductCategoryDetail"
+      @change="handleThingModelChange"
     ></ThingModel>
   </div>
 </template>
 
 <script setup>
   import * as productCategoryApi from '@/api/iot/productCategory.js'
+  import { ElMessageBox } from 'element-plus'
+  import { onBeforeRouteLeave } from 'vue-router'
+
   const route = useRoute()
+  const router = useRouter()
+
   const productCategoryId = route.query.id
   const productCategoryDetail = ref({})
   //获取详情
@@ -74,6 +80,8 @@
   }
   //tab切换
   const activeTab = ref('model')
+  const modelDirty = ref(false)
+
   const TABS = [
     {
       label: '物模型',
@@ -81,8 +89,47 @@
     }
   ]
 
+  const confirmDiscard = async () => {
+    await ElMessageBox.confirm('还未保存当前物模型，离开会丢失，确定继续吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+      closeOnHashChange: false
+    })
+  }
+
+  const handleThingModelChange = (val) => {
+    modelDirty.value = val
+  }
+
+  const handleTabClick = async (nextTab) => {
+    if (nextTab === activeTab.value) return
+
+    if (activeTab.value === 'model' && modelDirty.value) {
+      try {
+        await confirmDiscard()
+        modelDirty.value = false
+        activeTab.value = nextTab
+      } catch (err) {}
+      return
+    }
+
+    activeTab.value = nextTab
+  }
+
   onMounted(() => {
     getProductCategoryDetail()
+  })
+
+  onBeforeRouteLeave(async (to, from, next) => {
+    if (!modelDirty.value) return next()
+    try {
+      await confirmDiscard()
+      modelDirty.value = false
+      next()
+    } catch (error) {
+      next(false)
+    }
   })
 </script>
 

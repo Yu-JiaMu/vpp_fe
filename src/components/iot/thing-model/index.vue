@@ -87,6 +87,7 @@
       border
       stripe
       class="w-full"
+      show-overflow-tooltip
       @selection-change="handleSelectionChange"
     >
       <el-table-column v-if="isSettingModel" type="selection" />
@@ -161,7 +162,7 @@
   import AddSystemFunctionPointsDialog from './add-system-function-points-dialog/index.vue'
   import AddCustomFunctionPointDialog from './add-custom-function-point-dialog/index.vue'
   import FunctionDefinePreview from './function-define-preview/index.vue'
-  import { ref, computed, watchEffect, provide } from 'vue'
+  import { ref, computed, watchEffect, watch, provide } from 'vue'
   import { transformThingJsonToTable, transformTableToThingJson } from '@/utils'
   import { FUNCTION_MODE_MAP, INTERNAL_DEVICE_TYPES } from '@/enums'
   import { differenceBy } from 'lodash-es'
@@ -183,7 +184,7 @@
     }
   })
 
-  const emits = defineEmits(['refresh'])
+  const emits = defineEmits(['refresh', 'change'])
 
   /* ====================== 状态 ====================== */
 
@@ -207,6 +208,14 @@
 
   const isSettingModel = ref(false)
   const isChange = ref(false) // 已修改未保存
+
+  watch(
+    isChange,
+    (val) => {
+      emits('change', val)
+    },
+    { immediate: true }
+  )
 
   /* ====================== 搜索 ====================== */
 

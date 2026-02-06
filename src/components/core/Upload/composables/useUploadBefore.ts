@@ -28,7 +28,7 @@ export function useUploadBefore(options: UseUploadBeforeOptions) {
   const acceptTypes = options.accept.split(',').map((type) => type.trim())
 
   const acceptText = formatAcceptText(options.accept)
-  console.log('上传限制')
+  // console.log('上传限制')
 
   const beforeUpload: UploadProps['beforeUpload'] = (rawFile) => {
     // 1️⃣ 大小校验
