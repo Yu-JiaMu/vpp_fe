@@ -17,8 +17,8 @@
               @change="form.key = ''"
             >
               <el-option label="产品品类" value="name" />
-              <el-option label="所属行业" value="industryCode" />
-              <el-option label="所属场景" value="sceneCode" />
+              <el-option label="所属行业" value="industry" />
+              <el-option label="所属场景" value="scene" />
             </el-select>
           </template>
         </el-input>
@@ -44,8 +44,8 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="industryCode" label="所属行业" min-width="140" />
-        <el-table-column prop="sceneCode" label="所属场景" min-width="140" />
+        <el-table-column prop="industry" label="所属行业" min-width="140" />
+        <el-table-column prop="scene" label="所属场景" min-width="140" />
         <el-table-column label="操作" width="100">
           <template #default="{ row }">
             <el-button link type="primary" @click="selectRow(row)">选择</el-button>
