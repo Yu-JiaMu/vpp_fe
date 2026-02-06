@@ -30,7 +30,12 @@
         <img class="shu" src="@/assets/images/deviceAccess/5.webp" v-if="item.flag" />
         <div class="device-icon-container">
           <img v-if="item.imgUrl" :src="item.imgUrl" alt="" class="w-[100%] h-[100%]" />
-          <img src="@/assets/images/user/avatar.webp" alt="" v-else class="w-[100%] h-[100%]" />
+          <img
+            src="@/assets/images/icon/icon-empty-pic.webp"
+            alt=""
+            v-else
+            class="w-[100%] h-[100%]"
+          />
         </div>
         <div class="device-info flex-1">
           <div class="devive-title flex flex-cz-center">
@@ -76,7 +81,10 @@
   import { NODE_TYPES } from '@/enums'
   const router = useRouter()
   const form = reactive({
-    name: ''
+    name: '',
+    enabled: true,
+    isAsc: 'desc',
+    orderByColumn: 'updateTime'
   })
   const formItems = computed(() => [
     {
