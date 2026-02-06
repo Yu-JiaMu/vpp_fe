@@ -636,7 +636,7 @@
     getStatistics()
     autoRefreshTimer.value = setInterval(() => {
       getStatistics()
-    }, 3000)
+    }, 30000)
   }
   // 停止自动刷新
   const stopAutoRefresh = () => {
@@ -661,7 +661,7 @@
     if (route.query.productId) {
       form.productId = route.query.productId
     }
-    getStatistics()
+    // getStatistics()
     startAutoRefresh()
     loadColumnSettings()
     getProduceList()
