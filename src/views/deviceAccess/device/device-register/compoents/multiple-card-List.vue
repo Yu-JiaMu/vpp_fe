@@ -138,11 +138,16 @@
   //下一步
   const nextForm = () => {
     console.log('下一步')
-    //通过activeCardIndex判断是否选择了卡片
-    const someActiveCard = tableData.value.some((item) => item.flag)
-    if (!someActiveCard) return ElMessage.warning('请先选择一个产品')
-    const productIds = tableData.value.filter((item) => item.flag).map((map) => map.id)
-    emit('next-step', productIds)
+    // 收集已选产品，避免多次遍历 tableData
+    const selected = tableData.value.filter((item) => item.flag)
+    if (!selected.length) {
+      return ElMessage.warning('请先选择一个产品')
+    }
+    const productIds = selected.map((item) => item.id)
+    const isSubDevice = selected.some(
+      (item) => item.nodeType === 'direct-connect-device' || item.nodeType === 'gateway-device'
+    )
+    emit('next-step', productIds, isSubDevice)
   }
   const goback = () => {
     router.back()

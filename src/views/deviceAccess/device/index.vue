@@ -7,9 +7,19 @@
     <div class="statistics-cards-simple">
       <!-- 设备数卡片 -->
       <div class="stat-card-simple">
-        <div class="card-header-simple">
-          <div class="label-block gray-block"></div>
-          <div class="card-label-simple">设备数</div>
+        <div class="flex justify-between items-center">
+          <div class="card-header-simple">
+            <div class="label-block gray-block"></div>
+            <div class="card-label-simple">设备数</div>
+          </div>
+          <div>
+            <el-tooltip content="设备数：当前已注册的设备总数" placement="top">
+              <img
+                src="@/assets/images/deviceAccess/23.png"
+                class="w-[14px] h-[14px] cursor-pointer"
+              />
+            </el-tooltip>
+          </div>
         </div>
         <div class="card-value-simple">{{ staticstics.deviceNum || 0 }}</div>
         <!-- 蓝色下划线 -->
@@ -18,9 +28,17 @@
 
       <!-- 直连设备数卡片（默认选中样式） -->
       <div class="stat-card-simple active-card">
-        <div class="card-header-simple">
-          <div class="label-block blue-block"></div>
-          <div class="card-label-simple active-label">直连设备数</div>
+        <div class="flex justify-between items-center">
+          <div class="card-header-simple">
+            <div class="label-block blue-block"></div>
+            <div class="card-label-simple active-label">直连设备数</div>
+          </div>
+          <el-tooltip content="直连设备数：直连设备节点类型的设备总数" placement="top">
+            <img
+              src="@/assets/images/deviceAccess/23.png"
+              class="w-[14px] h-[14px] cursor-pointer"
+            />
+          </el-tooltip>
         </div>
         <div class="card-value-simple">{{ staticstics.directDeviceNum || 0 }}</div>
         <!-- 蓝色下划线 -->
@@ -29,10 +47,19 @@
 
       <!-- 直连网关数卡片 -->
       <div class="stat-card-simple">
-        <div class="card-header-simple">
-          <div class="label-block orange-block"></div>
-          <div class="card-label-simple">直连网关数</div>
+        <div class="flex justify-between items-center">
+          <div class="card-header-simple">
+            <div class="label-block orange-block"></div>
+            <div class="card-label-simple">直连网关数</div>
+          </div>
+          <el-tooltip content="直连网关数：直连网关节点类型的设备总数" placement="top">
+            <img
+              src="@/assets/images/deviceAccess/23.png"
+              class="w-[14px] h-[14px] cursor-pointer"
+            />
+          </el-tooltip>
         </div>
+
         <div class="card-value-simple">{{ staticstics.directGatewayNum || 0 }}</div>
         <!-- 蓝色下划线 -->
         <div class="active-underline"></div>
@@ -40,10 +67,19 @@
 
       <!-- 网关子设备数卡片 -->
       <div class="stat-card-simple">
-        <div class="card-header-simple">
-          <div class="label-block purple-block"></div>
-          <div class="card-label-simple">网关子设备数</div>
+        <div class="flex justify-between items-center">
+          <div class="card-header-simple">
+            <div class="label-block purple-block"></div>
+            <div class="card-label-simple">网关子设备数</div>
+          </div>
+          <el-tooltip content="网关子设备数：网关子设备节点类型的设备总数" placement="top">
+            <img
+              src="@/assets/images/deviceAccess/23.png"
+              class="w-[14px] h-[14px] cursor-pointer"
+            />
+          </el-tooltip>
         </div>
+
         <div class="card-value-simple">{{ staticstics.gatewaySubDeviceNum || 0 }}</div>
         <!-- 蓝色下划线 -->
         <div class="active-underline"></div>
@@ -51,10 +87,19 @@
 
       <!-- 在线设备数卡片 -->
       <div class="stat-card-simple">
-        <div class="card-header-simple">
-          <div class="label-block red-block"></div>
-          <div class="card-label-simple">在线设备数（{{ onlineDeviceBFB }}）</div>
+        <div class="flex justify-between items-center">
+          <div class="card-header-simple">
+            <div class="label-block red-block"></div>
+            <div class="card-label-simple">在线设备数（{{ onlineDeviceBFB }}）</div>
+          </div>
+          <el-tooltip content="在线设备数：当前处于在线状态的设备总数" placement="top">
+            <img
+              src="@/assets/images/deviceAccess/23.png"
+              class="w-[14px] h-[14px] cursor-pointer"
+            />
+          </el-tooltip>
         </div>
+
         <div class="card-value-simple">{{ staticstics.onlineDeviceNum || 0 }}</div>
         <!-- 蓝色下划线 -->
         <div class="active-underline"></div>
@@ -114,7 +159,7 @@
                   >单个设备注册</el-dropdown-item
                 >
                 <el-dropdown-item @click="goDeviceRegister('multiple')"
-                  >多个设备注册</el-dropdown-item
+                  >批量设备注册</el-dropdown-item
                 >
               </el-dropdown-menu>
             </template>
@@ -699,7 +744,7 @@
         .card-header-simple {
           display: flex;
           align-items: center;
-          margin-bottom: 8px;
+          // margin-bottom: 8px;
 
           .label-block {
             width: 8px;
@@ -756,6 +801,11 @@
           border-radius: 0 0 8px 8px;
           opacity: 0;
         }
+      }
+
+      .stat-card-simple:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
       }
       .stat-card-simple:hover .active-underline {
         opacity: 1 !important;
