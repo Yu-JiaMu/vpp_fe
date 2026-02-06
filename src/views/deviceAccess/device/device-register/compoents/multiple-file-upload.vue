@@ -3,8 +3,11 @@
     <div class="tip">
       <div class="flex flex-cz-center">
         <el-icon color="#298AF9" size="22"><Warning /></el-icon>
-        <span class="ml10">
+        <span class="ml10" v-if="productIds.length > 1">
           导入系统已存在的设备数据，不会更改已存在设备的所属产品信息。请注意:您选择了多个产品，模板中将以sheet方式区分。
+        </span>
+        <span class="ml10" v-if="productIds.length === 1">
+          导入系统已存在的设备数据，不会更改已存在设备的所属产品信息。
         </span>
       </div>
       <div class="ml30 mt5 font-primary-color">
@@ -123,6 +126,11 @@
     productIds.value = ids
     console.log(productIds.value, 'productIds.valueproductIds.value')
   }
+  const isSubDevice = ref(false)
+  //网关子设备
+  const getwzSubDevice = (status) => {
+    isSubDevice.value = status
+  }
   const exportNum = reactive({
     successNum: 0,
     failNum: 0
@@ -138,7 +146,7 @@
       return false
     }
   })
-  defineExpose({ setProductIds, setExportNum })
+  defineExpose({ setProductIds, setExportNum, getwzSubDevice })
 </script>
 
 <style lang="scss" scoped>

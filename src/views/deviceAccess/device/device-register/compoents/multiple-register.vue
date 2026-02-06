@@ -23,12 +23,13 @@
   const productIds = ref([])
   const activeStep = ref(1)
   const multipleFileUpload = ref(null)
-  const nextStep = async (productId) => {
+  const nextStep = async (productId, isSubDevice) => {
     productIds.value = productId
     activeStep.value = 2
     await nextTick()
     if (multipleFileUpload.value) {
       multipleFileUpload.value.setProductIds(productIds.value)
+      multipleFileUpload.value.getwzSubDevice(isSubDevice)
     }
   }
   //上一步
