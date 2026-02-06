@@ -26,7 +26,7 @@
       </el-descriptions-item>
 
       <el-descriptions-item label="设备品类">
-        {{ deviceDetail.nodeType }}
+        {{ NODE_TYPES.getLabel(deviceDetail.nodeType) }}
       </el-descriptions-item>
 
       <el-descriptions-item label="固件版本">
@@ -194,6 +194,7 @@
   import { Search } from '@element-plus/icons-vue'
   import newMap from '@/utils/map'
   import * as api from '@/api/iot'
+  import { NODE_TYPES } from '@/enums'
   const route = useRoute()
   const props = defineProps({
     deviceDetail: {
