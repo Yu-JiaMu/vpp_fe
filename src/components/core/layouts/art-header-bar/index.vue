@@ -15,7 +15,6 @@
       ]"
     >
       <div class="flex-c flex-1 min-w-0 leading-15" style="display: flex">
-        <!-- 系统信息  -->
         <div class="flex-c c-p" @click="toHome" v-if="isTopMenu">
           <ArtLogo class="pl-4.5" />
           <p v-if="width >= 1400" class="my-0 mx-2 ml-2 text-lg">{{ AppConfig.systemInfo.name }}</p>
@@ -78,11 +77,16 @@
           </div>
         </div>
 
+        <!-- 系统信息  -->
+        <div class="flex-c">
+          <el-tag type="primary" size="small" round> v {{ appVersion }} </el-tag>
+        </div>
+
         <!-- 全屏按钮 -->
         <ArtIconButton
           v-if="shouldShowFullscreen"
           :icon="isFullscreen ? 'ri:fullscreen-exit-line' : 'ri:fullscreen-fill'"
-          :class="[!isFullscreen ? 'full-screen-btn' : 'exit-full-screen-btn', 'ml-3']"
+          :class="[!isFullscreen ? 'full-screen-btn' : 'exit-full-screen-btn']"
           class="max-md:!hidden"
           @click="toggleFullScreen"
         />
@@ -192,6 +196,9 @@
 
   // 检测操作系统类型
   const isWindows = navigator.userAgent.includes('Windows')
+
+  // 获取应用版本号
+  const appVersion = ref(import.meta.env.VITE_VERSION || '1.0.0')
 
   const router = useRouter()
   const { locale } = useI18n()
