@@ -288,6 +288,14 @@
 
           <template #default="{ row }">
             <el-button link type="primary" @click="handleDetail(row)"> 详情 </el-button>
+            <el-button
+              v-if="NODE_TYPES.values.GATEWAY === row.nodeType"
+              link
+              type="primary"
+              @click="handleSubDevice(row)"
+            >
+              子设备
+            </el-button>
             <el-button link type="danger" @click="handleDelete(row)"> 删除 </el-button>
           </template>
         </el-table-column>
@@ -577,6 +585,11 @@
     console.log('查看详情:', row)
     // ElMessage.info(`查看 ${row.name} 详情`)
     router.push({ name: 'DeviceDetail', query: { id: row.id } })
+  }
+  // 查看子设备
+  const handleSubDevice = (row) => {
+    console.log('查看子设备:', row)
+    router.push({ name: 'DeviceDetail', query: { id: row.id, tab: 'subDeviceManagement' } })
   }
   // 处理删除
   const handleDelete = async (row) => {

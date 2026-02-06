@@ -138,6 +138,9 @@
     if (route.query.id) {
       getDeviceDetail(route.query.id)
     }
+    if (route.query.tab) {
+      activeTab.value = route.query.tab
+    }
   })
 </script>
 
