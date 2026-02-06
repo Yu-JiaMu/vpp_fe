@@ -285,7 +285,33 @@
   }
   // 格式化物模型状态
   const formatThingModelStatus = (thingModelJson) => {
-    return thingModelJson ? true : false
+    if (!thingModelJson) {
+      return false
+    }
+
+    // 支持传入字符串或对象
+    let model = thingModelJson
+    if (typeof thingModelJson === 'string') {
+      try {
+        model = JSON.parse(thingModelJson)
+      } catch (e) {
+        console.log(e)
+        return false
+      }
+    }
+
+    const modules = Array.isArray(model.modules) ? model.modules : []
+    if (modules.length === 0) return false
+
+    // 如果任一模块中 events/functions/properties 有数据，则认为已定义物模型
+    for (const m of modules) {
+      const hasEvents = Array.isArray(m.events) && m.events.length > 0
+      const hasFunctions = Array.isArray(m.functions) && m.functions.length > 0
+      const hasProperties = Array.isArray(m.properties) && m.properties.length > 0
+      if (hasEvents || hasFunctions || hasProperties) return true
+    }
+
+    return false
   }
 
   // 处理详情

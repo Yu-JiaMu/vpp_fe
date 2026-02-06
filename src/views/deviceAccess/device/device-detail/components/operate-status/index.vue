@@ -74,11 +74,15 @@
               />
             </div>
             <div class="content-font mt-[4px] mb-[15px] flex items-end">
-              <div class="flex items-center gap-2 mr-[4px]">
+              <div class="flex items-center gap-2 mr-[4px] flex-1">
                 <div class="kuai" style="opacity: 0"></div>
-                <span class="text-2xl">{{ item.val }}</span>
+                <el-tooltip :content="item.val" placement="top">
+                  <div class="text-2xl max-w-[70%] truncate">
+                    {{ item.val }}
+                    <span class="text-[16px]">{{ item.unit }}</span>
+                  </div>
+                </el-tooltip>
               </div>
-              <span class="text-[16px]">{{ item.unit }}</span>
             </div>
             <div class="flex items-center gap-2">
               <div class="kuai"></div>

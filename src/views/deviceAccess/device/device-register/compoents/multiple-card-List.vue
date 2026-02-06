@@ -4,7 +4,7 @@
       <el-icon color="#298AF9" size="22"><Warning /></el-icon>
       <span class="ml10">
         请先选择产品，本次注册的设备将继承产品定义的内容，成为该产品的所属设备。
-        <span class="t-c">单个注册仅支持单选产品!</span>
+        <span class="t-c">批量注册支持多个产品选择!</span>
       </span>
     </div>
     <ArtSearchBar

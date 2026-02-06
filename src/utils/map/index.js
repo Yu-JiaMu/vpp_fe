@@ -96,6 +96,15 @@ class SimpleAMapService {
       if (!container) {
         throw new Error(`找不到地图容器: ${containerId}`)
       }
+      // 设置Canvas上下文属性
+      // const originalGetContext = HTMLCanvasElement.prototype.getContext
+      // HTMLCanvasElement.prototype.getContext = function (...args) {
+      //   const context = originalGetContext.apply(this, args)
+      //   if (context && context.constructor.name === 'CanvasRenderingContext2D') {
+      //     context.willReadFrequently = true
+      //   }
+      //   return context
+      // }
       // 根据图片中的信息，成都中心坐标
       const defaultOptions = {
         zoom: 12,

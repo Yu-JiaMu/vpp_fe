@@ -613,12 +613,43 @@
       })
     }
   )
+  //30s 获取设备统计
+  const autoRefreshTimer = ref(null)
+  const startAutoRefresh = () => {
+    // 防止重复启动多个定时器
+    stopAutoRefresh()
 
+    // 先立即请求一次，再开启 30s 间隔
+    getStatistics()
+    autoRefreshTimer.value = setInterval(() => {
+      getStatistics()
+    }, 3000)
+  }
+  // 停止自动刷新
+  const stopAutoRefresh = () => {
+    if (autoRefreshTimer.value) {
+      clearInterval(autoRefreshTimer.value)
+      autoRefreshTimer.value = null
+      console.log('停止自动刷新')
+    }
+  }
+
+  onUnmounted(() => {
+    console.log('组件销毁')
+    // 组件销毁时清理定时器
+    stopAutoRefresh()
+  })
+  // 如果使用 Vue Router 的 keep-alive
+  onDeactivated(() => {
+    // 组件失活时停止刷新
+    stopAutoRefresh()
+  })
   onActivated(() => {
     if (route.query.productId) {
       form.productId = route.query.productId
     }
     getStatistics()
+    startAutoRefresh()
     loadColumnSettings()
     getProduceList()
     getTableData()
