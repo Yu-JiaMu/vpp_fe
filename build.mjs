@@ -31,6 +31,8 @@ try {
 } catch (error) {}
 
 async function build() {
+  await gitPullBeforeBuild()
+
   await clearDirectory(BUILD_DIR) // 清空打包目录
   await deleteFile(`${zipFilePath}`) // 删除旧的 zip 文件
   // 执行打包命令
@@ -59,6 +61,36 @@ async function build() {
 
   await archivePromise
   echo('压缩文件完成！')
+
+  // 自动提交 git
+  await autoGitCommit()
+}
+
+async function gitPullBeforeBuild() {
+  echo('开始拉取最新代码...')
+
+  try {
+    await $`git pull`
+    echo('Git 拉取完成 ✅')
+  } catch (err) {
+    echo('Git pull 失败，请先处理冲突 ❌')
+    process.exit(1)
+  }
+}
+
+async function autoGitCommit() {
+  const status = await $`git status --porcelain`
+  if (!status.stdout.trim()) {
+    echo('Git 无变更，跳过提交')
+    return
+  }
+
+  echo('开始自动提交 Git...')
+  await $`git add .`
+  await $`git commit -m 打包自动提交`
+  echo('开始推送到远程仓库...')
+  await $`git push`
+  echo('Git 自动提交并推送完成 ✅')
 }
 
 async function deploy() {
