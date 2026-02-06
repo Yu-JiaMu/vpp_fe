@@ -135,12 +135,17 @@
 
         <!-- 设备名称列 -->
         <el-table-column
-          prop="name"
           label="设备名称"
           v-if="visibleColumns.includes('name')"
           width="200"
-        />
-
+          fixed="left"
+        >
+          <template #default="{ row }">
+            <span class="cursor-pointer text-theme" @click.prevent="handleDetail(row)">{{
+              row.name
+            }}</span>
+          </template>
+        </el-table-column>
         <!-- 设备ID列 -->
         <el-table-column
           prop="identifier"
@@ -319,7 +324,7 @@
   })
   const form = reactive({
     isAsc: 'desc',
-    orderByColumn: '',
+    orderByColumn: 'createTime',
     name: '',
     id: '',
     productId: '',
@@ -505,10 +510,22 @@
       ElMessage.warning('请选择操作的设备')
       return
     }
-    const deviceIds = selectedRows.value.map((item) => item.id)
-    await deviceApi.apiDevUpdateStatus(type, deviceIds)
-    ElMessage.success('状态修改成功')
-    getTableData()
+    try {
+      await ElMessageBox.confirm(`确定要${type ? '开启' : '禁用'}选中的设备状态？`, '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+
+      const deviceIds = selectedRows.value.map((item) => item.id)
+      await deviceApi.apiDevUpdateStatus(type, deviceIds)
+      ElMessage.success('状态修改成功')
+      getTableData()
+    } catch (error) {
+      if (error !== 'cancel') {
+        ElMessage.error('删除失败')
+      }
+    }
   }
   //批量导出
   const batchExport = async () => {
@@ -516,10 +533,21 @@
       ElMessage.warning('请选择操作的设备')
       return
     }
-    // const QueryParamsRes = handleQueryParams()
-    const deviceIds = selectedRows.value.map((item) => item.id)
-    const result = await deviceApi.apiDevExport(deviceIds)
-    downloadFile(result, '设备列表', 'xlsx')
+    try {
+      await ElMessageBox.confirm(`是否批量导出选中设备？`, '批量导出？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+      // const QueryParamsRes = handleQueryParams()
+      const deviceIds = selectedRows.value.map((item) => item.id)
+      const result = await deviceApi.apiDevExport(deviceIds)
+      downloadFile(result, '设备列表', 'xlsx')
+    } catch (error) {
+      if (error !== 'cancel') {
+        ElMessage.error('删除失败')
+      }
+    }
   }
   //批量删除
   const batchDelete = async () => {
@@ -527,10 +555,22 @@
       ElMessage.warning('请选择操作的设备')
       return
     }
-    const deviceIds = selectedRows.value.map((item) => item.id)
-    await deviceApi.apiDevDelete(deviceIds)
-    ElMessage.success('状态修改成功')
-    getTableData()
+    try {
+      await ElMessageBox.confirm(`确定要删除选中的设备吗？`, '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+
+      const deviceIds = selectedRows.value.map((item) => item.id)
+      await deviceApi.apiDevDelete(deviceIds)
+      ElMessage.success('状态修改成功')
+      getTableData()
+    } catch (error) {
+      if (error !== 'cancel') {
+        ElMessage.error('删除失败')
+      }
+    }
   }
   // 操作按钮处理函数
   const handleDetail = (row) => {

@@ -83,7 +83,7 @@
           >
             拓展字段
             <ArtSvgIcon
-              :icon="formShowMore.TZShowMore ? 'ri:arrow-up-s-line' : 'ri:arrow-down-s-line'"
+              :icon="formShowMore.TZShowMore ? 'ri:arrow-down-s-line' : 'ri:arrow-up-s-line'"
               class="ml-1 text-[18px]"
             />
           </div>
@@ -116,7 +116,7 @@
           >
             更多配置
             <ArtSvgIcon
-              :icon="formShowMore.GDShowMore ? 'ri:arrow-up-s-line' : 'ri:arrow-down-s-line'"
+              :icon="formShowMore.GDShowMore ? 'ri:arrow-down-s-line' : 'ri:arrow-up-s-line'"
               class="ml-1 text-[18px]"
             />
           </div>
@@ -124,7 +124,7 @@
         </div>
       </div>
       <template v-if="formShowMore.GDShowMore">
-        <el-form-item label="产品描述" prop="remark">
+        <el-form-item label="描述" prop="remark">
           <el-input
             v-model="form.remark"
             type="textarea"
@@ -361,6 +361,7 @@
   const createMap = async () => {
     map.value = new newMap()
     await map.value.createMap('sigle-map')
+    await mapClickAddMarker()
     await getAddress()
   }
   const getAddress = async () => {
@@ -371,12 +372,33 @@
     form.lng = lng
     form.lat = lat
   }
-
+  //监听地图点击事件
+  const mapClickAddMarker = async () => {
+    console.log('执行几次')
+    await map.value.handleClickMapAddMarker({
+      once: false, // 设置为持续监听
+      getAddress: true, // 自动获取地址
+      markerTitle: '选择的位置',
+      onClick: (data) => {
+        // 每次点击都会执行这个回调
+        console.log('地图点击数据:', data)
+        form.lng = data.lng
+        form.lat = data.lat
+        form.address = data.address
+      }
+    })
+  }
   onMounted(() => {
     createMap()
   })
   onUnmounted(() => {
-    map.value.destroy()
+    // 停止监听
+    map.value.stopMapClickListening()
+    // 销毁地图
+    if (map.value) {
+      map.value.destroy()
+      map.value = null
+    }
   })
 </script>
 
