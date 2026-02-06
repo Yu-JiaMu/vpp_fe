@@ -107,7 +107,7 @@
           </el-form-item> -->
           <el-form-item label="设备标签">
             <div class="labels-box">
-              <span
+              <div
                 class="tag"
                 :class="{ 'border-none': item.flag }"
                 v-for="(item, index) in tagList"
@@ -123,7 +123,7 @@
                     ><Check
                   /></el-icon>
                 </template>
-              </span>
+              </div>
               <el-icon @click="addTag" class="cursor-pointer" size="22" color="#38ECF2"
                 ><CirclePlus
               /></el-icon>
@@ -138,10 +138,8 @@
               placeholder="请输入设备说明"
               :rows="5"
               maxlength="200"
+              show-word-limit
             />
-            <div class="w-full mt-1 text-xs text-right text-gray-400">
-              {{ getByteLength(form.remark) }}/200
-            </div>
           </el-form-item>
 
           <el-form-item label="位置信息" class="relative col-span-2">
@@ -423,8 +421,6 @@
       display: flex; /* 使用flex布局 */
       align-items: center; /* 垂直居中 */
       justify-content: center; /* 水平居中 */
-      text-align: center; /* 文字居中（备用） */
-      line-height: 1; /* 重置行高 */
     }
     .border-none {
       border: none !important;

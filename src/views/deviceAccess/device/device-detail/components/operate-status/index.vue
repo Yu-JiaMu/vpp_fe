@@ -77,7 +77,7 @@
               <div class="flex items-center gap-2 mr-[4px] flex-1">
                 <div class="kuai" style="opacity: 0"></div>
                 <el-tooltip :content="item.val" placement="top">
-                  <div class="text-2xl max-w-[70%] truncate">
+                  <div class="text-2xl max-w-[220px] truncate">
                     {{ item.val }}
                     <span class="text-[16px]">{{ item.unit }}</span>
                   </div>
@@ -134,7 +134,7 @@
       </div>
       <el-tabs v-model="tabsActive" class="mt20" @tab-click="handleTabsClick">
         <el-tab-pane label="列表" name="first">
-          <el-table :data="dialogTableData" border style="width: 100%">
+          <el-table :data="dialogTableData" border style="width: 100%" show-overflow-tooltip>
             <el-table-column prop="ts" label="时间" width="400" />
             <el-table-column prop="val" label="值" />
           </el-table>
