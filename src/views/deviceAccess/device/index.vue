@@ -159,7 +159,7 @@
                   >单个设备注册</el-dropdown-item
                 >
                 <el-dropdown-item @click="goDeviceRegister('multiple')"
-                  >多个设备注册</el-dropdown-item
+                  >批量设备注册</el-dropdown-item
                 >
               </el-dropdown-menu>
             </template>
