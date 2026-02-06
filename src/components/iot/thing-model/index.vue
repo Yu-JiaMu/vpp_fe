@@ -87,6 +87,7 @@
       border
       stripe
       class="w-full"
+      show-overflow-tooltip
       @selection-change="handleSelectionChange"
     >
       <el-table-column v-if="isSettingModel" type="selection" />

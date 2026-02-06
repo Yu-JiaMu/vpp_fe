@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <div v-if="!hasClose" class="op-btn bg-[#e9f3ff]">
+    <div v-if="!hasClose" class="op-btn bg-[#e9f3ff]" @click="openCustomFunctionDialog()">
       <ArtSvgIcon icon="ri:eye-fill" class="text-sm text-[#298AF9] mr-1" />
       查看
     </div>
@@ -22,6 +22,9 @@
       <ArtSvgIcon icon="ri:close-fill" class="mr-1 text-sm text-[#F8345C]" />
       关闭
     </div>
+
+    <!-- 添加自定义功能点 -->
+    <AddCustomFunctionPointDialog ref="addCustomFunctionPointDialogRef" />
   </div>
 </template>
 
@@ -37,10 +40,19 @@
     }
   })
 
+  const isReadOnly = ref(false)
+  provide('isReadOnly', isReadOnly)
+
   const emits = defineEmits(['removeFunctionPoint'])
 
   function removeFunctionPoint() {
     emits('removeFunctionPoint', props.info)
+  }
+
+  const addCustomFunctionPointDialogRef = useTemplateRef('addCustomFunctionPointDialogRef')
+  const openCustomFunctionDialog = () => {
+    isReadOnly.value = true
+    addCustomFunctionPointDialogRef.value.open(props.info, -1, 'look')
   }
 </script>
 
