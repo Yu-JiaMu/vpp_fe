@@ -93,7 +93,7 @@
           label: item.name || item.label,
           value: item.id || item.value
         }))
-        productCategoryList.value.unshift({ label: '未分类', value: -1 })
+        productCategoryList.value.push({ label: '未分类', value: -1 })
       }
     } catch (error) {
       console.error('获取产品品类列表失败:', error)
