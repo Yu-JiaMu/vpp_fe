@@ -65,7 +65,7 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <div class="kuai"></div>
-                <span class="text-[15px]">{{ item.name }}</span>
+                <span class="text-[15px] max-w-[180px] truncate">{{ item.name }}</span>
               </div>
               <img
                 src="@/assets/images/deviceAccess/13.png"
