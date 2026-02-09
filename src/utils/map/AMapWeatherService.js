@@ -43,6 +43,7 @@ export default class AMapWeatherService {
     if (city) return `${city}`
     return `LOCAL`
   }
+
   /** 真正请求高德天气 */
   fetchLiveWeather(city) {
     return new Promise((resolve, reject) => {
