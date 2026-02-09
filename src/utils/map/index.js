@@ -1,9 +1,11 @@
 // utils/simple-amap.js
-const key = 'a9f1840ab6ebfb81e17f611ca72572d2'
-const securityJsCode = '522054ec0e1ef9da651e7975e9235abf'
 import AMapLoader from '@amap/amap-jsapi-loader'
 
+const key = 'a9f1840ab6ebfb81e17f611ca72572d2'
+const securityJsCode = '522054ec0e1ef9da651e7975e9235abf'
+
 class SimpleAMapService {
+  weatherService = null
   constructor(options = {}) {
     this.options = {
       key: key || options.key || '',
@@ -493,6 +495,38 @@ class SimpleAMapService {
       this._mapClickHandler = null
       console.log('地图点击监听已停止')
     }
+  }
+
+  // 坐标 → 行政区信息
+  getAddressComponentByLocation(lnglat) {
+    return new Promise((resolve, reject) => {
+      this.AMap.plugin('AMap.Geocoder', () => {
+        const geocoder = new AMap.Geocoder({
+          city: '全国'
+        })
+
+        geocoder.getAddress(lnglat, (status, result) => {
+          if (status === 'complete' && result.regeocode) {
+            resolve(result.regeocode.addressComponent)
+          } else {
+            reject('逆地理失败')
+          }
+        })
+      })
+    })
+  }
+
+  /**
+   * 获取当前位置信息和对应的行政区信息
+   */
+  async getLocationAndAddress() {
+    const location = await this.getLocationAddress()
+
+    const lnglat = location.position
+
+    const addressComponent = await this.getAddressComponentByLocation(lnglat)
+
+    return { lnglat, addressComponent }
   }
 
   // 销毁地图
