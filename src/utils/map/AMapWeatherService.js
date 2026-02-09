@@ -4,6 +4,10 @@ import { WEATHER_ICON_MAP } from '@/enums'
 const WEATHER_EXPIRE = 3 * 60 * 60 * 1000 // 3 小时
 const CACHE_PREFIX = 'AMAP_WEATHER'
 
+const DEFAULT_CITY = '成都市'
+const LOCATION_CITY_CACHE_KEY = 'WEATHER_LOCATION_CITY'
+const LOCATION_CITY_EXPIRE = 24 * 60 * 60 * 1000 // 1 天
+
 export function getWeatherIcon(weather) {
   if (!weather) return 'ri-sun-line'
 
@@ -72,6 +76,29 @@ export default class AMapWeatherService {
     return null
   }
 
+  async getLocationCity() {
+    // ① 先读缓存
+    const cache = this.cache.get(LOCATION_CITY_CACHE_KEY)
+    if (cache) return cache
+
+    // ② 再定位
+    try {
+      const location = await this.mapService.getLocationAndAddress()
+      const city = this.resolveWeatherCity(location.addressComponent)
+
+      if (city) {
+        this.cache.set(LOCATION_CITY_CACHE_KEY, city, LOCATION_CITY_EXPIRE)
+        return city
+      }
+    } catch (err) {
+      console.warn('[weather] 定位失败', err)
+    }
+
+    // ③ fallback
+    this.cache.set(LOCATION_CITY_CACHE_KEY, DEFAULT_CITY, LOCATION_CITY_EXPIRE)
+    return DEFAULT_CITY
+  }
+
   /** 对外统一方法 */
   async getWeather(options = {}) {
     const { city, forceRefresh = false } = options
@@ -89,13 +116,9 @@ export default class AMapWeatherService {
 
     // ③ 只有在「没传 city 且需要请求」时，才去定位
     if (!weatherCity) {
-      const location = await this.mapService.getLocationAndAddress()
-      weatherCity = this.resolveWeatherCity(location.addressComponent)
-
-      if (!weatherCity) {
-        throw new Error('无法解析天气查询城市')
-      }
+      weatherCity = await this.getLocationCity()
     }
+
     console.log('[weather] 拉取天气')
 
     // ④ 拉取天气
@@ -106,7 +129,7 @@ export default class AMapWeatherService {
       icon: getWeatherIcon(weather.weather)
     }
 
-    this.cache.set(cacheKey, result)
+    this.cache.set(cacheKey, result, WEATHER_EXPIRE)
     return result
   }
 }
