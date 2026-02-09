@@ -709,6 +709,8 @@
   onActivated(() => {
     if (route.query.productId) {
       form.productId = route.query.productId
+    } else {
+      form.productId = ''
     }
     // getStatistics()
     startAutoRefresh()
