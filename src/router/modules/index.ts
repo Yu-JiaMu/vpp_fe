@@ -9,9 +9,9 @@ import { energyIot } from './energyIot'
  * 导出所有模块化路由
  */
 export const routeModules: AppRouteRecord[] = [
-  dashboardRoutes,
+  // dashboardRoutes,
   energyIot,
-  systemRoutes,
+  // systemRoutes,
   resultRoutes,
   exceptionRoutes
 ]
