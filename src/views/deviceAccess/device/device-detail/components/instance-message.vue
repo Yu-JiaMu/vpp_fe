@@ -321,9 +321,9 @@
       name: form.name,
       remark: form.remark,
       tags: tagList.value.map((tag) => tag.value),
-      lng: form.lng,
-      lat: form.lat,
-      address: form.address
+      lng: form.lng ? form.lng : 0,
+      lat: form.lat ? form.lat : 0,
+      address: form.address ? form.address : ''
     }
     await api.apiDevEdit(params)
     dialogVisible.value = false
