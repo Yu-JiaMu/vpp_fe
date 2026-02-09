@@ -59,7 +59,7 @@ export function apiDevDetail(deviceId) {
 
 //编辑
 export function apiDevEdit(params) {
-  return request.put(`/stage-api/model/device/edit`, params)
+  return request.put(`/stage-api/model/device/edit`, params, { skipClean: true })
 }
 
 // 获取设备日志

@@ -30,7 +30,12 @@
         <img class="shu" src="@/assets/images/deviceAccess/5.webp" v-if="item.flag" />
         <div class="device-icon-container">
           <img v-if="item.imgUrl" :src="item.imgUrl" alt="" class="w-[100%] h-[100%]" />
-          <img src="@/assets/images/user/avatar.webp" alt="" v-else class="w-[100%] h-[100%]" />
+          <img
+            src="@/assets/images/icon/icon-empty-pic.webp"
+            alt=""
+            v-else
+            class="w-[100%] h-[100%]"
+          />
         </div>
         <div class="device-info flex-1">
           <div class="devive-title flex flex-cz-center">
@@ -76,7 +81,10 @@
   import { NODE_TYPES } from '@/enums'
   const router = useRouter()
   const form = reactive({
-    name: ''
+    name: '',
+    enabled: true,
+    isAsc: 'desc',
+    orderByColumn: 'updateTime'
   })
   const formItems = computed(() => [
     {
@@ -124,6 +132,13 @@
             flag: false
           }
         })
+        tableData.value.forEach((a) => {
+          selectedProduct.value.forEach((b) => {
+            if (a.id === b.id) {
+              a.flag = true
+            }
+          })
+        })
         pagination.total = response.total || 0
       }
     } catch (error) {
@@ -131,20 +146,31 @@
       ElMessage.error('获取产品列表失败')
     }
   }
+  const selectedProduct = ref([])
   //切换card
   const changeCard = async (item) => {
     item.flag = !item.flag
+    // if(item)
+    console.log(item.flag)
+    if (item.flag) {
+      selectedProduct.value.push(item)
+    } else {
+      const index = selectedProduct.value.findIndex((find) => find.id === item.id)
+      selectedProduct.value.splice(index, 1)
+    }
+    console.log(selectedProduct.value)
   }
   //下一步
   const nextForm = () => {
     console.log('下一步')
     // 收集已选产品，避免多次遍历 tableData
-    const selected = tableData.value.filter((item) => item.flag)
-    if (!selected.length) {
+    // const selected = tableData.value.filter((item) => item.flag)
+    if (selectedProduct.value.length === 0) {
       return ElMessage.warning('请先选择一个产品')
     }
-    const productIds = selected.map((item) => item.id)
-    const isSubDevice = selected.some(
+    const productIds = selectedProduct.value.map((item) => item.id)
+
+    const isSubDevice = selectedProduct.value.some(
       (item) => item.nodeType === 'direct-connect-device' || item.nodeType === 'gateway-device'
     )
     emit('next-step', productIds, isSubDevice)

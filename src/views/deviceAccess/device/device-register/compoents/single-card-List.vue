@@ -86,7 +86,9 @@
   const router = useRouter()
   const form = reactive({
     name: '',
-    enabled: true
+    enabled: true,
+    isAsc: 'desc',
+    orderByColumn: 'updateTime'
   })
   const formItems = computed(() => [
     {

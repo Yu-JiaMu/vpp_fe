@@ -437,7 +437,11 @@
   //获取产品列表
   const produceList = ref([])
   const getProduceList = async () => {
-    const response = await deviceApi.apiGetProductList({ pageSize: 999 })
+    const response = await deviceApi.apiGetProductList({
+      pageSize: 999,
+      isAsc: 'desc',
+      orderByColumn: 'updateTime'
+    })
 
     produceList.value = response.rows.map((item) => {
       return {
