@@ -63,7 +63,7 @@
 
         <div
           v-if="modelValue.length === 0 || !hasRegisterDevice"
-          class="text-sm cursor-pointer text-theme hover:text-blue-500"
+          class="text-sm cursor-pointer text-theme hover:text-blue-500 w-fit"
           @click="add"
         >
           + 点击添加
