@@ -260,6 +260,25 @@
     GDShowMore: true, //更多
     TYShowMore: false //通用配置信息
   })
+  // computed(())
+  watch(
+    () => formShowMore.GDShowMore,
+    (newVal) => {
+      console.log('object', newVal)
+      if (newVal) {
+        createMap()
+      } else {
+        // 停止监听
+
+        // 销毁地图
+        if (map.value) {
+          map.value.stopMapClickListening()
+          map.value.destroy()
+          map.value = null
+        }
+      }
+    }
+  )
   const tagList = ref([])
   const addTag = () => {
     tagList.value.push({
@@ -393,9 +412,9 @@
   })
   onUnmounted(() => {
     // 停止监听
-    map.value.stopMapClickListening()
     // 销毁地图
     if (map.value) {
+      map.value.stopMapClickListening()
       map.value.destroy()
       map.value = null
     }
