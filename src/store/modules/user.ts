@@ -170,8 +170,8 @@ export const useUserStore = defineStore(
       const currentRoute = router.currentRoute.value
       const redirect = currentRoute.path !== '/login' ? currentRoute.fullPath : undefined
       router.push({
-        name: 'Login',
-        query: redirect ? { redirect } : undefined
+        name: 'Login'
+        // query: redirect ? { redirect } : undefined
       })
     }
 

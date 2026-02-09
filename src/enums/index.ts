@@ -13,3 +13,6 @@ export * from './formEnum'
 
 // 物联网定义模块
 export * from './iotEnum'
+
+// 天气图标
+export * from './weatherIconMap'
