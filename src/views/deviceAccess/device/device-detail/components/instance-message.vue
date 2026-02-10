@@ -25,7 +25,7 @@
         </el-tooltip>
       </el-descriptions-item>
 
-      <el-descriptions-item label="设备品类">
+      <el-descriptions-item label="节点类型">
         {{ NODE_TYPES.getLabel(deviceDetail.nodeType) }}
       </el-descriptions-item>
 
