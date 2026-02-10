@@ -170,10 +170,10 @@
     }
     const productIds = selectedProduct.value.map((item) => item.id)
     const hasDirectConnectDevice = selectedProduct.value.some(
-      (item) => item.nodeType === 'direct-connect-device'
+      (item) => item.nodeType === 'gateway-device'
     )
     const hasGatewayDevice = selectedProduct.value.some(
-      (item) => item.nodeType === 'gateway-device'
+      (item) => item.nodeType === 'gateway-sub-device'
     )
     const isSubDevice = hasDirectConnectDevice && hasGatewayDevice
     console.log(isSubDevice)

@@ -440,6 +440,7 @@ class SimpleAMapService {
           max-height: 300px;
           overflow-y: auto;
           display: none;
+          width:300px;
         `
           document.body.appendChild(dropdownContainer)
 
@@ -464,6 +465,7 @@ class SimpleAMapService {
                 color: #303537;
                 border: 1px solid #edeef3;
                 padding: 10px 10px;
+                 
               `
                 item.innerHTML = `
                 <div style="font-weight: 500; ">${tip.name}</div>
