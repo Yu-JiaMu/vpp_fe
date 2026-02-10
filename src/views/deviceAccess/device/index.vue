@@ -132,9 +132,9 @@
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item @click="batchExport">批量导出设备</el-dropdown-item>
+                <!-- <el-dropdown-item @click="batchExport">批量导出设备</el-dropdown-item> -->
                 <el-dropdown-item @click="batchHandleDeviceEnableChange(true)"
-                  >启用全部设备</el-dropdown-item
+                  >批量启用设备</el-dropdown-item
                 >
                 <el-dropdown-item @click="batchHandleDeviceEnableChange(false)"
                   >批量禁用设备</el-dropdown-item
@@ -870,10 +870,12 @@
   }
 
   /* 复选框选中样式 */
-  :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
-    background-color: #409eff;
-    border-color: #409eff;
-  }
+  // .column-list {
+  //   :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
+  //     background-color: #409eff;
+  //     border-color: #409eff;
+  //   }
+  // }
 
   /* 表格行悬停效果 */
   :deep(.el-table__body tr:hover > td) {

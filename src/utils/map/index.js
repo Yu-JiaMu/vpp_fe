@@ -161,19 +161,19 @@ class SimpleAMapService {
     // 保存最后添加的标记
     this._lastMarker = marker
 
-    // 添加信息窗口
-    if (title) {
-      const infoWindow = new this.AMap.InfoWindow({
-        content: `<div class="marker-info">
-          <h4>${title}</h4>
-          <p>坐标: ${lnglat[0].toFixed(6)}, ${lnglat[1].toFixed(6)}</p>
-        </div>`,
-        offset: new this.AMap.Pixel(0, -30)
-      })
-      marker.on('click', () => {
-        infoWindow.open(this.map, marker.getPosition())
-      })
-    }
+    // // 添加信息窗口
+    // if (title) {
+    //   const infoWindow = new this.AMap.InfoWindow({
+    //     content: `<div class="marker-info">
+    //       <h4>${title}</h4>
+    //       <p>坐标: ${lnglat[0].toFixed(6)}, ${lnglat[1].toFixed(6)}</p>
+    //     </div>`,
+    //     offset: new this.AMap.Pixel(0, -30)
+    //   })
+    //   marker.on('click', () => {
+    //     infoWindow.open(this.map, marker.getPosition())
+    //   })
+    // }
     return marker
   }
 
@@ -332,31 +332,264 @@ class SimpleAMapService {
   }
 
   // 输入提示
+  // async getSearchAddressList(inputId, options = {}) {
+  //   return new Promise((resolve, reject) => {
+  //     try {
+  //       const autoOptions = {
+  //         input: inputId,
+  //         city: options.city || '成都',
+  //         pageSize: 5
+  //       }
+  //       this.AMap.plugin(['AMap.AutoComplete'], () => {
+  //         const auto = new this.AMap.AutoComplete(autoOptions)
+  //         auto.on('select', async (e) => {
+  //           console.log(e)
+  //           this.clearMarkers()
+  //           this.addMarker(e.poi.location)
+  //           this.setCenter(e.poi.location)
+  //           const lnglat = [e.poi.location.lng, e.poi.location.lat]
+  //           const address = await this.getCoordinatesToAddress(lnglat)
+  //           if (lnglat.length > 0) {
+  //             const addresObj = {
+  //               address: address,
+  //               lng: lnglat[0],
+  //               lat: lnglat[1]
+  //             }
+  //             resolve(addresObj)
+  //           }
+  //         })
+  //       })
+  //     } catch (err) {
+  //       console.log(err, '搜索发生错误')
+  //       reject(err)
+  //     }
+  //   })
+  // }
+  // 输入提示
   async getSearchAddressList(inputId, options = {}) {
     return new Promise((resolve, reject) => {
       try {
         const autoOptions = {
           input: inputId,
-          city: options.city || '成都'
+          city: options.city || '成都',
+          pageSize: 5
         }
+
         this.AMap.plugin(['AMap.AutoComplete'], () => {
           const auto = new this.AMap.AutoComplete(autoOptions)
-          auto.on('select', async (e) => {
-            console.log(e)
-            this.clearMarkers()
-            this.addMarker(e.poi.location)
-            this.setCenter(e.poi.location)
-            const lnglat = [e.poi.location.lng, e.poi.location.lat]
-            const address = await this.getCoordinatesToAddress(lnglat)
-            if (lnglat.length > 0) {
-              const addresObj = {
-                address: address,
-                lng: lnglat[0],
-                lat: lnglat[1]
-              }
-              resolve(addresObj)
+
+          // 获取input元素
+          const inputElement = document.getElementById(inputId)
+          if (!inputElement) {
+            reject(new Error(`未找到输入框元素: ${inputId}`))
+            return
+          }
+
+          // 方法2: 使用CSS隐藏高德地图的原生下
+          const hideNativeDropdown = () => {
+            // 隐藏所有高德地图下拉容器
+            const hideAmapDropdowns = () => {
+              const amapDropdowns = document.querySelectorAll(
+                '[id*="amap-sug"], [class*="amap-sug"], [id*="autoComplete"]'
+              )
+              amapDropdowns.forEach((dropdown) => {
+                dropdown.style.display = 'none'
+              })
+            }
+
+            // 立即执行一次
+            hideAmapDropdowns()
+
+            // 监听DOM变化，持续隐藏
+            const observer = new MutationObserver((mutations) => {
+              mutations.forEach((mutation) => {
+                if (mutation.addedNodes.length) {
+                  hideAmapDropdowns()
+                }
+              })
+            })
+
+            // 开始观察document.body
+            observer.observe(document.body, { childList: true, subtree: true })
+
+            return observer
+          }
+
+          // 隐藏原生下拉
+          const observer = hideNativeDropdown()
+
+          // 创建我们自己的下拉容器
+          const dropdownId = 'amap-custom-dropdown'
+          let dropdownContainer = document.getElementById(dropdownId)
+
+          // 如果已有下拉容器，先移除
+          if (dropdownContainer) {
+            dropdownContainer.parentNode?.removeChild(dropdownContainer)
+          }
+
+          // 创建新的下拉容器
+          dropdownContainer = document.createElement('div')
+          dropdownContainer.id = dropdownId
+          dropdownContainer.style.cssText = `
+          position: absolute;
+          z-index: 10000;
+          background: white;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+          max-height: 300px;
+          overflow-y: auto;
+          display: none;
+        `
+          document.body.appendChild(dropdownContainer)
+
+          // 监听输入变化
+          auto.on('complete', (result) => {
+            if (!dropdownContainer) return
+
+            if (result.tips && result.tips.length > 0) {
+              // 清空容器
+              dropdownContainer.innerHTML = ''
+
+              // 添加结果项
+              result.tips.forEach((tip) => {
+                const item = document.createElement('div')
+                item.className = 'amap-dropdown-item'
+                item.style.cssText = `
+               font-size: 14px;
+                font-family:
+                  Source Han Sans SC,
+                  Source Han Sans SC-Regular;
+                font-weight: 400;
+                color: #303537;
+                border: 1px solid #edeef3;
+                padding: 10px 10px;
+              `
+                item.innerHTML = `
+                <div style="font-weight: 500; ">${tip.name}</div>
+                
+              `
+                // <div style="font-size: 12px;  margin-top: 2px;">${tip.district || ''}</div>
+                item.addEventListener('mouseenter', () => {
+                  // item.style.backgroundColor = '#f5f7fa'\
+                  item.style.backgroundColor = '#303537'
+                  item.style.color = '#ffffff'
+                })
+
+                item.addEventListener('mouseleave', () => {
+                  item.style.backgroundColor = 'white'
+                  item.style.color = '#303537'
+                })
+
+                item.addEventListener('click', async () => {
+                  try {
+                    console.log('选择了地点:', tip)
+                    this.clearMarkers()
+                    this.addMarker(tip.location, tip.name)
+                    this.setCenter(tip.location)
+
+                    const lnglat = [tip.location.lng, tip.location.lat]
+                    const address = await this.getCoordinatesToAddress(lnglat)
+
+                    const addresObj = {
+                      address: address || tip.name,
+                      lng: lnglat[0],
+                      lat: lnglat[1],
+                      name: tip.name,
+                      district: tip.district || ''
+                    }
+
+                    // 隐藏下拉框
+                    dropdownContainer.style.display = 'none'
+                    // 填充输入框
+                    inputElement.value = tip.name
+
+                    resolve(addresObj)
+                  } catch (error) {
+                    console.error('选择地点出错:', error)
+                    reject(error)
+                  }
+                })
+
+                dropdownContainer.appendChild(item)
+              })
+
+              // 显示下拉框
+              dropdownContainer.style.display = 'block'
+              updateDropdownPosition()
+            } else {
+              dropdownContainer.style.display = 'none'
             }
           })
+
+          // 更新下拉框位置
+          const updateDropdownPosition = () => {
+            if (!dropdownContainer || dropdownContainer.style.display === 'none') {
+              return
+            }
+
+            const rect = inputElement.getBoundingClientRect()
+            dropdownContainer.style.top = rect.bottom + window.scrollY + 'px'
+            dropdownContainer.style.left = rect.left + window.scrollX + 'px'
+            dropdownContainer.style.width = rect.width + 'px'
+          }
+
+          // 监听滚动和窗口大小变化
+          const handleScroll = () => {
+            if (dropdownContainer && dropdownContainer.style.display === 'block') {
+              updateDropdownPosition()
+            }
+          }
+
+          const handleResize = () => {
+            if (dropdownContainer && dropdownContainer.style.display === 'block') {
+              updateDropdownPosition()
+            }
+          }
+
+          window.addEventListener('scroll', handleScroll)
+          window.addEventListener('resize', handleResize)
+
+          // 点击其他地方时隐藏下拉框
+          const documentClickHandler = (e) => {
+            if (!dropdownContainer || dropdownContainer.style.display !== 'block') {
+              return
+            }
+
+            if (!dropdownContainer.contains(e.target) && e.target !== inputElement) {
+              dropdownContainer.style.display = 'none'
+            }
+          }
+
+          document.addEventListener('click', documentClickHandler)
+
+          // 输入框失去焦点时延迟隐藏下拉框
+          inputElement.addEventListener('blur', () => {
+            setTimeout(() => {
+              if (dropdownContainer && dropdownContainer.style.display === 'block') {
+                dropdownContainer.style.display = 'none'
+              }
+            }, 200)
+          })
+
+          // 清理函数
+          const cleanup = () => {
+            // 停止观察
+            if (observer) {
+              observer.disconnect()
+            }
+
+            window.removeEventListener('scroll', handleScroll)
+            window.removeEventListener('resize', handleResize)
+            document.removeEventListener('click', documentClickHandler)
+
+            if (dropdownContainer && dropdownContainer.parentNode) {
+              dropdownContainer.parentNode.removeChild(dropdownContainer)
+            }
+          }
+
+          // 存储清理函数
+          this._searchCleanup = cleanup
         })
       } catch (err) {
         console.log(err, '搜索发生错误')
