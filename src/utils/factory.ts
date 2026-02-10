@@ -107,7 +107,8 @@ export function createEnum(input: any) {
 
   // 👈 修改点 5：查询时，先 String(value) 再查
   const getLabel = (value: string | number | boolean) => {
-    if (value === undefined) return undefined
+    if (value === undefined) return ''
+    if (value === null) return ''
     return kvMap[String(value)]?.label ?? String(value)
   }
 
