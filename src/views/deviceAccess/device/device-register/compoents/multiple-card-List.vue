@@ -170,10 +170,14 @@
     }
     const productIds = selectedProduct.value.map((item) => item.id)
 
-    const isSubDevice = selectedProduct.value.some(
-      (item) => item.nodeType === 'direct-connect-device' || item.nodeType === 'gateway-device'
-    )
+    const isSubDevice = checkDeviceTypes(selectedProduct.value, [
+      'direct-connect-device',
+      'gateway-device'
+    ])
     emit('next-step', productIds, isSubDevice)
+  }
+  const checkDeviceTypes = (devices, requiredTypes) => {
+    return requiredTypes.every((type) => devices.some((device) => device.nodeType === type))
   }
   const goback = () => {
     router.back()
