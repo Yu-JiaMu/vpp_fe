@@ -2,7 +2,7 @@
   <!-- int / float / double -->
   <div v-if="isNumber" class="flex items-center">
     <el-input-number
-      v-model="modelValue"
+      v-model.number="modelValue"
       :min="toNumber(specs.min)"
       :max="toNumber(specs.max)"
       placeholder="请输入"
