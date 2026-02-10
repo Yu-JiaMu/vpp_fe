@@ -578,7 +578,7 @@ export function validateParamDesc(rule: any, value: any, callback: any) {
   // }
 
   // 全字符检查：仅支持中文、英文字母、数字、短划线、下划线、@
-  const pattern = /^[a-zA-Z\u4e00-\u9fa5][a-zA-Z0-9\u4e00-\u9fa5\-_@]*$/
+  const pattern = /^[a-zA-Z0-9\u4e00-\u9fa5\-_@]*$/
 
   if (!pattern.test(value)) {
     return callback(new Error('仅支持中文、英文字母、数字、短划线（-）、下划线（_）、@'))
@@ -609,7 +609,7 @@ export function validateBooleanDesc(rule: any, value: any, callback: any) {
   // }
 
   // 全字符检查
-  const pattern = /^[a-zA-Z\u4e00-\u9fa5][a-zA-Z0-9\u4e00-\u9fa5\-_@]*$/
+  const pattern = /^[a-zA-Z0-9\u4e00-\u9fa5\-_@]*$/
 
   if (!pattern.test(value)) {
     return callback(new Error('仅支持中文、英文字母、数字、短划线（-）、下划线（_）、@'))
