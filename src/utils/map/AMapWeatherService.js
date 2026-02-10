@@ -18,9 +18,9 @@ export function getWeatherIcon(weather) {
 
   // ② 模糊匹配（防未来字段变化）
   if (weather.includes('雨')) return 'ri-rainy-line'
-  if (weather.includes('雪')) return 'ri-snowy-line'
+  if (weather.includes('雪')) return 'ri-snowflake-line'
   if (weather.includes('雷')) return 'ri-thunderstorms-line'
-  if (weather.includes('雾') || weather.includes('霾')) return 'ri-fog-line'
+  if (weather.includes('雾') || weather.includes('霾')) return 'ri-foggy-line'
   if (weather.includes('风')) return 'ri-windy-line'
   if (weather.includes('云')) return 'ri-cloudy-line'
   if (weather.includes('晴')) return 'ri-sun-line'
