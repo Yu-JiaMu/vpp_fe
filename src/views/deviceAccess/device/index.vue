@@ -568,7 +568,7 @@
       return
     }
     try {
-      await ElMessageBox.confirm(`确定要${type ? '开启' : '禁用'}选中的设备状态？`, '删除确认', {
+      await ElMessageBox.confirm(`确定要${type ? '启用' : '禁用'}选中的设备状态？`, '删除确认', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
