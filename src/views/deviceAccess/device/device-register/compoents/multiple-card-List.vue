@@ -169,15 +169,17 @@
       return ElMessage.warning('请先选择一个产品')
     }
     const productIds = selectedProduct.value.map((item) => item.id)
-
-    const isSubDevice = checkDeviceTypes(selectedProduct.value, [
-      'direct-connect-device',
-      'gateway-device'
-    ])
+    const hasDirectConnectDevice = selectedProduct.value.some(
+      (item) => item.nodeType === 'direct-connect-device'
+    )
+    const hasGatewayDevice = selectedProduct.value.some(
+      (item) => item.nodeType === 'gateway-device'
+    )
+    const isSubDevice = hasDirectConnectDevice && hasGatewayDevice
+    console.log(isSubDevice)
+    // debugger
+    // return
     emit('next-step', productIds, isSubDevice)
-  }
-  const checkDeviceTypes = (devices, requiredTypes) => {
-    return requiredTypes.every((type) => devices.some((device) => device.nodeType === type))
   }
   const goback = () => {
     router.back()

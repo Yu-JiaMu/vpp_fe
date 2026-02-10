@@ -10,7 +10,7 @@
           导入系统已存在的设备数据，不会更改已存在设备的所属产品信息。
         </span>
       </div>
-      <div class="ml30 mt5 font-primary-color">
+      <div class="ml30 mt5 font-primary-color" v-if="isSubDevice">
         系统识别到您选择的多个产品间存在网关设备与子设备节点拓扑关系，如需绑定子设备管理关系，请在模板中录入。
       </div>
     </div>
