@@ -242,7 +242,7 @@
 
   const initForm = (json) => {
     const data = parseThingModel(json)
-    console.log('解析后的数据', data)
+    console.log('解析后的数据', JSON.parse(JSON.stringify(data)))
 
     if (data) {
       Object.assign(form, data)

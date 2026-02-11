@@ -57,7 +57,7 @@ export function parseDataType(dataType) {
       type: 'enum',
       config: {
         list: Object.entries(specs || {}).map(([value, label]) => ({
-          value,
+          value: isNaN(Number(value)) ? value : Number(value),
           label
         }))
       }
