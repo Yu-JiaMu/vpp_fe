@@ -182,7 +182,7 @@
   const form = reactive({
     name: '',
     identifier: '',
-    callType: 'sync',
+    callType: 'async',
     desc: '',
     input: [
       //   {
