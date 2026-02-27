@@ -365,7 +365,7 @@ class SimpleAMapService {
   //     }
   //   })
   // }
-  // 输入提示
+  // 自定义输入提示
   async getSearchAddressList(inputId, options = {}) {
     return new Promise((resolve, reject) => {
       try {
