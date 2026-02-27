@@ -21,7 +21,7 @@
         /> -->
       </ArtSearchBar>
       <div class="flex flex-space-between mb10">
-        <div class="flex flex-cz-center flex-sp-center add-container" @click="openDialog('add')">
+        <div class="flex flex-cz-center flex-sp-center btn-link" @click="openDialog('add')">
           <img
             src="~@/assets/images/deviceAccess/1.png"
             style="width: 20px; height: 20px"
@@ -30,10 +30,7 @@
           <span>新增产品品类</span>
         </div>
         <div class="flex">
-          <div
-            class="flex flex-cz-center flex-sp-center add-container mr10"
-            @click="handleBatchDelete"
-          >
+          <div class="flex flex-cz-center flex-sp-center btn-link mr10" @click="handleBatchDelete">
             <img
               src="~@/assets/images/deviceAccess/2.png"
               style="width: 20px; height: 20px"
@@ -41,10 +38,7 @@
             />
             <span>删除</span>
           </div>
-          <div
-            class="flex flex-cz-center flex-sp-center add-container"
-            @click="handleExportThingModel"
-          >
+          <div class="flex flex-cz-center flex-sp-center btn-link" @click="handleExportThingModel">
             <img
               src="~@/assets/images/deviceAccess/3.png"
               style="width: 20px; height: 20px"
