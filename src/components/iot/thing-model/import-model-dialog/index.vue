@@ -12,7 +12,7 @@
       <el-form label-width="90px" label-position="top">
         <el-form-item label="导入方式" required>
           <el-select v-model="importType">
-            <el-option v-if="module !== 'productCategory'" label="拷贝产品" value="product" />
+            <el-option v-if="module === 'product'" label="拷贝产品" value="product" />
             <el-option label="JSON导入" value="json" />
           </el-select>
         </el-form-item>
@@ -237,7 +237,7 @@
   }
 
   const init = async () => {
-    if (props.module !== 'ProductCategory') {
+    if (props.module === 'product') {
       getProductList()
     }
   }

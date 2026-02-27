@@ -96,6 +96,16 @@ export const energyIot: AppRouteRecord = {
             isHide: true,
             activePath: '/energyIot/deviceAccess/device'
           }
+        },
+        // 物模型库
+        {
+          path: 'thing-model-library',
+          name: 'thingModelLibrary',
+          component: '/deviceAccess/thing-model-library/index',
+          meta: {
+            title: '物模型库',
+            keepAlive: true
+          }
         }
       ]
     }

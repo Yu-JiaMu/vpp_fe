@@ -115,6 +115,18 @@
             <el-input v-model="form.name" placeholder="请输入产品名称" />
           </el-form-item>
 
+          <!-- 产品品类 (未分类时显示) -->
+          <el-form-item v-if="showCategorySelect" label="产品品类" prop="categoryId" required>
+            <el-select v-model="form.categoryId" placeholder="请选择产品品类" filterable clearable>
+              <el-option
+                v-for="item in productCategoryList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+
           <!-- 产品厂商 -->
           <el-form-item label="产品厂商" prop="manufactory">
             <el-input v-model="form.manufactory" placeholder="请输入产品厂商" />
@@ -181,12 +193,39 @@
 
   const emits = defineEmits(['refresh'])
   const dialogVisible = ref(false)
+  const showCategorySelect = ref(false)
+  const productCategoryList = ref([])
 
-  const handleEdit = () => {
+  // 获取产品品类列表
+  const initProductCategoryList = async () => {
+    try {
+      const { rows } = await api.apiGetProductCategoryList({ pageNum: 1, pageSize: 1000 })
+      if (rows && Array.isArray(rows)) {
+        productCategoryList.value = rows.map((item) => ({
+          label: item.name || item.label,
+          value: item.id || item.value
+        }))
+      }
+    } catch (error) {
+      console.error('获取产品品类列表失败:', error)
+    }
+  }
+
+  const handleEdit = async () => {
     Object.assign(
       form,
       pick(props.product, ['imgUrl', 'name', 'manufactory', 'productModel', 'remark'])
     )
+
+    // 检查产品品类是否为未分类（-1），如果是则显示下拉选择
+    if (props.product.productCategoryName === '未分类') {
+      showCategorySelect.value = true
+      form.categoryId = null
+      initProductCategoryList()
+    } else {
+      showCategorySelect.value = false
+    }
+
     dialogVisible.value = true
   }
 
@@ -198,7 +237,8 @@
     name: '',
     manufactory: '',
     productModel: '',
-    remark: ''
+    remark: '',
+    categoryId: null
   })
 
   const rules = {
@@ -210,12 +250,20 @@
       },
       { validator: validateCommon, trigger: 'blur' }
     ],
-    remark: [{ validator: validateDescLength, trigger: 'blur' }]
+    remark: [{ validator: validateDescLength, trigger: 'blur' }],
+    categoryId: [
+      {
+        required: true,
+        message: '请选择产品品类',
+        trigger: 'change'
+      }
+    ]
   }
 
   const handleReset = () => {
     formRef.value?.resetFields()
     form.imgUrl = ''
+    form.categoryId = null
   }
 
   const submitLoading = ref(false)
@@ -226,7 +274,10 @@
     console.log('form', form)
 
     try {
-      await api.apiEditProduct({ ...props.product, ...form, id: props.product.id })
+      // 将原始产品和表单数据合并，默认保留原有分类
+      const submitData = { ...props.product, ...form, id: props.product.id }
+
+      await api.apiEditProduct(submitData)
 
       ElMessage.success('提交成功')
 
@@ -235,7 +286,7 @@
       dialogVisible.value = false
       emits('refresh')
     } catch (err) {
-      console.log(error)
+      console.log(err)
     } finally {
       submitLoading.value = false
     }
