@@ -81,53 +81,55 @@
     </div>
 
     <!-- 表格 -->
-    <el-table
-      ref="tableRef"
-      :data="tableData"
-      border
-      stripe
-      class="w-full"
-      show-overflow-tooltip
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column v-if="isSettingModel" type="selection" />
-      <el-table-column prop="type" label="功能类型" width="100" />
-      <el-table-column prop="source" label="功能来源" width="100" />
-      <el-table-column prop="name" label="功能名称" width="120" />
-      <el-table-column prop="identifier" label="标识符" width="160" />
-      <el-table-column prop="dataType" label="数据类型" width="140" />
+    <div class="p-5 pt-0">
+      <el-table
+        ref="tableRef"
+        :data="tableData"
+        border
+        stripe
+        class="w-full"
+        show-overflow-tooltip
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column v-if="isSettingModel" type="selection" />
+        <el-table-column prop="type" label="功能类型" width="100" />
+        <el-table-column prop="source" label="功能来源" width="100" />
+        <el-table-column prop="name" label="功能名称" width="120" />
+        <el-table-column prop="identifier" label="标识符" width="160" />
+        <el-table-column prop="dataType" label="数据类型" width="140" />
 
-      <!-- 数据定义 -->
-      <el-table-column label="数据定义" min-width="260">
-        <template #default="{ row }">
-          <FunctionDefinePreview :row="row" />
-        </template>
-      </el-table-column>
-
-      <el-table-column prop="accessMode" label="读写类型" width="100" />
-
-      <!-- 操作 -->
-      <el-table-column label="操作" :width="isSettingModel ? 160 : 80" fixed="right">
-        <template #default="{ row, $index }">
-          <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'look')">
-            详情
-          </el-button>
-          <template v-if="isSettingModel">
-            <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'edit')">
-              编辑
-            </el-button>
-            <el-button
-              :disabled="hasRegisterDevice"
-              type="danger"
-              link
-              @click="handleRemove(row, $index)"
-            >
-              删除
-            </el-button>
+        <!-- 数据定义 -->
+        <el-table-column label="数据定义" min-width="260">
+          <template #default="{ row }">
+            <FunctionDefinePreview :row="row" />
           </template>
-        </template>
-      </el-table-column>
-    </el-table>
+        </el-table-column>
+
+        <el-table-column prop="accessMode" label="读写类型" width="100" />
+
+        <!-- 操作 -->
+        <el-table-column label="操作" :width="isSettingModel ? 160 : 80" fixed="right">
+          <template #default="{ row, $index }">
+            <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'look')">
+              详情
+            </el-button>
+            <template v-if="isSettingModel">
+              <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'edit')">
+                编辑
+              </el-button>
+              <el-button
+                :disabled="hasRegisterDevice"
+                type="danger"
+                link
+                @click="handleRemove(row, $index)"
+              >
+                删除
+              </el-button>
+            </template>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
 
     <!-- 导出物模型弹窗 -->
     <ExportModelDialog ref="exportModelDialogRef" :info="info" :module="module" />

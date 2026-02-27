@@ -238,6 +238,12 @@ $popup-menu-radius: 6px;
 }
 
 // 暗黑模式菜单样式
+.menu-left-dark-popper {
+  .el-menu--vertical,
+  .el-menu--popup-container {
+    @include popup-menu-base(var(--art-gray-4), var(--art-gray-900), var(--art-gray-200));
+  }
+}
 .dark {
   .el-menu--vertical,
   .el-menu--popup-container {

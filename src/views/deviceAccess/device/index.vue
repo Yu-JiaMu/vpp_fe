@@ -121,10 +121,10 @@
         <!-- <div class="flex flex-cz-center flex-sp-center add-container">
          
         </div> -->
-        <div class="mr30">
+        <div class="mr-[22px]">
           <el-dropdown>
             <span class="cursor-pointer el-dropdown-label">
-              <el-icon color="#FFA500" class="mr5" size="14"><Grid /></el-icon>
+              <img src="@/assets/images/icon/icon-007.png" class="w-5 h-5 mr5" />
               批量操作
               <el-icon class="el-icon--right">
                 <arrow-down />
@@ -147,7 +147,7 @@
         <div>
           <el-dropdown>
             <span class="cursor-pointer el-dropdown-label">
-              <el-icon color="#246EF6" class="mr5" size="14"><Setting /></el-icon>
+              <img src="@/assets/images/icon/icon-setting-blue.png" class="w-5 h-5 mr5" />
               设备注册
               <el-icon class="el-icon--right">
                 <arrow-down />

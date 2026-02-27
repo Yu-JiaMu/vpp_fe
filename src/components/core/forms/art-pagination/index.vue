@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-start pt-5">
+  <div class="flex justify-start pt-7.5 pb-2.5">
     <el-pagination
       background
       :layout="props.layout"

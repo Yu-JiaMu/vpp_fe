@@ -162,3 +162,20 @@
   --el-tag-border-color: #38ecf2;
   --el-tag-hover-color: #eefeff;
 }
+
+.btn-link {
+  padding: 6px 5px;
+  font-family:
+    Source Han Sans SC,
+    Source Han Sans SC-Regular;
+  font-weight: 400;
+  text-align: left;
+  color: #303537;
+  line-height: 20px;
+  cursor: pointer;
+  border-radius: var(--el-border-radius-base);
+  font-size: var(--el-font-size-base);
+  &:hover {
+    background-color: var(--el-fill-color-light);
+  }
+}

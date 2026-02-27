@@ -1,11 +1,11 @@
 <template>
   <div class="bg-white base-info base-info-table">
     <div class="flex items-center justify-between p-5">
-      <div class="font-scBold text-g-131617 flex-c">
+      <div class="font-scBold text-g-131617 flex-c text-sm">
         <img src="@/assets/images/icon/icon-info.png" class="w-5 h-5 mr-2.5" alt="" />
         基本信息
       </div>
-      <div class="cursor-pointer text-g-303537 flex-c" @click="handleEdit">
+      <div class="cursor-pointer text-g-303537 flex-c text-sm btn-link" @click="handleEdit">
         <img src="@/assets/images/icon/icon-edit.png" class="w-5 h-5 mr-1" alt="" />
         编辑
       </div>

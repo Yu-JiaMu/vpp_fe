@@ -34,49 +34,50 @@
     </div>
 
     <!-- 表格 -->
-    <el-table
-      ref="tableRef"
-      :data="tableData"
-      border
-      show-overflow-tooltip
-      stripe
-      class="w-full"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" width="55" />
-      <el-table-column prop="name" label="功能名称" width="120" />
-      <el-table-column prop="identifier" label="标识符" width="160" />
-      <el-table-column prop="dataType" label="数据类型" width="140">
-        <template #default="{ row }">
-          {{ handleDataType(row) }}
-        </template>
-      </el-table-column>
-      <!-- 数据定义 -->
-      <el-table-column label="数据定义" min-width="260">
-        <template #default="{ row }">
-          <FunctionDefinePreview :row="row" functionMode="property" />
-        </template>
-      </el-table-column>
-      <el-table-column prop="required" label="是否必填项" width="100">
-        <template #default="{ row }">
-          {{ REQUIRED_MAP.getLabel(row.required) }}
-        </template>
-      </el-table-column>
-      <!-- 操作 -->
-      <el-table-column label="操作" width="160" fixed="right">
-        <template #default="{ row, $index }">
-          <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'look')">
-            查看
-          </el-button>
+    <div class="px-5">
+      <el-table
+        ref="tableRef"
+        :data="tableData"
+        border
+        show-overflow-tooltip
+        stripe
+        class="w-full"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="55" />
+        <el-table-column prop="name" label="功能名称" width="120" />
+        <el-table-column prop="identifier" label="标识符" width="160" />
+        <el-table-column prop="dataType" label="数据类型" width="140">
+          <template #default="{ row }">
+            {{ handleDataType(row) }}
+          </template>
+        </el-table-column>
+        <!-- 数据定义 -->
+        <el-table-column label="数据定义" min-width="260">
+          <template #default="{ row }">
+            <FunctionDefinePreview :row="row" functionMode="property" />
+          </template>
+        </el-table-column>
+        <el-table-column prop="required" label="是否必填项" width="100">
+          <template #default="{ row }">
+            {{ REQUIRED_MAP.getLabel(row.required) }}
+          </template>
+        </el-table-column>
+        <!-- 操作 -->
+        <el-table-column label="操作" width="160" fixed="right">
+          <template #default="{ row, $index }">
+            <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'look')">
+              查看
+            </el-button>
 
-          <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'edit')">
-            编辑
-          </el-button>
-          <el-button type="danger" link @click="handleRemove($index)"> 删除 </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
+            <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'edit')">
+              编辑
+            </el-button>
+            <el-button type="danger" link @click="handleRemove($index)"> 删除 </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
     <!-- 添加功能点 -->
     <ParamsDialog
       ref="dialogRef"

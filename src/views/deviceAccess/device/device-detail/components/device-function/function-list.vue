@@ -1,13 +1,14 @@
 <template>
-  <div class="w-48 bg-white rounded-md">
+  <div class="w-48 bg-white rounded-md relative">
+    <div class="absolute right-0 top-0 h-full w-[2px] bg-[#EBECF1]"></div>
     <ul>
       <li
         v-for="item in list"
         :key="item.identifier"
-        class="px-4 py-3 text-sm border-r-2 cursor-pointer"
+        class="px-4 py-3 text-sm border-r-2 cursor-pointer z-2 relative"
         :class="[
           modelValue?.identifier === item.identifier
-            ? 'border-blue-500 text-blue-600 bg-blue-50'
+            ? 'border-[#38ECF2] text-g-303537 bg-[#EBECF1]'
             : 'border-transparent hover:bg-gray-100'
         ]"
         @click="select(item)"

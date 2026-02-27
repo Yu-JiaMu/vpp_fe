@@ -70,9 +70,15 @@ html.dark .el-card {
   }
 }
 
-.el-pager li {
-  padding: 0 10px !important;
-  // border: 1px solid red !important;
+body {
+  .el-pager li {
+    padding: 0 10px;
+    // border: 1px solid red !important;
+    margin: 0 6px !important;
+  }
+  .el-pager li.is-active {
+    font-weight: 400;
+  }
 }
 
 // 优化菜单折叠展开动画（提升动画流畅度）
@@ -141,6 +147,7 @@ body {
   --el-dialog-padding-y: 30px;
   .el-dialog {
     padding: var(--el-dialog-padding-primary) var(--el-dialog-padding-y);
+    padding-bottom: calc(var(--el-dialog-padding-y));
     border-radius: 6px;
     overflow: hidden;
     .el-dialog__headerbtn .el-dialog__close {
@@ -484,7 +491,7 @@ body {
 // 修改 el-select 样式
 .el-select__popper:not(.el-tree-select__popper) {
   .el-select-dropdown__list {
-    padding: 5px !important;
+    padding: 5px 8px !important;
 
     .el-select-dropdown__item {
       height: 34px !important;
@@ -588,6 +595,9 @@ body {
 .el-table--default {
   th {
     padding: 14px 0 !important;
+    font-family:
+      Source Han Sans SC,
+      Source Han Sans SC-Medium;
   }
   td {
     padding: 14px 0 !important;

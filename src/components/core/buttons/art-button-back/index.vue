@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative text-lg art-button-back text-g-5 font-scBold w-fit flex-cc"
+    class="relative text-base art-button-back text-g-5 font-scBold w-fit flex-cc"
     :class="{ 'is-back': isBack }"
     @click="fullBack"
   >

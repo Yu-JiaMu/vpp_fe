@@ -63,7 +63,7 @@
 
       <div class="flex items-center gap-2 op-con">
         <div
-          class="text-[#767C80] bg-[#F6F7F9] rounded-md p-1.5 cursor-pointer flex-cc"
+          class="text-[#767C80] rounded-md p-1.5 cursor-pointer flex-cc hover:bg-[#F6F7F9]"
           @click="handleBatchRemove"
         >
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-unbind.png" alt="" />
@@ -72,7 +72,7 @@
         <div class="dividing-line"></div>
         <div
           text
-          class="text-g-131617 bg-[#EBF4FF] rounded-md p-1.5 cursor-pointer flex-cc"
+          class="text-g-131617 hover:bg-[#ebf4ff] rounded-md p-1.5 cursor-pointer flex-cc"
           @click="openBindDeviceDialog"
         >
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-bind.png" alt="" />

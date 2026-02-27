@@ -452,7 +452,7 @@
   .divider-line {
     width: 0px;
     height: 21px;
-    border: 1px solid var(--art-gray-1);
+    border-left: 1px solid var(--art-gray-1);
     margin: 0 10px;
   }
 

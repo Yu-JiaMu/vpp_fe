@@ -38,7 +38,7 @@
           <ThingFieldPreview :item="row" />
         </template>
       </el-table-column>
-      <el-table-column prop="required" label="是否必填项" width="100">
+      <el-table-column prop="required" label="是否必填项" width="200">
         <template #default="{ row }">
           {{ REQUIRED_MAP.getLabel(row.required) }}
         </template>
