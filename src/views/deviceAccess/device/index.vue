@@ -1,7 +1,10 @@
 <template>
   <div class="device-statistics-simple">
     <!-- 页面标题 -->
-    <div class="page-title">设备统计</div>
+    <div class="page-title flex-c font-scBold">
+      <img src="@/assets/images/icon/icon-008.png" class="w-[22px] h-7.5 mr-1.5" alt="" />
+      设备统计
+    </div>
 
     <!-- 统计卡片区域 -->
     <div class="statistics-cards-simple">
@@ -9,7 +12,7 @@
       <div class="stat-card-simple">
         <div class="flex justify-between items-center">
           <div class="card-header-simple">
-            <div class="label-block gray-block"></div>
+            <div class="label-block"></div>
             <div class="card-label-simple">设备数</div>
           </div>
           <div>
@@ -30,7 +33,7 @@
       <div class="stat-card-simple active-card">
         <div class="flex justify-between items-center">
           <div class="card-header-simple">
-            <div class="label-block blue-block"></div>
+            <div class="label-block"></div>
             <div class="card-label-simple active-label">直连设备数</div>
           </div>
           <el-tooltip content="直连设备数：直连设备节点类型的设备总数" placement="top">
@@ -49,7 +52,7 @@
       <div class="stat-card-simple">
         <div class="flex justify-between items-center">
           <div class="card-header-simple">
-            <div class="label-block orange-block"></div>
+            <div class="label-block"></div>
             <div class="card-label-simple">直连网关数</div>
           </div>
           <el-tooltip content="直连网关数：直连网关节点类型的设备总数" placement="top">
@@ -69,7 +72,7 @@
       <div class="stat-card-simple">
         <div class="flex justify-between items-center">
           <div class="card-header-simple">
-            <div class="label-block purple-block"></div>
+            <div class="label-block"></div>
             <div class="card-label-simple">网关子设备数</div>
           </div>
           <el-tooltip content="网关子设备数：网关子设备节点类型的设备总数" placement="top">
@@ -89,7 +92,7 @@
       <div class="stat-card-simple">
         <div class="flex justify-between items-center">
           <div class="card-header-simple">
-            <div class="label-block red-block"></div>
+            <div class="label-block"></div>
             <div class="card-label-simple">在线设备数（{{ onlineDeviceBFB }}）</div>
           </div>
           <el-tooltip content="在线设备数：当前处于在线状态的设备总数" placement="top">
@@ -117,7 +120,7 @@
         @search="onSearch"
       >
       </ArtSearchBar>
-      <div class="flex mb10" style="justify-content: flex-end">
+      <div class="flex mb10">
         <!-- <div class="flex flex-cz-center flex-sp-center add-container">
          
         </div> -->
@@ -753,15 +756,16 @@
           // margin-bottom: 8px;
 
           .label-block {
-            width: 8px;
-            height: 8px;
+            width: 5px;
+            height: 5px;
             border-radius: 2px; /* 小方块的圆角 */
             margin-right: 8px;
             flex-shrink: 0;
+            background-color: #ced1d9;
           }
 
           .gray-block {
-            background-color: #8c8c8c; /* 灰色小块 */
+            background-color: #ced1d9; /* 灰色小块 */
           }
 
           .blue-block {
@@ -812,6 +816,9 @@
       .stat-card-simple:hover {
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
         transform: translateY(-2px);
+        .label-block {
+          background-color: #38ecf2;
+        }
       }
       .stat-card-simple:hover .active-underline {
         opacity: 1 !important;

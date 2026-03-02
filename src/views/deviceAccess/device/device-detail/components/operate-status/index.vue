@@ -24,7 +24,7 @@
         <ArtResetBtn class="!ml-0" @click="onReset" />
       </div>
       <!-- 修改这里：去掉倒计时显示 -->
-      <div class="flex items-center justify-end gap-8 search-box">
+      <div class="flex items-center justify-end gap-8 search-box mb-5">
         <el-switch v-model="form.refresh" active-text="实时刷新" @change="handleRefreshChange" />
         <div class="flex items-center icon-box">
           <div
@@ -609,7 +609,7 @@
       font-weight: 500;
     }
     .search-box {
-      padding-right: 65px;
+      // padding-right: 65px;
       .icon-box {
         .icon-item {
           img {
