@@ -366,7 +366,7 @@ export function validateDescLength(rule: any, value: any, callback: any) {
     callback()
   }
 }
-//设备id校验
+//设备标识符校验
 export function validateDeviceId(rule: any, value: any, callback: any) {
   const maxLength = 18
   const regex = /^[a-zA-Z0-9]*$/

@@ -8,7 +8,7 @@
       label-position="top"
       class="grid grid-cols-2 gap-x-12 gap-y-2"
     >
-      <el-form-item label="产品ID" prop="identifier">
+      <el-form-item label="产品标识符" prop="identifier">
         <template #label="{ label }">
           <div class="flex-c">
             <span> {{ label }} </span>
@@ -22,7 +22,7 @@
             </el-tooltip>
           </div>
         </template>
-        <el-input v-model="form.identifier" placeholder="请输入产品ID" />
+        <el-input v-model="form.identifier" placeholder="请输入产品标识符" />
       </el-form-item>
 
       <el-form-item label="产品名称" prop="name">

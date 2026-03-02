@@ -13,7 +13,7 @@
 
     <!-- 信息表格 -->
     <el-descriptions :column="3" border label-width="133px" class="">
-      <el-descriptions-item label="ID">
+      <el-descriptions-item label="产品标识符">
         <el-tooltip :content="product.identifier || product.id" placement="top">
           <div class="max-w-[220px] truncate">{{ product.identifier || product.id }}</div>
         </el-tooltip>

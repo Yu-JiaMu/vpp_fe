@@ -12,7 +12,7 @@
     </div>
     <!-- 信息表格 -->
     <el-descriptions :column="3" border label-width="133px" class="">
-      <el-descriptions-item label="设备ID">
+      <el-descriptions-item label="设备标识符">
         <el-tooltip :content="deviceDetail.identifier || deviceDetail.id" placement="top">
           <div class="max-w-[200px] truncate">{{ deviceDetail.identifier || deviceDetail.id }}</div>
         </el-tooltip>
@@ -86,8 +86,8 @@
     >
       <div class="p-2">
         <el-form ref="reviceFormRef" :model="form" :rules="rules" label-width="82px">
-          <el-form-item label="设备ID">
-            <el-input v-model="form.identifier" placeholder="请输入设备ID" disabled />
+          <el-form-item label="设备标识符">
+            <el-input v-model="form.identifier" placeholder="请输入设备标识符" disabled />
           </el-form-item>
           <!-- 设备名称 -->
           <el-form-item label="设备名称" prop="name" required>

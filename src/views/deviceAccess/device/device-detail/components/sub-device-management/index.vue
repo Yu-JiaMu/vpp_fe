@@ -94,7 +94,7 @@
 
         <el-table-column prop="name" label="设备名称" min-width="140" />
 
-        <el-table-column prop="identifier" label="设备ID" min-width="200" />
+        <el-table-column prop="identifier" label="设备标识符" min-width="200" />
 
         <el-table-column prop="productName" label="所属产品" min-width="160" />
 

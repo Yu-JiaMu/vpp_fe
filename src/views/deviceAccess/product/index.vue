@@ -32,7 +32,7 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column prop="identifier" label="产品ID" min-width="180" />
+        <el-table-column prop="identifier" label="产品标识符" min-width="180" />
         <el-table-column prop="productCategoryName" label="产品品类" min-width="120" />
         <el-table-column prop="nodeType" label="节点类型" min-width="100">
           <template #default="{ row }"> {{ NODE_TYPES.getLabel(row.nodeType) }} </template>
@@ -130,10 +130,10 @@
       clearable: true
     },
     {
-      label: '产品ID',
+      label: '产品标识符',
       key: 'identifier',
       type: 'input',
-      placeholder: '请输入产品ID',
+      placeholder: '请输入产品标识符',
       clearable: true
     },
     {

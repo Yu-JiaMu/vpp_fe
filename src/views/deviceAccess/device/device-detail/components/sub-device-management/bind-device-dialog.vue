@@ -26,7 +26,7 @@
               @change="form.key = ''"
             >
               <el-option label="设备名称" value="name" />
-              <el-option label="设备ID" value="identifier" />
+              <el-option label="设备标识符" value="identifier" />
             </el-select>
           </template>
         </el-input>
@@ -49,7 +49,7 @@
 
         <el-table-column prop="name" label="设备名称" min-width="160" />
 
-        <el-table-column prop="identifier" label="设备ID" min-width="220" />
+        <el-table-column prop="identifier" label="设备标识符" min-width="220" />
 
         <el-table-column prop="productName" label="所属产品" min-width="160" />
 

@@ -23,7 +23,7 @@
         </div>
 
         <div class="text-sm text-g-505658">
-          <span>设备ID：</span>{{ deviceDetail.identifier }}
+          <span>设备标识符：</span>{{ deviceDetail.identifier }}
         </div>
         <div class="text-sm text-g-505658">
           <span>所属产品：</span>

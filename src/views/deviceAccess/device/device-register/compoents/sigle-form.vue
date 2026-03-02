@@ -8,7 +8,7 @@
       label-position="top"
       class="grid grid-cols-2 gap-x-12 gap-y-2"
     >
-      <el-form-item label="设备ID" prop="devIdentifier">
+      <el-form-item label="设备标识符" prop="devIdentifier">
         <template #label="{ label }">
           <div class="flex-c">
             <span> {{ label }} </span>
@@ -22,7 +22,7 @@
             </el-tooltip>
           </div>
         </template>
-        <el-input v-model="form.devIdentifier" placeholder="请输入设备ID" />
+        <el-input v-model="form.devIdentifier" placeholder="请输入设备标识符" />
       </el-form-item>
       <el-form-item label="设备名称" prop="name">
         <el-input v-model="form.name" placeholder="请输入设备名称" />
