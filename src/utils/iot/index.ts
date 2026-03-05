@@ -50,7 +50,7 @@ export function buildRow(
     source: THING_SOURCE_MAP.getLabel?.(item.functionType) ?? '-', // 功能来源
     name: item.name ?? '-', // 功能名称
     identifier: item.identifier ?? '-', // 标识符
-    id: item.identifier ?? '-', // 标识符别名
+    id: item.id ?? '-',
     dataType: handleDataType(item), // 数据类型
     define: item.dataType
       ? {
@@ -58,7 +58,7 @@ export function buildRow(
           type: item.dataType?.type?.toLowerCase()
         }
       : {}, // 数据定义
-    accessMode: ACCESS_MODE_MAP.getLabel?.(item.accessMode) ?? '-', // 读写权限
+    accessMode: ACCESS_MODE_MAP.getLabel?.(item.accessMode) || '-', // 读写权限
     functionMode: item.functionMode,
     ...overrides
   }

@@ -92,6 +92,10 @@ export function parseThingModel(json) {
     desc: json.desc
   }
 
+  if (json.id) {
+    base.id = json.id
+  }
+
   switch (json.functionMode) {
     case 'property':
       return {

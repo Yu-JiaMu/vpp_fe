@@ -27,6 +27,7 @@
         :tableData="tableData"
         :currentIndex="currentIndex"
         :currentRow="currentRow"
+        :module="module"
       />
     </div>
     <!-- Footer -->
@@ -112,8 +113,7 @@
 
     // if (!data) return
 
-    emits('addFunctionPoint', { data, functionMode: activeTab.value })
-    ElMessage.success(isAddPoint.value ? '新增成功' : '编辑成功')
+    emits('addFunctionPoint', { data, functionMode: activeTab.value, isAddPoint: isAddPoint.value })
     dialogVisible.value = false
   }
 

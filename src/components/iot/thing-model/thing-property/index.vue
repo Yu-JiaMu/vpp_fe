@@ -84,11 +84,13 @@
     validateDescLength,
     validateCommon,
     createUniqueValidatorByValue,
+    createAsyncUniqueValidator,
     validateBooleanDesc,
     validateEnumList,
     getByteLength
   } from '@/utils'
   import { ACCESS_MODE_MAP, DATA_TYPE_MAP, REQUIRED_MAP } from '@/enums'
+  import * as api from '@/api/iot'
 
   const props = defineProps({
     tableData: {
@@ -114,6 +116,10 @@
     currentRow: {
       type: Object,
       default: () => {}
+    },
+    module: {
+      type: String,
+      default: ''
     }
   })
 
@@ -164,11 +170,26 @@
       },
       { validator: validateIdentifier, trigger: 'blur' },
       {
-        validator: createUniqueValidatorByValue(
-          props.tableData,
-          'identifier',
-          () => props.currentRow?.identifier
-        ),
+        validator:
+          props.module === 'library'
+            ? createAsyncUniqueValidator(
+                async (value) => {
+                  try {
+                    const res = await api.apiThingModelIdentifierCheck({ identifier: value })
+                    console.log('res', res)
+                    return Boolean(res)
+                  } catch (error) {
+                    console.log(error)
+                    return false
+                  }
+                },
+                { currentValue: props.currentRow?.identifier }
+              )
+            : createUniqueValidatorByValue(
+                props.tableData,
+                'identifier',
+                () => props.currentRow?.identifier
+              ),
         trigger: 'blur'
       }
     ],

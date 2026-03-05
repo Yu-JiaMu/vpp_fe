@@ -104,6 +104,7 @@
     validateDescLength,
     validateCommon,
     createUniqueValidatorByValue,
+    createAsyncUniqueValidator,
     getByteLength
   } from '@/utils'
   import ParamsDialog from '../params-dialog/index.vue'
@@ -121,6 +122,10 @@
     currentRow: {
       type: Object,
       default: () => {}
+    },
+    module: {
+      type: String,
+      default: ''
     }
   })
 
@@ -156,11 +161,25 @@
       { required: true, message: '请输入标识符', trigger: 'blur' },
       { validator: validateIdentifier, trigger: 'blur' },
       {
-        validator: createUniqueValidatorByValue(
-          props.tableData,
-          'identifier',
-          () => props.currentRow?.identifier
-        ),
+        validator:
+          props.module === 'library'
+            ? createAsyncUniqueValidator(
+                async (value) => {
+                  console.log('@@', value)
+
+                  // 通过接口检查标识符唯一性
+                  // 返回 true 表示已存在，false 表示不存在
+                  const res = await api.apiThingModelIdentifierCheck(value)
+                  console.log('res', res)
+                  return res
+                },
+                { currentValue: props.currentRow?.identifier }
+              )
+            : createUniqueValidatorByValue(
+                props.tableData,
+                'identifier',
+                () => props.currentRow?.identifier
+              ),
         trigger: 'blur'
       }
     ],

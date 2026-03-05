@@ -524,7 +524,7 @@ export function createAsyncUniqueValidator(
     debounce?: number
   }
 ) {
-  const { currentValue, message = '该值已存在，请更换', debounce = 300 } = options || {}
+  const { currentValue, message = '标识符已存在，请更换', debounce = 300 } = options || {}
 
   let timer: number | null = null
 

@@ -181,6 +181,8 @@
           case 'productCategory':
             await api.importProductCategoryThingModelJson({ file: formData, id: props.info.id })
             break
+          case 'library':
+            await api.importLibThingModelJson({ file: formData })
           default:
             break
         }
@@ -199,7 +201,12 @@
   }
 
   const downloadThingModelTemplate = async () => {
-    const result = await api.downloadThingModelTemplate()
+    let result
+    if (props.module === 'library') {
+      result = await api.apiThingModelImportTemplate()
+    } else {
+      result = await api.downloadThingModelTemplate()
+    }
     downloadFile(result, `物模型模版`)
   }
 

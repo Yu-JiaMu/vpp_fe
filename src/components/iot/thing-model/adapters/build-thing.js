@@ -68,6 +68,9 @@ export function buildThingModel(form, type) {
     name: form.name,
     desc: form.desc
   }
+  if (form.id) {
+    base.id = form.id
+  }
 
   switch (type) {
     case 'property':

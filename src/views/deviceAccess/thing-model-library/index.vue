@@ -46,6 +46,7 @@
         class="w-full"
         show-overflow-tooltip
         @selection-change="handleSelectionChange"
+        @sort-change="handleSort"
       >
         <el-table-column type="selection" />
         <el-table-column prop="type" label="功能类型" width="100" />
@@ -63,13 +64,19 @@
 
         <el-table-column prop="accessMode" label="读写类型" width="100" />
 
+        <el-table-column
+          prop="originData.updateTime"
+          label="更新时间"
+          width="180"
+          sortable="custom"
+        />
         <!-- 操作 -->
         <el-table-column label="操作" :width="160" fixed="right">
           <template #default="{ row, $index }">
             <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'look')">
               详情
             </el-button>
-            <template v-if="row.source === THING_SOURCE_MAP.values.CUSTOM">
+            <template v-if="row.originData.functionType === THING_SOURCE_MAP.values.CUSTOM">
               <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'edit')">
                 编辑
               </el-button>
@@ -88,21 +95,27 @@
     <AddCustomFunctionPointDialog
       ref="addCustomFunctionPointDialogRef"
       :tableData="tableData"
+      module="library"
       @addFunctionPoint="addCustomPoint"
     />
   </div>
 </template>
 
 <script setup>
-  import { FUNCTION_MODE_MAP, THING_SOURCE_MAP, DATA_TYPE_MAP } from '@/enums'
+  import { FUNCTION_MODE_MAP, THING_SOURCE_MAP, DATA_TYPE_MAP, ACCESS_MODE_MAP } from '@/enums'
+  import { buildRow } from '@/utils'
   import * as api from '@/api/iot'
+  import { downloadFile } from '@/utils'
 
   const router = useRouter()
 
   const isReadOnly = ref(false)
   provide('isReadOnly', isReadOnly)
 
-  const form = reactive({})
+  const form = reactive({
+    isAsc: 'desc',
+    orderByColumn: 'updateTime'
+  })
 
   const pagination = reactive({
     size: 10,
@@ -119,9 +132,9 @@
         ...form
       }
 
-      const response = await api.apiGetProductList(queryParams)
+      const response = await api.apiThingModelList(queryParams)
       if (response) {
-        tableData.value = response.rows
+        tableData.value = response.rows.map((item) => buildRow(item))
         pagination.total = response.total || 0
       }
     } catch (error) {
@@ -141,7 +154,7 @@
     },
     {
       label: '功能类型',
-      key: 'identifier',
+      key: 'functionMode',
       type: 'select',
       props: {
         placeholder: '请选择功能类型',
@@ -152,7 +165,7 @@
     },
     {
       label: '功能类别',
-      key: 'categoryId',
+      key: 'functionType',
       type: 'select',
       props: {
         placeholder: '请选择功能类别',
@@ -163,7 +176,7 @@
     },
     {
       label: '数据类型',
-      key: 'nodeType',
+      key: 'dataType',
       type: 'select',
       props: {
         placeholder: '请选择数据类型',
@@ -201,7 +214,18 @@
     getTableData()
   }
 
-  const addCustomPoint = ({ data, functionMode }) => {}
+  const addCustomPoint = async ({ data, functionMode, isAddPoint }) => {
+    // console.log('###', data, functionMode)
+    if (isAddPoint) {
+      await api.apiThingModelAdd(data)
+      ElMessage.success('新增成功')
+      onReset()
+    } else {
+      await api.apiThingModelEdit(data)
+      ElMessage.success('编辑成功')
+      getTableData()
+    }
+  }
 
   /* ====================== Dialog ====================== */
   const addCustomFunctionPointDialogRef = useTemplateRef('addCustomFunctionPointDialogRef')
@@ -217,7 +241,39 @@
     importModelDialogRef.value.open()
   }
 
-  const handleExportModel = () => {}
+  const handleExportModel = async () => {
+    if (selectedItems.value.length === 0) {
+      ElMessage.warning('请先选择要导出的功能点')
+      return
+    }
+
+    try {
+      await ElMessageBox.confirm(
+        `将导出选中的 ${selectedItems.value.length} 个功能点，是否继续？`,
+        '批量导出确认',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'info'
+        }
+      )
+
+      const ids = selectedItems.value.map((item) => item.id)
+      const response = await api.apiThingModelExport(ids)
+
+      if (ids.length === 1) {
+        const name = selectedItems.value[0].name || '物模型'
+        downloadFile(response, name)
+      } else {
+        downloadFile(response, '物模型', 'zip')
+      }
+    } catch (error) {
+      if (error !== 'cancel') {
+        console.error('批量导出失败:', error)
+        ElMessage.error('批量导出失败')
+      }
+    }
+  }
 
   const handleBatchDelete = async () => {
     if (selectedItems.value.length === 0) {
@@ -226,11 +282,8 @@
 
     // 分离系统和自定义功能点
     const customItems = selectedItems.value.filter(
-      (item) => item.source === THING_SOURCE_MAP.values.CUSTOM
+      (item) => item.originData.functionType === THING_SOURCE_MAP.values.CUSTOM
     )
-    // const systemItems = selectedItems.value.filter(
-    //   (item) => item.source === THING_SOURCE_MAP.values.SYSTEM
-    // )
 
     if (customItems.length === 0) {
       return ElMessage.warning('选中的全是系统功能点，无法删除')
@@ -246,11 +299,8 @@
       )
 
       // 执行删除
-      for (const item of customItems) {
-        // TODO: 根据实际API调用删除功能
-        // 可能需要调用删除API: await api.apiDeleteFunction(item.id)
-        // 或更新物模型: await api.updateProductThingModel({...})
-      }
+      const ids = customItems.map((item) => item.id)
+      await api.apiThingModelDelete(ids)
 
       ElMessage.success(`删除成功`)
 
@@ -271,7 +321,9 @@
         type: 'warning'
       })
 
+      await api.apiThingModelDelete([row.id])
       ElMessage.success('删除成功')
+      getTableData()
     } catch (err) {}
   }
 

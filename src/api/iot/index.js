@@ -9,4 +9,8 @@ export * from './productCategory'
 // 产品接口
 export * from './product'
 
+// 设备接口
 export * from './device'
+
+// 物模型库接口
+export * from './thingModelLib'

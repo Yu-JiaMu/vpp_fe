@@ -427,7 +427,7 @@
     originTableData.value = transformThingJsonToTable(thingJson)
   }
 
-  const addCustomPoint = ({ data, functionMode }) => {
+  const addCustomPoint = ({ data, functionMode, isAddPoint }) => {
     isChange.value = true
 
     const model = thingJson.modules[0]
@@ -460,6 +460,7 @@
     originalIdentifier.value = null
 
     originTableData.value = transformThingJsonToTable(thingJson)
+    ElMessage.success(isAddPoint ? '新增成功' : '编辑成功')
   }
 
   /* ====================== 提交 ====================== */

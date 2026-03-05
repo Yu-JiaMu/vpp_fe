@@ -179,7 +179,11 @@ class HttpRequest {
           showSuccess(res.data.msg)
         }
 
-        return (res.data.data as T) || (res.data as T)
+        if (res.data.data !== undefined) {
+          return res.data.data as T
+        }
+
+        return res.data as T
       } catch (error) {
         const canRetry =
           error instanceof HttpError &&
