@@ -66,7 +66,7 @@ export const AUTH_MODE_MAP = createEnum({
 // 功能类型
 export const FUNCTION_MODE_MAP = createEnum({
   PROPERTY: { label: '属性', value: 'property', pKey: 'properties' },
-  SERVICE: { label: '功能', value: 'service', pKey: 'functions' },
+  SERVICE: { label: '功能', value: 'function', pKey: 'functions' },
   EVENT: { label: '事件', value: 'event', pKey: 'events' }
 })
 

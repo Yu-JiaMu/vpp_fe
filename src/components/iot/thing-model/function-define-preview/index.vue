@@ -93,7 +93,7 @@
     () => props.row.functionMode === 'event' || props.functionMode === 'event'
   )
   const isService = computed(
-    () => props.row.functionMode === 'service' || props.functionMode === 'service'
+    () => props.row.functionMode === 'function' || props.functionMode === 'function'
   )
 
   const levelTagType = (level) => {

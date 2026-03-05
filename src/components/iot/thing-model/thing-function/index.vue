@@ -263,7 +263,7 @@
   }
 
   const getThingJson = () => {
-    return buildThingModel(form, 'service')
+    return buildThingModel(form, 'function')
   }
 
   const initForm = (json) => {

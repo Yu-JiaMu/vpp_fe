@@ -65,7 +65,7 @@ export function buildRow(
 }
 const MODULE_FUNCTION_MODE_MAP: Record<keyof Module, string> = {
   properties: 'property',
-  functions: 'service',
+  functions: 'function',
   events: 'event'
 }
 // 把json物模型转成list

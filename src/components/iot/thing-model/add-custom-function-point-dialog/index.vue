@@ -72,7 +72,7 @@
 
   const componentMap = {
     property: ThingProperty,
-    service: ThingService,
+    function: ThingService,
     event: ThingEvent
   }
   const handleCancel = () => {
@@ -85,7 +85,7 @@
 
   let refMap = {
     property: thingPropertyRef,
-    service: thingServiceRef,
+    function: thingServiceRef,
     event: thingEventRef
   }
 

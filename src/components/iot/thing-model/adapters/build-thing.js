@@ -81,12 +81,12 @@ export function buildThingModel(form, type) {
         accessMode: form.accessMode,
         functionMode: 'property'
       }
-    case 'service':
+    case 'function':
       return {
         ...base,
         functionType: 'custom',
         callType: form.callType,
-        functionMode: 'service',
+        functionMode: 'function',
         input: form.input.map((i) => ({
           identifier: i.identifier,
           name: i.name,

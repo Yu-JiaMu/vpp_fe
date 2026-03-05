@@ -104,7 +104,7 @@ export function parseThingModel(json) {
         dataType: parseDataType(json.dataType)
       }
 
-    case 'service':
+    case 'function':
       return {
         ...base,
         callType: json.callType,
