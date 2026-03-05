@@ -265,7 +265,7 @@
         const name = selectedItems.value[0].name || '物模型'
         downloadFile(response, name)
       } else {
-        downloadFile(response, '物模型', 'zip')
+        downloadFile(response, '物模型')
       }
     } catch (error) {
       if (error !== 'cancel') {
