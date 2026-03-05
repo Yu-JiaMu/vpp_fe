@@ -204,10 +204,11 @@
     let result
     if (props.module === 'library') {
       result = await api.apiThingModelImportTemplate()
+      downloadFile(result, `物模型库模版`)
     } else {
       result = await api.downloadThingModelTemplate()
+      downloadFile(result, `物模型模版`)
     }
-    downloadFile(result, `物模型模版`)
   }
 
   const getProductList = async () => {
