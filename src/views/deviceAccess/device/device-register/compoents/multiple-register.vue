@@ -5,17 +5,21 @@
     <!-- 第二步表单 -->
     <MultipleFileUpload
       @previousStep="previousStep"
-      @sumbitForm="sumbitForm"
+      @submitForm="submitForm"
       ref="multipleFileUpload"
       v-if="activeStep === 2"
     />
+    <ImportResultDialog ref="importResultDialogRef" />
   </div>
 </template>
 
 <script setup>
   import MultipleCardList from './multiple-card-List.vue'
   import MultipleFileUpload from './multiple-file-upload.vue'
+  import ImportResultDialog from './import-result-dialog.vue'
   import * as api from '@/api/iot'
+  import { downloadFile } from '@/utils'
+
   const router = useRouter()
   // const form = reactive({
   //   productId: ''
@@ -36,18 +40,45 @@
   const previousStep = async () => {
     activeStep.value = 1
   }
-  const sumbitForm = async (submitData) => {
+
+  async function handleImportResult(promise) {
+    const res = await promise
+
+    const headers = res.headers || {}
+
+    const successCount = Number(headers['success-count'] || 0)
+    const failCount = Number(headers['fail-count'] || 0)
+
+    const blob = res.data
+
+    if (failCount > 0 && blob) {
+      const filename =
+        headers['content-disposition']?.match(/filename=(.*)/)?.[1] || 'fail_list.xlsx'
+
+      downloadFile(blob, filename)
+    }
+
+    return {
+      successCount,
+      failCount
+    }
+  }
+
+  const importResultDialogRef = useTemplateRef('importResultDialogRef')
+  const submitForm = async (submitData) => {
     const formData = new FormData()
     formData.append('file', submitData.pendingFile.raw)
     formData.append('devEnable', submitData.devEnable)
     formData.append('productIds', productIds.value)
     console.log(formData)
     // return
-    const data = await api.apiDevBatchRegister(formData)
+    const data = await handleImportResult(api.apiDevBatchRegister(formData))
     if (multipleFileUpload.value) {
       multipleFileUpload.value.setExportNum(data)
     }
     ElMessage.success('批量导入成功')
+    // importResultDialogRef.value.open({ successCount: 10, failCount: 0 })
+
     // router.back()
   }
 </script>

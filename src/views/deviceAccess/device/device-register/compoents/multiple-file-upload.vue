@@ -109,7 +109,7 @@
     file.uid = genFileId()
     uploadRef.value?.handleStart(file)
   }
-  const emit = defineEmits(['previousStep', 'sumbitForm'])
+  const emit = defineEmits(['previousStep', 'submitForm'])
   const previousStep = async () => {
     emit('previousStep')
   }
@@ -119,7 +119,7 @@
   })
   const submitForm = async () => {
     console.log(form, 'formformformform')
-    emit('sumbitForm', form)
+    emit('submitForm', form)
   }
   const productIds = ref([])
   const setProductIds = async (ids) => {
