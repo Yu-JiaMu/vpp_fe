@@ -27,7 +27,7 @@
         @click="changeCard(item)"
       >
         <!-- 活跃的竖线 -->
-        <img class="shu" src="@/assets/images/deviceAccess/5.webp" v-if="item.flag" />
+        <img class="shu" src="@/assets/images/deviceAccess/5.webp" />
         <div class="device-icon-container">
           <img v-if="item.imgUrl" :src="item.imgUrl" alt="" class="w-[100%] h-[100%]" />
           <img
@@ -209,14 +209,19 @@
     .device-card-list {
       //gird布局 一行排列3个间距20px
       box-sizing: border-box;
-      .active-card {
-        border: 1px solid #2a4dfc !important;
-      }
+
       .device-card {
         border: 1px solid #ebecf1;
         border-radius: 6px;
         padding: 24px;
         position: relative;
+        &.active-card,
+        &:hover {
+          border: 1px solid #2a4dfc !important;
+          .shu {
+            display: block;
+          }
+        }
         .shu {
           position: absolute;
           left: 0;
@@ -225,6 +230,7 @@
           height: 100%;
           background: #2a4dfc;
           border-radius: 6px;
+          display: none;
         }
         .device-icon-container {
           width: 93px;
@@ -263,6 +269,10 @@
 
             .info-label {
               width: 150px;
+              font-size: 16px;
+              font-weight: 400;
+              text-align: left;
+              color: #505658;
             }
           }
         }

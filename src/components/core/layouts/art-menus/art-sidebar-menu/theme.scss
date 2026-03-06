@@ -208,7 +208,7 @@ $popup-menu-radius: 6px;
   } */
   .el-menu-light {
     @include theme-menu-base;
-    @include menu-active(var(--theme-color), var(--el-color-primary-light-9));
+    @include menu-active(var(--art-gray-900), var(--art-gray-200));
     @include menu-hover($hover-bg-color);
 
     .el-sub-menu__icon-arrow {
@@ -241,7 +241,7 @@ $popup-menu-radius: 6px;
 .menu-left-dark-popper {
   .el-menu--vertical,
   .el-menu--popup-container {
-    @include popup-menu-base(var(--art-gray-4), var(--art-gray-900), var(--art-gray-200));
+    @include popup-menu-base(#0f1015, #fff, #3a3e48);
   }
 }
 .dark {

@@ -2,7 +2,7 @@
   <div class="min-h-full pb-5 bg-white">
     <!-- 顶部搜索区 -->
     <div class="flex items-center justify-between p-5 search-con">
-      <div class="flex flex-wrap items-center">
+      <div class="flex flex-wrap items-center mb-[-15px]">
         <el-form :model="form" inline class="" @keyup.enter="getTableData">
           <el-form-item>
             <el-input
@@ -63,7 +63,7 @@
 
       <div class="flex items-center gap-2 op-con">
         <div
-          class="text-[#767C80] rounded-md p-1.5 cursor-pointer flex-cc hover:bg-[#F6F7F9]"
+          class="text-[#767C80] rounded-md p-1.5 cursor-pointer flex-cc hover:bg-[#F6F7F9] text-sm"
           @click="handleBatchRemove"
         >
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-unbind.png" alt="" />
@@ -72,7 +72,7 @@
         <div class="dividing-line"></div>
         <div
           text
-          class="text-g-131617 hover:bg-[#ebf4ff] rounded-md p-1.5 cursor-pointer flex-cc"
+          class="text-g-131617 hover:bg-[#ebf4ff] rounded-md p-1.5 cursor-pointer flex-cc text-sm"
           @click="openBindDeviceDialog"
         >
           <img class="w-5 h-5 mr-1.5" src="@/assets/images/icon/icon-bind.png" alt="" />

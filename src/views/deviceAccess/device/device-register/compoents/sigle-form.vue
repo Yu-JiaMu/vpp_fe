@@ -78,7 +78,7 @@
       >
         <div class="relative flex items-center">
           <div
-            class="flex-shrink bg-white p-2.5 text-g-4 font-scBold text-sm cursor-pointer rounded-[20px]"
+            class="flex-shrink bg-[#f7f8fa] p-2.5 text-g-4 font-scBold text-sm cursor-pointer rounded-[20px]"
             @click="formShowMore.TZShowMore = !formShowMore.TZShowMore"
           >
             拓展字段
@@ -111,7 +111,7 @@
       <div class="col-span-2">
         <div class="relative flex items-center">
           <div
-            class="flex-shrink bg-white p-2.5 text-g-4 font-scBold text-sm cursor-pointer rounded-[20px]"
+            class="flex-shrink bg-[#f7f8fa] p-2.5 text-g-4 font-scBold text-sm cursor-pointer rounded-[20px]"
             @click="formShowMore.GDShowMore = !formShowMore.GDShowMore"
           >
             更多配置
