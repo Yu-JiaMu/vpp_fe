@@ -36,8 +36,8 @@ interface RequestExtraOptions {
   cancel?: boolean
   loading?: boolean
   fullLoading?: boolean
-  isSign?: boolean
-  skipClean?: boolean
+  skipClean?: boolean // 跳过空值去除
+  raw?: boolean // 返回原始 AxiosResponse
 }
 
 /** 外部使用（request / api.get 等） */
@@ -107,6 +107,7 @@ class HttpRequest {
     this.instance.interceptors.response.use(
       (response: AxiosResponse<BaseResponse>) => {
         const { data, config, status } = response
+        // console.log('response', response)
 
         this.axiosCanceler.removePending(config)
 
@@ -166,7 +167,9 @@ class HttpRequest {
   }
 
   /** 核心请求方法（带重试逻辑） */
-  async request<T = any>(config: ExtendedAxiosRequestConfig): Promise<T> {
+  async request<T = any>(
+    config: ExtendedAxiosRequestConfig
+  ): Promise<T | AxiosResponse<BaseResponse<T>>> {
     const maxRetries = config.retry ?? 0
     let attempt = 0
 
@@ -174,6 +177,10 @@ class HttpRequest {
       try {
         const res = await this.instance.request<BaseResponse<T>>(config)
         // console.log('res', res)
+
+        if (config.raw) {
+          return res
+        }
 
         if (config.showSuccessMessage && res.data.msg) {
           showSuccess(res.data.msg)

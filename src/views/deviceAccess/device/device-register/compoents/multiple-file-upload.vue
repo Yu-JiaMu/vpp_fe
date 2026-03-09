@@ -44,12 +44,12 @@
             <el-icon class="mr-[2px]"><CircleCheck /></el-icon>
             导入完成
           </div>
-          <span class="text-[#192936] font-[Source Han Sans SC] font-normal mr-[5px]"
+          <!--   <span class="text-[#192936] font-[Source Han Sans SC] font-normal mr-[5px]"
             >导入成功：{{ exportNum.successNum }}个</span
           >
           <span class="text-[#192936] font-[Source Han Sans SC] font-normal"
             >导入失败：{{ exportNum.failNum }}个</span
-          >
+          > -->
         </div>
         <div>
           <el-switch v-model="form.devEnable" />

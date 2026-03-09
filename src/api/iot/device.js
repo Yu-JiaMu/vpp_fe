@@ -50,7 +50,10 @@ export function apiDevdownloadExcelTemplate(params) {
   })
 }
 export function apiDevBatchRegister(params) {
-  return request.post(`/stage-api/model/device/batch/register`, params, { responseType: 'blob' })
+  return request.post(`/stage-api/model/device/batch/register`, params, {
+    responseType: 'blob',
+    raw: true
+  })
 }
 //获取设备详情
 export function apiDevDetail(deviceId) {

@@ -43,11 +43,12 @@
 
   async function handleImportResult(promise) {
     const res = await promise
+    console.log('@@@', res)
 
     const headers = res.headers || {}
 
-    const successCount = Number(headers['success-count'] || 0)
-    const failCount = Number(headers['fail-count'] || 0)
+    const successCount = Number(headers['success-number'] || 0)
+    const failCount = Number(headers['fail-number'] || 0)
 
     const blob = res.data
 
@@ -73,11 +74,13 @@
     console.log(formData)
     // return
     const data = await handleImportResult(api.apiDevBatchRegister(formData))
-    if (multipleFileUpload.value) {
+    /*  if (multipleFileUpload.value) {
       multipleFileUpload.value.setExportNum(data)
     }
-    ElMessage.success('批量导入成功')
-    // importResultDialogRef.value.open({ successCount: 10, failCount: 0 })
+    if (data.successCount) {
+      ElMessage.success('批量导入成功')
+    } */
+    importResultDialogRef.value.open({ successCount: data.successCount, failCount: data.failCount })
 
     // router.back()
   }

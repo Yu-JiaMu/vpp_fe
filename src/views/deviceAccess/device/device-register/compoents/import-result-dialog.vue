@@ -67,8 +67,6 @@
   const info = reactive({})
 
   const open = (data) => {
-    console.log('哈哈哈哈哈')
-
     info.successCount = data.successCount
     info.failCount = data.failCount
     dialogVisible.value = true
