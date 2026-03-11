@@ -64,12 +64,11 @@
 
         <el-table-column prop="accessMode" label="读写类型" width="100" />
 
-        <el-table-column
-          prop="originData.updateTime"
-          label="更新时间"
-          width="180"
-          sortable="custom"
-        />
+        <el-table-column prop="updateTime" label="更新时间" width="180" sortable="custom">
+          <template #default="{ row }">
+            {{ row.originData.updateTime }}
+          </template>
+        </el-table-column>
         <!-- 操作 -->
         <el-table-column label="操作" :width="160" fixed="right">
           <template #default="{ row, $index }">
