@@ -33,7 +33,12 @@
           v-if="index === activeCardIndex"
         />
         <div class="device-icon-container">
-          <img v-if="item.imgUrl" :src="item.imgUrl" alt="" class="w-[100%] h-[100%]" />
+          <img
+            v-if="item.imgUrl"
+            :src="item.imgUrl"
+            alt=""
+            class="w-[100%] h-[100%] object-contain"
+          />
           <img
             src="@/assets/images/icon/icon-empty-pic.webp"
             alt=""
