@@ -180,7 +180,7 @@
       //gird布局 一行排列3个间距20px
       box-sizing: border-box;
       .active-card {
-        border: 1px solid #2a4dfc !important;
+        border: 1px solid #1464ee !important;
       }
       .device-card {
         border: 1px solid #ebecf1;
@@ -193,7 +193,7 @@
           top: 0;
           width: 10px;
           height: 100%;
-          background: #2a4dfc;
+          background: #1464ee;
           border-radius: 6px;
         }
         .device-icon-container {

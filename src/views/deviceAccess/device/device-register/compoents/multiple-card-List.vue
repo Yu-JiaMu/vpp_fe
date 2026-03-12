@@ -217,7 +217,7 @@
         position: relative;
         &.active-card,
         &:hover {
-          border: 1px solid #2a4dfc !important;
+          border: 1px solid #1464ee !important;
           .shu {
             display: block;
           }
@@ -228,7 +228,7 @@
           top: 0;
           width: 10px;
           height: 100%;
-          background: #2a4dfc;
+          background: #1464ee;
           border-radius: 6px;
           display: none;
         }
