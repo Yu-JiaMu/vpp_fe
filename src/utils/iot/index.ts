@@ -50,7 +50,7 @@ export function buildRow(
     source: THING_SOURCE_MAP.getLabel?.(item.functionType) ?? '-', // 功能来源
     name: item.name ?? '-', // 功能名称
     identifier: item.identifier ?? '-', // 标识符
-    id: item.id ?? '-',
+    id: item.id ? item.id : (item.identifier ?? '-'),
     dataType: handleDataType(item), // 数据类型
     define: item.dataType
       ? {
