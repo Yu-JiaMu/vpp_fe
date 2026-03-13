@@ -259,14 +259,6 @@ export function formatTimestamp(timestamp: any, format = 'YYYY-MM-DD HH:mm:ss', 
 
 type BlobPart = BufferSource | Blob | string
 
-// 获取文件后缀方法
-function getExtensionByBlob(blob: Blob, defaultExt = 'xlsx') {
-  console.log(blob.type)
-
-  const mime = blob.type
-  return MIME_EXTENSION_MAP[mime] || defaultExt
-}
-
 /**
  * 下载文件的工具函数
  * @param result - 文件的二进制数据或 Blob 数据
@@ -283,20 +275,31 @@ const MIME_EXTENSION_MAP: Record<string, string> = {
   'application/zip': 'zip'
 }
 
+// 判断文件名是否已有后缀
+function hasExtension(name: string) {
+  return /\.[a-zA-Z0-9]+$/.test(name)
+}
+
+// 根据 blob 获取后缀
+function getExtensionByBlob(blob: Blob, defaultExt = 'xlsx') {
+  const mime = blob.type
+  return MIME_EXTENSION_MAP[mime] || defaultExt
+}
+
 export function downloadFile(
   result: Blob | ArrayBuffer | Uint8Array,
   fileName = '导出数据',
   defaultExt = 'json'
 ): void {
   const blob: Blob = result instanceof Blob ? result : new Blob([result as BlobPart])
-  // 👉 自动识别后缀
-  const ext = getExtensionByBlob(blob, defaultExt) || fileName.endsWith('.') ? defaultExt : ''
 
   let finalName = fileName
-  if (ext && !fileName.endsWith(`.${ext}`)) {
+
+  // 如果文件名没有后缀才自动补
+  if (!hasExtension(fileName)) {
+    const ext = getExtensionByBlob(blob, defaultExt)
     finalName = `${fileName}.${ext}`
   }
-
   const downloadElement = document.createElement('a')
   const href = URL.createObjectURL(blob)
 

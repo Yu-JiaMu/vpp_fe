@@ -50,13 +50,22 @@
     const successCount = Number(headers['success-number'] || 0)
     const failCount = Number(headers['fail-number'] || 0)
 
+    const errorMsg = headers['import-error']
+
+    if (errorMsg) {
+      ElMessage.error(decodeURIComponent(errorMsg))
+    }
+
     const blob = res.data
 
-    if (failCount > 0 && blob) {
-      const filename =
-        headers['content-disposition']?.match(/filename=(.*)/)?.[1] || 'fail_list.xlsx'
+    if (failCount > 0 && blob && res.status === 200) {
+      const disposition = res.headers['content-disposition']
 
-      downloadFile(blob, filename)
+      const match = disposition.match(/filename\*=UTF-8''(.+)/)
+
+      const fileName = match ? decodeURIComponent(match[1]) : '注册失败设备.xlsx'
+
+      downloadFile(blob, fileName)
     }
 
     return {
