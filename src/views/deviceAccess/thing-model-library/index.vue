@@ -163,11 +163,11 @@
       }
     },
     {
-      label: '功能类别',
+      label: '功能来源',
       key: 'functionType',
       type: 'select',
       props: {
-        placeholder: '请选择功能类别',
+        placeholder: '请选择功能来源',
         filterable: true,
         clearable: true,
         options: THING_SOURCE_MAP.options

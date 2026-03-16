@@ -113,14 +113,16 @@ export function parseThingModel(json) {
             identifier: i.identifier,
             name: i.name,
             required: i.required,
-            dataType: parseDataType(i.dataType)
+            dataType: parseDataType(i.dataType),
+            desc: i.desc
           })) || [],
         output:
           json.output?.map((o) => ({
             identifier: o.identifier,
             name: o.name,
             required: o.required,
-            dataType: parseDataType(o.dataType)
+            dataType: parseDataType(o.dataType),
+            desc: o.desc
           })) || []
       }
 
@@ -133,7 +135,8 @@ export function parseThingModel(json) {
             identifier: o.identifier,
             name: o.name,
             required: o.required,
-            dataType: parseDataType(o.dataType)
+            dataType: parseDataType(o.dataType),
+            desc: o.desc
           })) || []
       }
 

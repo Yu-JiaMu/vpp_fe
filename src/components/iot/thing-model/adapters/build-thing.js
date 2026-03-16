@@ -91,13 +91,15 @@ export function buildThingModel(form, type) {
           identifier: i.identifier,
           name: i.name,
           dataType: buildDataType(i.dataType),
-          required: i.required
+          required: i.required,
+          desc: i.desc
         })),
         output: form.output.map((o) => ({
           identifier: o.identifier,
           name: o.name,
           dataType: buildDataType(o.dataType),
-          required: o.required
+          required: o.required,
+          desc: o.desc
         }))
       }
     case 'event':
@@ -110,7 +112,8 @@ export function buildThingModel(form, type) {
           identifier: o.identifier,
           name: o.name,
           dataType: buildDataType(o.dataType),
-          required: o.required
+          required: o.required,
+          desc: o.desc
         }))
       }
     default:
