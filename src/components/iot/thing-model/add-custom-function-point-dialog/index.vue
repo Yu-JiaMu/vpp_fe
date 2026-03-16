@@ -114,7 +114,9 @@
     // if (!data) return
 
     emits('addFunctionPoint', { data, functionMode: activeTab.value, isAddPoint: isAddPoint.value })
-    dialogVisible.value = false
+    if (props.module !== 'library') {
+      dialogVisible.value = false
+    }
   }
 
   const currentIndex = ref(-1)
@@ -141,7 +143,11 @@
     ref.formRef.clearValidate()
   }
 
-  defineExpose({ open })
+  const close = () => {
+    dialogVisible.value = false
+  }
+
+  defineExpose({ open, close })
 
   onMounted(() => {})
 </script>

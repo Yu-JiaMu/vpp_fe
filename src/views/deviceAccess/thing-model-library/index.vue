@@ -224,6 +224,8 @@
       ElMessage.success('编辑成功')
       getTableData()
     }
+    // 关闭弹窗
+    addCustomFunctionPointDialogRef.value.close()
   }
 
   /* ====================== Dialog ====================== */
