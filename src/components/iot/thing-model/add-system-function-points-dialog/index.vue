@@ -7,21 +7,33 @@
   >
     <div class="add-system-function-points-dialog">
       <div class="mb-2.5 text-sm text-g-303537">功能列表</div>
-      <el-input
-        v-model="keyword"
-        placeholder="请输入功能名称/标识符进行搜索"
-        clearable
-        class="mb-6"
-      >
-        <template #prefix>
-          <ArtSvgIcon icon="ri:search-line" class="text-g-303537" />
-        </template>
-      </el-input>
-
+      <div class="flex-b gap-2.5 mb-6">
+        <el-input
+          v-model="form.key"
+          placeholder="请输入搜索内容"
+          class="input-with-select"
+          clearable
+          @input="debouncedSearch"
+          @keyup.enter="handleSearch"
+        >
+          <template #prepend>
+            <el-select
+              v-model="form.mode"
+              placeholder="请选择"
+              style="width: 116px"
+              @change="form.key = ''"
+            >
+              <el-option label="功能名称" value="name" />
+              <el-option label="标识符" value="identifier" />
+            </el-select>
+          </template>
+        </el-input>
+        <el-button @click="handleSearch">搜索</el-button>
+      </div>
       <div class="flex gap-2 h-[405px]">
         <!-- 左侧：可选功能点 -->
         <div class="flex flex-col w-1/2 p-2.5 pr-0 border border-[#e4e5ef] rounded-md">
-          <el-scrollbar height="330px">
+          <el-scrollbar height="330px" @end-reached="loadMore">
             <div class="flex-1 pr-3 space-y-2">
               <div
                 v-for="item in filteredAvailableList"
@@ -45,7 +57,7 @@
         </div>
 
         <!-- 中间箭头 -->
-        <div class="flex items-center justify-center center-arrow"> </div>
+        <div class="m-auto center-arrow"> </div>
 
         <!-- 右侧：已选功能点 -->
         <div class="flex flex-col w-1/2 p-2.5 pr-0 border border-[#e4e5ef] rounded-md bg-[#f7f7f9]">
@@ -82,32 +94,57 @@
 
 <script setup>
   import { ref, computed } from 'vue'
+  import { ElMessage } from 'element-plus'
+  import { debounce } from 'lodash-es'
   import * as api from '@/api/iot'
   import PointCard from './point-card.vue'
-  import { transformThingJsonToTable } from '@/utils'
+  import { buildRow } from '@/utils'
 
   const emits = defineEmits(['addFunctionPoint'])
+
+  const props = defineProps({
+    /** 父组件表格数据（用于过滤已存在的功能点） */
+    tableData: {
+      type: Array,
+      default: () => []
+    }
+  })
+
+  const existingIdentifiers = computed(() => {
+    return props.tableData.map((row) => row.identifier)
+  })
+
   /** 弹窗状态 */
   const dialogVisible = ref(false)
 
-  /** 搜索关键字 */
-  const keyword = ref('')
+  /** 搜索表单 */
+  const form = ref({
+    mode: 'name', // 默认搜索功能名称
+    key: ''
+  })
 
-  /** 模拟数据（后续可直接换 thingJson 转换结果） */
   const allFunctionPoints = ref([])
 
   /** 已选功能点 */
   const selectedList = ref([])
 
+  /** 分页 */
+  const pagination = ref({
+    current: 1,
+    size: 20,
+    total: 0
+  })
+
   /** 是否已选 */
   const isSelected = (id) => selectedList.value.some((item) => item.id === id)
 
-  /** 左侧可选列表（自动排除已选） */
+  /** 左侧可选列表（自动排除已选和已存在的） */
   const filteredAvailableList = computed(() => {
     return allFunctionPoints.value.filter((item) => {
       if (isSelected(item.id)) return false
-      if (!keyword.value) return true
-      return item.name.includes(keyword.value) || item.identifier.includes(keyword.value)
+      // 过滤掉父组件已经存在的功能点
+      if (item.identifier && existingIdentifiers.value.includes(item.identifier)) return false
+      return true
     })
   })
 
@@ -144,19 +181,70 @@
     dialogVisible.value = false
   }
 
-  async function getSystemPoint() {
-    const res = await api.getSystemFunctionPoint()
-    const data = transformThingJsonToTable(res)
-    allFunctionPoints.value = data
+  /** 防抖搜索 */
+  const debouncedSearch = debounce(() => {
+    handleSearch()
+  }, 500)
+
+  /** 搜索 */
+  const handleSearch = () => {
+    pagination.value.current = 1
+    getSystemPoint()
   }
+
+  const getSystemPoint = async () => {
+    try {
+      const queryParams = {
+        pageNum: pagination.value.current,
+        pageSize: pagination.value.size
+      }
+
+      // 添加搜索参数
+      if (form.value.key) {
+        queryParams[form.value.mode] = form.value.key
+      }
+
+      const response = await api.apiThingModelList(queryParams)
+      if (response) {
+        const data = response.rows.map((item) => buildRow(item))
+        console.log('@@', response, data)
+
+        if (pagination.value.current === 1) {
+          allFunctionPoints.value = data
+        } else {
+          allFunctionPoints.value = [...allFunctionPoints.value, ...data]
+        }
+        pagination.value.total = response.total || 0
+      }
+    } catch (error) {
+      console.error('获取系统功能点失败:', error)
+      ElMessage.error('获取系统功能点失败')
+    }
+  }
+
+  /** 滚动加载更多 */
+  const loadMore = () => {
+    if (allFunctionPoints.value.length < pagination.value.total) {
+      pagination.value.current += 1
+      getSystemPoint()
+    }
+  }
+
   const open = (row) => {
+    // 重置搜索
+    form.value.key = ''
+    form.value.mode = 'name'
+    selectedList.value = []
+    allFunctionPoints.value = []
+    pagination.value.current = 1
     dialogVisible.value = true
+    getSystemPoint()
   }
 
   defineExpose({ open })
 
   onMounted(() => {
-    getSystemPoint()
+    // 初始加载已在 open 中处理
   })
 </script>
 

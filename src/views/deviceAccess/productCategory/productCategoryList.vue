@@ -75,7 +75,7 @@
                   content="该产品品类还未定义物模型。"
                   placement="top"
                 >
-                  <el-icon :size="18"><Warning /></el-icon>
+                  <el-icon class="align-text-bottom" :size="18"><Warning /></el-icon>
                 </el-tooltip>
               </template>
             </span>

@@ -145,6 +145,7 @@
     <!-- 添加系统功能点 -->
     <AddSystemFunctionPointsDialog
       ref="addSystemFunctionPointsDialogRef"
+      :tableData="originTableData"
       @addFunctionPoint="addFunctionPoint"
     />
 
