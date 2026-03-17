@@ -113,7 +113,7 @@
         ref="searchBarRef"
         v-model="form"
         :items="formItems"
-        :labelWidth="80"
+        :labelWidth="82"
         defaultExpanded
         :showExpand="false"
         @reset="onReset"

@@ -291,13 +291,15 @@
     }
 
     try {
-      await ElMessageBox.confirm(
-        '内置功能点不允许删除，仅支持删除自定义功能点，您确定要删除所有勾选的自定义功能点吗?',
-        '提示',
-        {
-          type: 'warning'
-        }
-      )
+      // 根据是否包含内置功能点显示不同的提示信息
+      const confirmMessage =
+        customItems.length === selectedItems.value.length
+          ? '您确定要删除所有勾选的功能点吗?'
+          : '内置功能点不允许删除，仅支持删除自定义功能点，您确定要删除所有勾选的自定义功能点吗?'
+
+      await ElMessageBox.confirm(confirmMessage, '提示', {
+        type: 'warning'
+      })
 
       // 执行删除
       const ids = customItems.map((item) => item.id)
