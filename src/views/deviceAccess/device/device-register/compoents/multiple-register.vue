@@ -84,12 +84,7 @@
     console.log(formData)
     // return
     const data = await handleImportResult(api.apiDevBatchRegister(formData))
-    /*  if (multipleFileUpload.value) {
-      multipleFileUpload.value.setExportNum(data)
-    }
-    if (data.successCount) {
-      ElMessage.success('批量导入成功')
-    } */
+
     if (!data.errorMsg) {
       importResultDialogRef.value.open({
         successCount: data.successCount,
