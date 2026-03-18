@@ -70,7 +70,8 @@
 
     return {
       successCount,
-      failCount
+      failCount,
+      errorMsg
     }
   }
 
@@ -89,7 +90,12 @@
     if (data.successCount) {
       ElMessage.success('批量导入成功')
     } */
-    importResultDialogRef.value.open({ successCount: data.successCount, failCount: data.failCount })
+    if (!data.errorMsg) {
+      importResultDialogRef.value.open({
+        successCount: data.successCount,
+        failCount: data.failCount
+      })
+    }
 
     // router.back()
   }
