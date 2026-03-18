@@ -50,7 +50,11 @@
       >
         <el-table-column type="selection" />
         <el-table-column prop="type" label="功能类型" width="100" />
-        <el-table-column prop="source" label="功能来源" width="100" />
+        <el-table-column prop="source" label="功能来源" width="100">
+          <template #default="{ row }">
+            {{ THING_LIB_SOURCE_MAP.getLabel(row.originData.functionType) }}
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="功能名称" width="120" />
         <el-table-column prop="identifier" label="标识符" width="160" />
         <el-table-column prop="dataType" label="数据类型" width="140" />
@@ -75,7 +79,7 @@
             <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'look')">
               详情
             </el-button>
-            <template v-if="row.originData.functionType === THING_SOURCE_MAP.values.CUSTOM">
+            <template v-if="row.originData.functionType === THING_LIB_SOURCE_MAP.values.CUSTOM">
               <el-button type="primary" link @click="openCustomFunctionDialog(row, $index, 'edit')">
                 编辑
               </el-button>
@@ -101,7 +105,7 @@
 </template>
 
 <script setup>
-  import { FUNCTION_MODE_MAP, THING_SOURCE_MAP, DATA_TYPE_MAP, ACCESS_MODE_MAP } from '@/enums'
+  import { FUNCTION_MODE_MAP, DATA_TYPE_MAP, THING_LIB_SOURCE_MAP } from '@/enums'
   import { buildRow } from '@/utils'
   import * as api from '@/api/iot'
   import { downloadFile } from '@/utils'
@@ -170,7 +174,7 @@
         placeholder: '请选择功能来源',
         filterable: true,
         clearable: true,
-        options: THING_SOURCE_MAP.options
+        options: THING_LIB_SOURCE_MAP.options
       }
     },
     {
@@ -283,7 +287,7 @@
 
     // 分离系统和自定义功能点
     const customItems = selectedItems.value.filter(
-      (item) => item.originData.functionType === THING_SOURCE_MAP.values.CUSTOM
+      (item) => item.originData.functionType === THING_LIB_SOURCE_MAP.values.CUSTOM
     )
 
     if (customItems.length === 0) {
@@ -316,7 +320,7 @@
   }
 
   const handleRemove = async (row, index) => {
-    if (row.source === THING_SOURCE_MAP.values.SYSTEM) {
+    if (row.source === THING_LIB_SOURCE_MAP.values.SYSTEM) {
       return ElMessage.error('系统功能点不可删除')
     }
     try {

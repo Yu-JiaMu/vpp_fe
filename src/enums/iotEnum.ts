@@ -72,6 +72,12 @@ export const FUNCTION_MODE_MAP = createEnum({
 
 // 物模型来源
 export const THING_SOURCE_MAP = createEnum({
+  SYSTEM: { label: '系统', value: 'st' },
+  CUSTOM: { label: '自定义', value: 'custom' }
+})
+
+// 物模型库来源
+export const THING_LIB_SOURCE_MAP = createEnum({
   SYSTEM: { label: '内置', value: 'st' },
   CUSTOM: { label: '自定义', value: 'custom' }
 })
