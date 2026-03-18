@@ -176,7 +176,6 @@
                 async (value) => {
                   try {
                     const res = await api.apiThingModelIdentifierCheck({ identifier: value })
-                    console.log('res', res)
                     return Boolean(res)
                   } catch (error) {
                     console.log(error)

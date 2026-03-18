@@ -160,6 +160,7 @@
   } from '@/utils'
   import ParamsDialog from '../params-dialog/index.vue'
   import FunctionDefinePreview from '../function-define-preview/index.vue'
+  import * as api from '@/api/iot'
 
   const props = defineProps({
     tableData: {
@@ -226,9 +227,13 @@
           props.module === 'library'
             ? createAsyncUniqueValidator(
                 async (value) => {
-                  // 通过接口检查标识符唯一性
-                  // 返回 true 表示已存在，false 表示不存在
-                  return false
+                  try {
+                    const res = await api.apiThingModelIdentifierCheck({ identifier: value })
+                    return Boolean(res)
+                  } catch (error) {
+                    console.log(error)
+                    return false
+                  }
                 },
                 { currentValue: props.currentRow?.identifier }
               )
