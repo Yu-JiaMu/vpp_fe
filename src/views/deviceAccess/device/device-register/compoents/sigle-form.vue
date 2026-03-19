@@ -384,13 +384,17 @@
     await getAddress()
   }
   const getAddress = async () => {
-    const res = await map.value.getSearchAddressList('tipinput')
-    console.log('res------address', res)
-    form.address = res.address
-    const { lng, lat } = res
-    form.lng = lng
-    form.lat = lat
+    await map.value.getSearchAddressList('tipinput', {
+      onSelect: (res) => {
+        console.log('res------address', res)
+
+        form.address = res.address
+        form.lng = res.lng
+        form.lat = res.lat
+      }
+    })
   }
+
   //监听地图点击事件
   const mapClickAddMarker = async () => {
     console.log('执行几次')

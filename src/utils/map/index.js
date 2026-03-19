@@ -350,12 +350,12 @@ class SimpleAMapService {
   //           const lnglat = [e.poi.location.lng, e.poi.location.lat]
   //           const address = await this.getCoordinatesToAddress(lnglat)
   //           if (lnglat.length > 0) {
-  //             const addresObj = {
+  //             const addressObj = {
   //               address: address,
   //               lng: lnglat[0],
   //               lat: lnglat[1]
   //             }
-  //             resolve(addresObj)
+  //             resolve(addressObj)
   //           }
   //         })
   //       })
@@ -367,6 +367,7 @@ class SimpleAMapService {
   // }
   // 自定义输入提示
   async getSearchAddressList(inputId, options = {}) {
+    const onSelect = options.onSelect
     return new Promise((resolve, reject) => {
       try {
         const autoOptions = {
@@ -491,7 +492,7 @@ class SimpleAMapService {
                     const lnglat = [tip.location.lng, tip.location.lat]
                     const address = await this.getCoordinatesToAddress(lnglat)
 
-                    const addresObj = {
+                    const addressObj = {
                       address: address || tip.name,
                       lng: lnglat[0],
                       lat: lnglat[1],
@@ -504,7 +505,8 @@ class SimpleAMapService {
                     // 填充输入框
                     inputElement.value = tip.name
 
-                    resolve(addresObj)
+                    onSelect && onSelect(addressObj)
+                    resolve(addressObj)
                   } catch (error) {
                     console.error('选择地点出错:', error)
                     reject(error)
