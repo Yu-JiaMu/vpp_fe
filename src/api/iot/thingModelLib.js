@@ -4,7 +4,15 @@ const SERVICE_API = '/stage-api/model'
 
 // 查询物模型库列表
 export function apiThingModelList(params) {
-  return request.get(SERVICE_API + '/thingModelLibrary/list', params)
+  const { pageSize, pageNum, orderByColumn, isAsc, ...otherParams } = params || {}
+  const queryParams = new URLSearchParams()
+  if (pageSize !== undefined) queryParams.append('pageSize', pageSize)
+  if (pageNum !== undefined) queryParams.append('pageNum', pageNum)
+  if (orderByColumn !== undefined) queryParams.append('orderByColumn', orderByColumn)
+  if (isAsc !== undefined) queryParams.append('isAsc', isAsc)
+  const queryString = queryParams.toString()
+  const url = queryString ? `${SERVICE_API}/thingModelLibrary/list?${queryString}` : `${SERVICE_API}/thingModelLibrary/list`
+  return request.post(url, otherParams)
 }
 
 // 新增物模型库

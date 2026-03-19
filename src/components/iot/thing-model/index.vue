@@ -418,13 +418,13 @@
 
       if (index > -1) {
         list.splice(index, 1, item.originData)
-        ElMessage.success('更新成功')
+        // ElMessage.success('更新成功')
       } else {
         list.push(item.originData)
-        ElMessage.success('添加成功')
+        // ElMessage.success('添加成功')
       }
     })
-
+    ElMessage.success('添加成功')
     originTableData.value = transformThingJsonToTable(thingJson)
   }
 

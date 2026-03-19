@@ -47,6 +47,14 @@
                 />
                 <PointCard :info="item" />
               </div>
+              <div v-if="isLoading" class="flex justify-center py-4">
+                <el-icon class="is-loading text-blue-500">
+                  <Loading />
+                </el-icon>
+              </div>
+              <div v-if="isAllLoaded && !isLoading" class="flex justify-center py-4">
+                <span class="text-sm text-gray-400">已加载全部</span>
+              </div>
             </div>
           </el-scrollbar>
           <div class="pr-3 text-right">
@@ -93,12 +101,14 @@
 </template>
 
 <script setup>
-  import { ref, computed } from 'vue'
+  import { ref, computed, onMounted } from 'vue'
   import { ElMessage } from 'element-plus'
+  import { Loading } from '@element-plus/icons-vue'
   import { debounce } from 'lodash-es'
   import * as api from '@/api/iot'
   import PointCard from './point-card.vue'
   import { buildRow } from '@/utils'
+  import { THING_SOURCE_MAP } from '@/enums'
 
   const emits = defineEmits(['addFunctionPoint'])
 
@@ -128,6 +138,9 @@
   /** 已选功能点 */
   const selectedList = ref([])
 
+  /** 加载状态 */
+  const isLoading = ref(false)
+
   /** 分页 */
   const pagination = ref({
     current: 1,
@@ -142,10 +155,17 @@
   const filteredAvailableList = computed(() => {
     return allFunctionPoints.value.filter((item) => {
       if (isSelected(item.id)) return false
-      // 过滤掉父组件已经存在的功能点
-      if (item.identifier && existingIdentifiers.value.includes(item.identifier)) return false
+      // // 过滤掉父组件已经存在的功能点
+      // if (item.identifier && existingIdentifiers.value.includes(item.identifier)) return false
       return true
     })
+  })
+
+  /** 是否全部加载完 */
+  const isAllLoaded = computed(() => {
+    return (
+      allFunctionPoints.value.length > 0 && allFunctionPoints.value.length >= pagination.value.total
+    )
   })
 
   /** 添加单个 */
@@ -194,9 +214,11 @@
 
   const getSystemPoint = async () => {
     try {
+      isLoading.value = true
       const queryParams = {
         pageNum: pagination.value.current,
-        pageSize: pagination.value.size
+        pageSize: pagination.value.size,
+        filterIdentifierList: existingIdentifiers.value
       }
 
       // 添加搜索参数
@@ -206,7 +228,10 @@
 
       const response = await api.apiThingModelList(queryParams)
       if (response) {
-        const data = response.rows.map((item) => buildRow(item))
+        const data = response.rows.map((item) => {
+          item.functionType = THING_SOURCE_MAP.values.SYSTEM // 物模型库添加的全部为系统功能点
+          return buildRow(item)
+        })
         console.log('@@', response, data)
 
         if (pagination.value.current === 1) {
@@ -219,11 +244,14 @@
     } catch (error) {
       console.error('获取系统功能点失败:', error)
       ElMessage.error('获取系统功能点失败')
+    } finally {
+      isLoading.value = false
     }
   }
 
   /** 滚动加载更多 */
   const loadMore = () => {
+    if (isLoading.value) return // 正在加载时不处理
     if (allFunctionPoints.value.length < pagination.value.total) {
       pagination.value.current += 1
       getSystemPoint()
