@@ -90,7 +90,7 @@
   import { ElMessage, genFileId } from 'element-plus'
   const downloadDevTemplate = async () => {
     const result = await api.apiDevdownloadExcelTemplate(productIds.value)
-    downloadFile(result, '多产品注册模板', 'xlsx')
+    downloadFile(result, '设备批量注册模板', 'xlsx')
   }
   const beforeUpload = useUploadBefore({
     fileSize: 10,
