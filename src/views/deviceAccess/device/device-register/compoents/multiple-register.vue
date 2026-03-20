@@ -1,7 +1,7 @@
 <template>
   <div class="multiple-register bg-white">
     <!-- 第一步选择 -->
-    <MultipleCardList ref="" @next-step="nextStep" v-if="activeStep === 1" />
+    <MultipleCardList v-model="selectedProducts" @next-step="nextStep" v-if="activeStep === 1" />
     <!-- 第二步表单 -->
     <MultipleFileUpload
       @previousStep="previousStep"
@@ -25,6 +25,7 @@
   //   productId: ''
   // })
   const productIds = ref([])
+  const selectedProducts = ref([])
   const activeStep = ref(1)
   const multipleFileUpload = ref(null)
   const nextStep = async (productId, isSubDevice) => {

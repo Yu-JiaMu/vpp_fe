@@ -22,7 +22,7 @@
       <div
         class="device-card cursor-pointer flex items-center gap-5"
         v-for="(item, index) in tableData"
-        :key="index"
+        :key="item.id"
         :class="{ 'active-card': item.flag }"
         @click="changeCard(item)"
       >
@@ -85,6 +85,12 @@
   import * as api from '@/api/iot'
   import { NODE_TYPES } from '@/enums'
   const router = useRouter()
+
+  // 使用 defineModel 来定义 v-model
+  const selectedProduct = defineModel({
+    type: Array,
+    default: () => []
+  })
   const form = reactive({
     name: '',
     enabled: true,
@@ -151,7 +157,6 @@
       ElMessage.error('获取产品列表失败')
     }
   }
-  const selectedProduct = ref([])
   //切换card
   const changeCard = async (item) => {
     item.flag = !item.flag
