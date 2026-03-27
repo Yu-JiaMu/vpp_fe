@@ -9,6 +9,17 @@ export const energyIot: AppRouteRecord = {
   },
   children: [
     {
+      path: 'dashboard',
+      name: 'dashboard',
+      component: '/dashboard',
+      meta: {
+        icon: 'ri:home-4-fill',
+        title: '首页',
+        keepAlive: false,
+        fixedTab: false
+      }
+    },
+    {
       path: 'deviceAccess',
       name: 'DeviceAccess',
       component: '',

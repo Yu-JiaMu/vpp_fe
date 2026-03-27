@@ -39,6 +39,8 @@
   onMounted(() => {
     if (route.query.registerType) {
       activeTab.value = route.query.registerType
+    } else {
+      activeTab.value = TABS[0].value
     }
   })
 </script>
