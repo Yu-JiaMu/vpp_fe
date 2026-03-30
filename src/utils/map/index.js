@@ -92,7 +92,7 @@ class SimpleAMapService {
     try {
       // 确保 API 已加载
       await this.loadAMapAPI()
-      console.log(this.AMap)
+      console.log('[高德api加载]', this.AMap)
       // 获取容器元素
       const container = document.getElementById(containerId)
       if (!container) {
@@ -120,25 +120,28 @@ class SimpleAMapService {
         rotateEnable: false,
         ...options
       }
+
+      // 创建地图实例
+      this.map = new this.AMap.Map(containerId, defaultOptions)
+      console.log('高德地图创建成功')
+
       // 尝试获取当前位置作为中心点
       try {
         const location = await this.getCurrentPosition()
         if (location && location.success) {
           console.log('使用定位中心:', location.position)
           defaultOptions.center = location.position
-
+          this.map.setCenter(location.position)
           // 如果定位成功，调整合适的缩放级别
           if (options.zoom === undefined) {
-            defaultOptions.zoom = 14 // 定位成功后显示更近的视野
+            this.map.setZoom(14) // 定位成功后显示更近的视野
           }
         }
       } catch (error) {
         console.warn('获取定位失败，使用默认中心:', error.message || error)
         // 获取定位失败，继续使用默认中心
       }
-      // 创建地图实例
-      this.map = new this.AMap.Map(containerId, defaultOptions)
-      console.log('高德地图创建成功')
+
       return this.map
     } catch (error) {
       console.error('创建地图失败:', error)
