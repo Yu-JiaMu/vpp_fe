@@ -1,9 +1,7 @@
 <template>
   <div class="relative w-full h-[360px] border border-[#ebecf1] overflow-hidden">
-    <!-- 地图容器 -->
     <div id="map" class="w-full h-full"></div>
 
-    <!-- 弹层 -->
     <DeviceMapInfoCard
       v-if="active"
       :data="currentData"
@@ -15,75 +13,169 @@
 
 <script setup>
   import { onMounted, onBeforeUnmount, ref } from 'vue'
-  import { useRouter } from 'vue-router'
   import { debounce } from 'lodash-es'
   import SimpleAMapService from '@/utils/map/index'
   import DeviceMapInfoCard from './DeviceMapInfoCard.vue'
+  import { generateMockDevicesAdvanced } from './deviceMapMock'
 
   const router = useRouter()
-  const amapService = new SimpleAMapService()
+  const amapService = new SimpleAMapService({ plugins: ['AMap.MarkerCluster'] })
 
   let map = null
+
+  // 三种渲染对象
+  let cluster = null
+  let massMarks = null
   let markers = []
 
-  // 当前选中
+  // 当前数据缓存
+  let currentList = []
+
+  // UI状态
   const active = ref(false)
   const currentData = ref(null)
   const cardStyle = ref({})
 
+  // 数据加载
   const fetchData = debounce(async () => {
     if (!map) return
 
     const bounds = map.getBounds()
 
-    const params = {
+    const list = await mockApi({
       minLng: bounds.getSouthWest().lng,
       minLat: bounds.getSouthWest().lat,
       maxLng: bounds.getNorthEast().lng,
       maxLat: bounds.getNorthEast().lat
-    }
+    })
 
-    // 👉 mock接口（你替换成真实接口）
-    const list = await mockApi(params)
+    currentList = list
 
-    renderMarkers(list)
+    renderByZoom()
   }, 300)
 
-  const renderMarkers = (list) => {
-    // 清空旧点
-    markers.forEach((m) => m.setMap(null))
-    markers = []
+  // 根据缩放级别切换模式
+  const renderByZoom = () => {
+    const zoom = map.getZoom()
+    // console.log('zoom', zoom)
 
-    list.forEach((item) => {
-      const marker = new window.AMap.Marker({
-        position: item.lnglat,
-        offset: new window.AMap.Pixel(-10, -10),
-        content: createMarkerDOM(item)
-      })
+    clearAll()
 
-      marker.on('click', (e) => {
-        // e.stopPropagation()
-        handleClick(item, marker)
-      })
+    if (zoom < 10) {
+      renderCluster()
+    } else if (zoom < 14) {
+      renderMass()
+    } else {
+      renderMarkersBatch()
+    }
+  }
 
-      map.add(marker)
-      markers.push(marker)
+  // 1️⃣ 点聚合
+  const renderCluster = () => {
+    cluster = new window.AMap.MarkerCluster(map, currentList, {
+      gridSize: 60,
+      renderMarker: (context) => {
+        const div = document.createElement('div')
+        div.className = 'cluster'
+        div.innerText = context.count
+
+        context.marker.setContent(div)
+      }
+    })
+    cluster.on('click', (e) => {
+      const marker = e.marker
+      const pos = marker.getPosition()
+
+      map.setZoomAndCenter(map.getZoom() + 2, pos, true)
     })
   }
 
-  const createMarkerDOM = (item) => {
+  // 2️⃣ 海量点 MassMarks
+  const renderMass = () => {
+    massMarks = new window.AMap.MassMarks(currentList, {
+      zIndex: 5,
+      zooms: [3, 20],
+      style: [
+        {
+          url: 'https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/guanwang/icon-marker-cyan.png',
+          size: new window.AMap.Size(12, 20),
+          anchor: new window.AMap.Pixel(6, 20)
+        }
+      ]
+    })
+
+    massMarks.setMap(map)
+
+    massMarks.on('click', (e) => {
+      // console.log('renderMass', e.data, e)
+      handleClick(e.data, e.data.lnglat)
+    })
+  }
+
+  // 3️⃣ 分批 Marker（解决卡顿）
+  const renderMarkersBatch = () => {
+    const batchSize = 200
+    let index = 0
+
+    const addBatch = () => {
+      if (index >= currentList.length) return
+
+      const slice = currentList.slice(index, index + batchSize)
+
+      slice.forEach((item) => {
+        const marker = new window.AMap.Marker({
+          position: item.lnglat,
+          offset: new window.AMap.Pixel(-10, -10),
+          content: createMarkerDOM()
+        })
+
+        marker.on('click', () => handleClick(item, marker.getPosition()))
+
+        map.add(marker)
+        markers.push(marker)
+      })
+
+      index += batchSize
+
+      requestAnimationFrame(addBatch) // 👉不卡UI关键
+    }
+
+    addBatch()
+  }
+
+  // 工具函数
+
+  const clearAll = () => {
+    cluster?.setMap(null)
+    cluster = null
+
+    massMarks?.setMap(null)
+    massMarks = null
+
+    markers.forEach((m) => m.setMap(null))
+    markers = []
+  }
+
+  const createMarkerDOM = () => {
     const div = document.createElement('div')
-
     div.innerHTML = `
-    <div class="w-3 h-5"> <img class="w-full h-full object-contain" src="https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/guanwang/icon-marker-cyan.png"/></div>
+    <div class="w-3 h-5">
+      <img class="w-full h-full object-contain"
+      src="https://power-market-b4a3.obs.cn-east-3.myhuaweicloud.com/message/guanwang/icon-marker-cyan.png"/>
+    </div>
   `
-
     return div
   }
 
-  const updateCardPosition = (lnglat) => {
-    if (!map || !lnglat) return
+  // 点击 & 弹层
 
+  const handleClick = (item, lnglat) => {
+    updateCardPosition(lnglat)
+    currentData.value = item
+    active.value = true
+  }
+
+  const updateCardPosition = (lnglat) => {
     const pixel = map.lngLatToContainer(lnglat)
 
     cardStyle.value = {
@@ -92,19 +184,9 @@
     }
   }
 
-  const handleClick = (item, marker) => {
-    updateCardPosition(marker.getPosition())
+  // mock数据
 
-    currentData.value = item
-    active.value = true
-  }
-
-  // ========================
-  // mock接口（你替换）
-  // ========================
-  const mockApi = async (params) => {
-    // console.log(params)
-
+  const mockApi = async () => {
     return [
       {
         lnglat: [104.08392, 30.389842],
@@ -115,36 +197,28 @@
         address: '成都高新区1号',
         id: '2034160071931465729'
       },
-      {
-        lnglat: [104.07, 30.66],
-        name: '设备2',
-        productName: '测试产品B',
-        nodeType: 'gateway-sub-device',
-        devState: 'offLine',
-        address: '成都高新区2号',
-        id: '2034160071931465731'
-      }
+      ...generateMockDevicesAdvanced(500) // 👉 1w+
     ]
   }
 
+  // 生命周期
+
   let handleMapMove = null
+
   onMounted(async () => {
     map = await amapService.createMap('map')
 
     fetchData()
 
-    // 监听地图变化
-    map.on('moveend', fetchData)
-    map.on('zoomend', fetchData)
+    // map.on('moveend', fetchData)
+    map.on('zoomend', renderByZoom)
 
-    // 点击地图关闭弹层
     map.on('click', () => {
       active.value = false
     })
 
     handleMapMove = () => {
       if (!active.value || !currentData.value) return
-
       updateCardPosition(currentData.value.lnglat)
     }
 
@@ -153,7 +227,7 @@
 
   onBeforeUnmount(() => {
     map?.off('moveend', fetchData)
-    map?.off('zoomend', fetchData)
+    map?.off('zoomend', renderByZoom)
     map?.off('mapmove', handleMapMove)
     amapService.destroy()
   })
