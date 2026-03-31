@@ -62,7 +62,7 @@ class SimpleAMapService {
           AMapLoader.load({
             key: this.options.key,
             version: this.options.version,
-            plugins: [] // 默认不加载插件
+            plugins: this.options.plugins || [] // 默认不加载插件
           })
             .then((AMap) => {
               this.AMap = AMap
