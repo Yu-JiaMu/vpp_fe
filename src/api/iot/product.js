@@ -100,3 +100,13 @@ export function downloadThingModelTemplate() {
     { responseType: 'blob' }
   )
 }
+
+// 查询所有支持的通信协议列表
+export function apiGetProtocolTypeList() {
+  return request.get(SERVICE_API + '/productProtocol/list/applyLayerProtocol')
+}
+
+// 根据信协议类型查询数据格式列表
+export function apiGetProtocolDetail(params) {
+  return request.get(SERVICE_API + '/productProtocol/getProtocolDetail', params)
+}

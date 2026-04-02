@@ -95,9 +95,14 @@
       </el-form-item>
 
       <el-form-item label="协议类型" prop="applyLayerProtocol">
-        <el-select v-model="form.applyLayerProtocol" placeholder="请选择协议类型" class="w-full">
+        <el-select
+          v-model="form.applyLayerProtocol"
+          placeholder="请选择协议类型"
+          class="w-full"
+          @change="handleApplyLayerProtocolChange"
+        >
           <el-option
-            v-for="item in PROTOCOL_TYPES_MAP.options"
+            v-for="item in protocolOptions"
             :key="item.value"
             :label="item.label"
             :value="item.value"
@@ -108,7 +113,7 @@
       <el-form-item label="数据格式" prop="dataFormat">
         <el-select v-model="form.dataFormat" class="w-full">
           <el-option
-            v-for="item in DATA_FORMAT_MAP.options"
+            v-for="item in dataFormatOptions"
             :key="item.value"
             :label="item.label"
             :value="item.value"
@@ -278,6 +283,51 @@
     dataFormat: [{ required: true, message: '请选择数据格式', trigger: 'change' }]
   }
 
+  const protocolOptions = ref(PROTOCOL_TYPES_MAP.options)
+  const dataFormatOptions = ref(DATA_FORMAT_MAP.options)
+
+  const loadProtocolOptions = async () => {
+    try {
+      const res = await api.apiGetProtocolTypeList()
+      if (Array.isArray(res) && res.length > 0) {
+        protocolOptions.value = res.map((item) => ({ label: item, value: item }))
+        if (!form.applyLayerProtocol) {
+          form.applyLayerProtocol = protocolOptions.value[0]?.value || ''
+        }
+      } else {
+        protocolOptions.value = PROTOCOL_TYPES_MAP.options
+      }
+
+      if (form.applyLayerProtocol) {
+        await loadDataFormatOptions(form.applyLayerProtocol)
+      }
+    } catch (error) {
+      console.error('获取协议类型列表失败:', error)
+      protocolOptions.value = PROTOCOL_TYPES_MAP.options
+    }
+  }
+
+  const loadDataFormatOptions = async (applyLayerProtocol) => {
+    if (!applyLayerProtocol) {
+      dataFormatOptions.value = DATA_FORMAT_MAP.options
+      return
+    }
+
+    try {
+      const { rows: res } = await api.apiGetProtocolDetail({ applyLayerProtocol })
+      console.log('res', res)
+      dataFormatOptions.value = res.map((item) => ({ label: item, value: item }))
+      form.dataFormat = dataFormatOptions.value[0]?.value || ''
+    } catch (error) {
+      console.error('获取数据格式列表失败:', error)
+    }
+  }
+
+  const handleApplyLayerProtocolChange = (value) => {
+    form.applyLayerProtocol = value
+    loadDataFormatOptions(value)
+  }
+
   const handleCategoryChange = () => {
     isProductSelectVisible.value = true // 模拟点击后弹出抽屉
   }
@@ -324,6 +374,7 @@
 
   onMounted(() => {
     initProductCategoryList()
+    loadProtocolOptions()
   })
 </script>
 
