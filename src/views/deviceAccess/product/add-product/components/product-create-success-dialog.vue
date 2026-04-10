@@ -65,6 +65,9 @@
 
   const handleRegisterDevice = () => {
     console.log('去注册设备')
+    router.replace({
+      name: 'DeviceRegister'
+    })
   }
 
   const handleViewDetail = () => {
