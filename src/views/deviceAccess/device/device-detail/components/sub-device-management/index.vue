@@ -142,6 +142,13 @@
   import BindDeviceDialog from './bind-device-dialog.vue'
   import * as api from '@/api/iot'
 
+  const props = defineProps({
+    deviceDetail: {
+      type: Object,
+      default: () => {}
+    }
+  })
+
   const router = useRouter()
   const route = useRoute()
 
@@ -179,7 +186,7 @@
     const queryParams = {
       pageNum: pagination.current,
       pageSize: pagination.size,
-      parentId: route.query.id,
+      parentId: props.deviceDetail.identifier,
       ...form
     }
     const response = await api.apiGetDeviceList(queryParams)
