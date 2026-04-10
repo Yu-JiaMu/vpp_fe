@@ -186,7 +186,7 @@
     const queryParams = {
       pageNum: pagination.current,
       pageSize: pagination.size,
-      parentId: props.deviceDetail.identifier,
+      parentId: route.query.identifier,
       ...form
     }
     const response = await api.apiGetDeviceList(queryParams)

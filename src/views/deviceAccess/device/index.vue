@@ -10,7 +10,7 @@
     <div class="statistics-cards-simple">
       <!-- 设备数卡片 -->
       <div class="stat-card-simple">
-        <div class="flex justify-between items-center">
+        <div class="flex items-center justify-between">
           <div class="card-header-simple">
             <div class="label-block"></div>
             <div class="card-label-simple">设备数</div>
@@ -31,7 +31,7 @@
 
       <!-- 直连设备数卡片（默认选中样式） -->
       <div class="stat-card-simple active-card">
-        <div class="flex justify-between items-center">
+        <div class="flex items-center justify-between">
           <div class="card-header-simple">
             <div class="label-block"></div>
             <div class="card-label-simple active-label">直连设备数</div>
@@ -50,7 +50,7 @@
 
       <!-- 直连网关数卡片 -->
       <div class="stat-card-simple">
-        <div class="flex justify-between items-center">
+        <div class="flex items-center justify-between">
           <div class="card-header-simple">
             <div class="label-block"></div>
             <div class="card-label-simple">直连网关数</div>
@@ -70,7 +70,7 @@
 
       <!-- 网关子设备数卡片 -->
       <div class="stat-card-simple">
-        <div class="flex justify-between items-center">
+        <div class="flex items-center justify-between">
           <div class="card-header-simple">
             <div class="label-block"></div>
             <div class="card-label-simple">网关子设备数</div>
@@ -90,7 +90,7 @@
 
       <!-- 在线设备数卡片 -->
       <div class="stat-card-simple">
-        <div class="flex justify-between items-center">
+        <div class="flex items-center justify-between">
           <div class="card-header-simple">
             <div class="label-block"></div>
             <div class="card-label-simple">在线设备数（{{ onlineDeviceBFB }}）</div>
@@ -641,7 +641,10 @@
   // 查看子设备
   const handleSubDevice = (row) => {
     console.log('查看子设备:', row)
-    router.push({ name: 'DeviceDetail', query: { id: row.id, tab: 'subDeviceManagement' } })
+    router.push({
+      name: 'DeviceDetail',
+      query: { id: row.id, tab: 'subDeviceManagement', identifier: row.identifier }
+    })
   }
   // 处理删除
   const handleDelete = async (row) => {
