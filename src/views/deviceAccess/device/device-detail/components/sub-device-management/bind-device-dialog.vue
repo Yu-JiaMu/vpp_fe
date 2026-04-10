@@ -61,7 +61,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <ArtPagination v-model="pagination" @change="handleSearch" />
+      <ArtPagination v-model="pagination" @change="getDeviceList" />
 
       <template #footer>
         <div class="flex justify-center gap-[6px]">
