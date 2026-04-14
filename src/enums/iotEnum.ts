@@ -146,3 +146,18 @@ export const LOG_TYPES = createEnum({
   DEVICE_OFFLINE: { label: '设备离线', value: 'DEVICE_OFFLINE' },
   OTHER: { label: '其他', value: 'OTHER' }
 })
+
+// 启用/禁用
+export const APP_STATUS = createEnum({
+  ENABLE: { label: '启用', value: 'enable' },
+  DISABLED: { label: '禁用', value: 'disable' }
+})
+
+// 有效期
+export const VALIDITY_PERIOD = createEnum({
+  LONG_TERM: { label: '长期', value: '0' },
+  THREE_YEARS: { label: '三年', value: '1' },
+  ONE_YEAR: { label: '一年', value: '2' },
+  THREE_MONTHS: { label: '三个月', value: '3' },
+  CUSTOMIZABLE: { label: '自定义', value: '4' },
+})

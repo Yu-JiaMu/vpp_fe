@@ -119,6 +119,26 @@ export const energyIot: AppRouteRecord = {
           }
         }
       ]
+    },
+    {
+      path: 'openAPIMagt',
+      name: 'OpenAPIMagt',
+      component: '',
+      meta: {
+        title: 'OpenApi管理',
+        icon: 'ri:earth-line'
+      },
+      children: [
+        {
+          path: 'appManagementList',
+          name: 'AppManagementList',
+          component: '/openAPIMagt/appManagement/appManagementList',
+          meta: {
+            title: '应用管理',
+            keepAlive: true
+          }
+        }
+      ]
     }
   ]
 }
