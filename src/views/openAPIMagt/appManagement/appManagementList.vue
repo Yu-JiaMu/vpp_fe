@@ -15,29 +15,22 @@
         border
         show-overflow-tooltip
         style="width: 100%"
-        @sort-change="handleSort"
       >
-        <el-table-column prop="appName" label="应用名称" min-width="180">
-          <template #default="{ row }">
-            <span class="cursor-pointer" @click.prevent="viewDetails(row)">
-              {{ row.appName }}
-            </span>
-          </template>
-        </el-table-column>
+        <el-table-column prop="appName" label="应用名称" min-width="180"/>
         <el-table-column prop="id" label="应用编号" min-width="180" />
-        <el-table-column prop="endTime" label="有效期" min-width="180">
+        <el-table-column prop="endTime" label="有效期" min-width="200">
           <template #default="{ row }">
             {{ formatDate(row.createTime) }} 至 {{ formatDate(row.endTime) }}
           </template>
         </el-table-column>
-        <el-table-column label="状态" width="120">
+        <el-table-column label="状态" width="100">
           <template #default="{ row }">
             <el-switch :model-value="row.appStatus===APP_STATUS.map.ENABLE.value" @change="toggleEnable(row)" />
           </template>
         </el-table-column>
-        <el-table-column prop="lastReqTime" label="最后调用时间" width="180" sortable="custom" />
-        <el-table-column prop="createTime" label="创建时间" width="180" sortable="custom" />
-        <el-table-column label="操作" fixed="right" width="150">
+        <el-table-column prop="lastRequestTime" label="最后调用时间" width="180"/>
+        <el-table-column prop="createTime" label="创建时间" width="180"/>
+        <el-table-column label="操作" fixed="right" width="120">
           <template #default="{ row }">
             <el-button link type="primary" @click.prevent="viewDetails(row)">详情</el-button>
             <el-button link type="danger" @click.prevent="deleteApp(row)">删除</el-button>
@@ -63,8 +56,6 @@
   const router = useRouter()
 
   const form = reactive({
-    isAsc: 'desc',
-    orderByColumn: 'updateTime',
     appName: '',
     id: ''
   })
@@ -76,8 +67,6 @@
   })
   const tableData = ref([])
   const dialogVisible = ref(false); // 记录弹窗是否显示
-
-  const productCategoryList = ref([])
 
   /**
    * @Description 时间格式化 YYYY-MM-DD
@@ -104,27 +93,10 @@
         pageSize: pagination.size,
         ...form
       }
-      // todo 修改接口
-      const response = await api.apiGetProductList(queryParams)
+      // 调用接口
+      const response = await api.apiGetApiApplicationList(queryParams)
       if (response) {
-        tableData.value = [
-          {
-            "appName": "而往往如此111",
-            "id": "2013452228110716928",
-            "endTime": "2026-04-14 15:33:30",
-            "appStatus": "enable",
-            "lastReqTime": "2026-04-09 16:07:57",
-            "createTime": "2026-04-01 15:33:30"
-          },
-          {
-            "appName": "而往往如此111",
-            "id": "2016678968400416768",
-            "endTime": "2026-04-14 15:33:30",
-            "appStatus": "disable",
-            "lastReqTime": "2026-04-09 16:07:57",
-            "createTime": "2026-04-01 15:33:30"
-          },
-        ]
+        tableData.value = response.rows
         pagination.total = response.total || 0
       }
     } catch (error) {
@@ -133,7 +105,11 @@
     }
   }
 
-  // 表单配置
+  /**
+   * @Description 搜索表单配置
+   * @author Huang Jialin
+   * @date 2026/4/15 16:53
+   */
   const formItems = computed(() => [
     {
       label: '应用名称',
@@ -151,22 +127,25 @@
     }
   ])
 
+  /**
+   * @Description 搜索按钮事件
+   * @author Huang Jialin
+   * @date 2026/4/15 16:53
+   */
   function onSearch() {
     pagination.current = 1
     getTableData()
   }
 
+  /**
+   * @Description 重置按钮功能
+   * @author Huang Jialin
+   * @date 2026/4/15 16:53
+   */
   const tableRef = useTemplateRef('tableRef')
   function onReset() {
     pagination.current = 1
     tableRef.value?.clearSort()
-    getTableData()
-  }
-
-  function handleSort({ order, prop }) {
-    // console.log('更新时间', value)
-    form.orderByColumn = prop
-    form.isAsc = order
     getTableData()
   }
 
@@ -224,16 +203,6 @@
     })
   }
 
-  function manageDevices(row) {
-    console.log('管理设备', row)
-    router.push({
-      name: 'Device',
-      query: {
-        productId: row.id
-      }
-    })
-  }
-
   /**
    * @Description 调用应用删除接口
    * @author Huang Jialin
@@ -246,8 +215,11 @@
         cancelButtonText: '取消',
         type: 'warning'
       })
-      // todo 修改删除接口
-      await api.apiDeleteProduct([row.id])
+      // 1. 构造 FormData 对象
+      const formData = new FormData()
+      formData.append('id', row.id) // 对应接口的 id 参数
+      // 2. 调用接口（Axios 会自动设置正确的 Content-Type）
+      await api.deleteApiApplication(formData)
       ElMessage.success('删除成功')
       getTableData()
     } catch (error) {
@@ -285,14 +257,13 @@
       );
 
       // 调用接口
-      await api.apiEditProduct({
+      await api.updateApiApplication({
         ...row,
         appStatus: newStatus
       });
       // 接口成功 → 更新状态
       row.appStatus = newStatus;
       ElMessage.success('更新成功');
-
     } catch (error) {
       // 接口失败 / 取消弹窗 → 都会进这里
       console.error('更新失败', error);
@@ -305,10 +276,20 @@
     }
   }
 
+  /**
+   * @Description 激活页面时获取列表数据
+   * @author Huang Jialin
+   * @date 2026/4/14 16:03
+   */
   onActivated(() => {
     getTableData()
   })
 
+  /**
+   * @Description 挂载页面时获取列表数据
+   * @author Huang Jialin
+   * @date 2026/4/15 16:55
+   */
   onMounted(() => {})
 </script>
 

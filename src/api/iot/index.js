@@ -14,3 +14,6 @@ export * from './device'
 
 // 物模型库接口
 export * from './thingModelLib'
+
+// openApi接口
+export * from './openApi'
