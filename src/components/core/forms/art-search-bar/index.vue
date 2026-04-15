@@ -240,13 +240,33 @@
    */
   const isExpanded = ref(props.defaultExpanded)
 
-  const rootProps = ['label', 'labelWidth', 'key', 'type', 'hidden', 'span', 'slots']
+  const rootProps = ['label', 'labelWidth', 'key', 'render', 'hidden', 'span', 'slots']
 
   const getProps = (item: SearchFormItem) => {
-    if (item.props) return item.props
-    const props = { ...item }
-    rootProps.forEach((key) => delete (props as Record<string, any>)[key])
-    return props
+    // 基础属性处理
+    const baseProps = item.props ? { ...item.props } : { ...item }
+    rootProps.forEach((key) => delete baseProps[key])
+
+    // 为日期类组件补充 type 属性
+    if (['date', 'daterange', 'datetime', 'datetimerange'].includes(item.type || '')) {
+      // 映射 item.type 到 ElDatePicker 的 type 属性
+      const dateTypeMap: Record<string, string> = {
+        date: 'date',
+        daterange: 'daterange',
+        datetime: 'datetime',
+        datetimerange: 'datetimerange'
+      }
+      // 优先使用 item.props 中的 type，未传则自动补充
+      baseProps.type = baseProps.type || dateTypeMap[item.type!]
+      // 范围选择器默认补充 range-separator（可选，优化体验）
+      if (['daterange', 'datetimerange'].includes(item.type!)) {
+        baseProps.rangeSeparator = baseProps.rangeSeparator || '至'
+        baseProps.startPlaceholder = baseProps.startPlaceholder || '请输入开始时间'
+        baseProps.endPlaceholder = baseProps.endPlaceholder || '请输入结束时间'
+      }
+    }
+
+    return baseProps
   }
 
   // 获取插槽

@@ -48,15 +48,10 @@
     <!-- 基础信息 -->
     <BaseInfo v-if="activeTab === 'info'" :appInfo="appInfo" @refresh="getDetail"></BaseInfo>
 
-    <!-- 物模型 -->
-    <ThingModel
-      v-if="activeTab === 'usageRecord'"
-      module="product"
-      :info="product"
-      :thingJson="product.thingModelJson"
-      @refresh="getDetail"
-      @change="handleThingModelChange"
-    ></ThingModel>
+    <!-- 调用记录 -->
+    <ReqRecord
+        v-if="activeTab === 'reqRecord'"
+    ></ReqRecord>
   </div>
 </template>
 
@@ -66,6 +61,7 @@
   import ExtendedField from './components/extended-field/index.vue'
   import { ElMessageBox } from 'element-plus'
   import { onBeforeRouteLeave } from 'vue-router'
+  import ReqRecord from "@views/deviceAccess/product/product-detail/components/req-record.vue";
 
   const route = useRoute()
   const router = useRouter()
@@ -107,8 +103,8 @@
       value: 'info'
     },
     {
-      label: '使用记录',
-      value: 'usageRecord'
+      label: '调用记录',
+      value: 'reqRecord'
     },
   ]
 
@@ -128,7 +124,7 @@
   const handleTabClick = async (nextTab) => {
     if (nextTab === activeTab.value) return
 
-    if (activeTab.value === 'usageRecord' && modelDirty.value) {
+    if (activeTab.value === 'reqRecord' && modelDirty.value) {
       try {
         await confirmDiscard()
         modelDirty.value = false
