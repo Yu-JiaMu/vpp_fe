@@ -1,6 +1,5 @@
 <template>
-  <div class="product">
-    <ElCard class="art-table-card" shadow="never">
+  <ElCard class="art-table-card" shadow="never">
       <ArtSearchBar
         ref="searchBarRef"
         v-model="form"
@@ -51,10 +50,8 @@
         ref="productCategoryDialogRef"
         v-model="dialogVisible"
         @add-success="handleSuccess"
-        @edit-success="handleEditSuccess"
       />
     </ElCard>
-  </div>
 </template>
 
 <script setup>
@@ -113,7 +110,7 @@
         tableData.value = [
           {
             "appName": "而往往如此111",
-            "id": "2013532097922338816",
+            "id": "2013452228110716928",
             "endTime": "2026-04-14 15:33:30",
             "appStatus": "enable",
             "lastReqTime": "2026-04-09 16:07:57",
@@ -121,7 +118,7 @@
           },
           {
             "appName": "而往往如此111",
-            "id": "2013532097922338816",
+            "id": "2016678968400416768",
             "endTime": "2026-04-14 15:33:30",
             "appStatus": "disable",
             "lastReqTime": "2026-04-09 16:07:57",
@@ -213,9 +210,14 @@
     getTableData()
   }
 
+  /**
+   * @Description 打开详情页面
+   * @author Huang Jialin
+   * @date 2026/4/15 10:40
+   */
   function viewDetails(row) {
     router.push({
-      name: 'productDetail',
+      name: 'appDetail',
       query: {
         id: row.id
       }

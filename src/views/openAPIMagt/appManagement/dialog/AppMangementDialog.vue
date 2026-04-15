@@ -33,6 +33,7 @@
             v-model="formData.appStatus"
             placeholder="请选择"
             clearable
+            :disabled="formData.id !== ''"
           >
             <el-option
               v-for="item in APP_STATUS.options"
@@ -51,7 +52,7 @@
         </el-form-item>
         <el-form-item label="有效期" prop="endTime">
           <div class="validity-box">
-            <el-select v-model="formData.validityPeriod" placeholder="请选择" clearable @change="handleValidityChange">
+            <el-select :disabled="formData.id !== ''" v-model="formData.validityPeriod" placeholder="请选择" clearable @change="handleValidityChange">
               <el-option
                   v-for="item in VALIDITY_PERIOD.options"
                   :key="item.value"
@@ -67,6 +68,7 @@
                 value-format="YYYY-MM-DD"
                 @change="handleEndTimeChange"
                 :disabled-date="disabledEndDate"
+                :disabled="formData.id !== ''"
             />
           </div>
         </el-form-item>
@@ -113,7 +115,7 @@ import AppSecretDialog from "@views/openAPIMagt/appManagement/dialog/AppSecretDi
 const props = defineProps({
   modelValue: { type: Boolean, default: false }
 })
-const emit = defineEmits(['update:modelValue', 'add-success'])
+const emit = defineEmits(['update:modelValue', 'add-success', 'edit-success'])
 
 const dialogVisible = computed({
   get: () => props.modelValue,
@@ -197,34 +199,9 @@ const disabledEndDate = (time) => {
   return time.getTime() < today.getTime()
 }
 
-const industryOptions = ref([])
-const sceneOptions = ref([])
-
-async function getIndustryList() {
-  const res = await productCategoryApi.apiGetIndustryList()
-  industryOptions.value = res.map(item => ({
-    label: item.label,
-    value: item.code,
-    children: item.children || []
-  }))
-}
-
-function industryCodeChange(e) {
-  if (e) {
-    formData.sceneCode = ''
-    const children = industryOptions.value.find(i => i.value === e)?.children || []
-    sceneOptions.value = children.map(i => ({ label: i.label, value: i.code }))
-  } else {
-    sceneOptions.value = []
-    formData.sceneCode = ''
-  }
-}
-
 watch(() => props.modelValue, (newVal) => {
   if (!newVal) {
     resetForm()
-  } else {
-    getIndustryList()
   }
 })
 
@@ -237,18 +214,25 @@ const handleSubmit = async () => {
   if (!formRef.value) return
   try {
     await formRef.value.validate()
-
-    // todo 调用新增接口，返回key和secret
-    console.log("提交数据", { ...formData })
-
-    // 模拟生成密钥
-    generateKeys()
-
-    // 打开密钥弹窗
-    secretDialogVisible.value = true
-
-    ElMessage.success('提交成功')
-    // emit('addSuccess', { ...formData })
+    // todo 判断id是否为空，为空调用新增方法，不为空调用修改方法
+    if (formData.id) {
+      // todo 调用修改接口
+      console.log("提交数据", { ...formData })
+      // 关闭弹窗
+      dialogVisible.value = false;
+      // 调用父界面的刷新
+      emit('edit-success')
+      ElMessage.success('修改成功')
+    } else {
+      // todo 调用新增接口，返回key和secret
+      console.log("提交数据", { ...formData })
+      // 模拟生成密钥
+      generateKeys()
+      // 打开密钥弹窗
+      secretDialogVisible.value = true
+      ElMessage.success('提交成功')
+      // emit('addSuccess', { ...formData })
+    }
   } catch (e) {
     console.log('验证失败', e)
   }
@@ -309,13 +293,19 @@ const resetForm = () => {
   formData.appStatus = 'enable'
 }
 
+/**
+ * @Description 编辑页面初始化数据
+ * @author Huang Jialin
+ * @date 2026/4/15 11:27
+ */
 const initFormData = (data) => {
+  if (!data) return // 空值兜底
   formData.id = data.id || ''
   formData.appStatus = data.appStatus || 'enable'
   formData.appName = data.appName || ''
-  formData.validityPeriod = data.validityPeriod || ''
   formData.endTime = data.endTime || ''
   formData.remark = data.remark || ''
+  formData.validityPeriod = data.validityPeriod || VALIDITY_PERIOD.map.LONG_TERM.value
 }
 
 defineExpose({ resetForm, initFormData })

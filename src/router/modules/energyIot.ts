@@ -137,7 +137,18 @@ export const energyIot: AppRouteRecord = {
             title: '应用管理',
             keepAlive: true
           }
-        }
+        },
+        {
+          path: 'app-detail',
+          name: 'appDetail',
+          component: '/openAPIMagt/appManagement/app-detail',
+          meta: {
+            title: '应用详情',
+            keepAlive: false,
+            isHide: true,
+            activePath: '/energyIot/openAPIMagt/appManagement'
+          }
+        },
       ]
     }
   ]
