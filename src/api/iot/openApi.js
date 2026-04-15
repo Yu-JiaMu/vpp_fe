@@ -43,3 +43,12 @@ export function updateApiApplication(params) {
 export function deleteApiApplication(params) {
   return request.post(SERVICE_API + '/apiApplication/delete', params)
 }
+
+/**
+ * @Description 新增应用信息接口
+ * @author Huang Jialin
+ * @date 2026/4/15 16:38
+ */
+export function addApiApplication(params) {
+  return request.post(SERVICE_API + '/apiApplication/add', params)
+}

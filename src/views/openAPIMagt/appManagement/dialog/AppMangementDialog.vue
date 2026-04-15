@@ -64,8 +64,7 @@
                 v-model="formData.endTime"
                 type="date"
                 placeholder="请选择到期日期"
-                format="YYYY-MM-DD"
-                value-format="YYYY-MM-DD"
+                value-format="YYYY-MM-DD HH:mm:ss"
                 @change="handleEndTimeChange"
                 :disabled-date="disabledEndDate"
                 :disabled="formData.id !== ''"
@@ -108,9 +107,9 @@
 import { validateNameLength, validateCommon, validateDescLength } from '@/utils'
 import { ref, reactive, watch, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import * as productCategoryApi from '@/api/iot/productCategory.js'
 import { APP_STATUS, VALIDITY_PERIOD } from "@/enums/index.js";
 import AppSecretDialog from "@views/openAPIMagt/appManagement/dialog/AppSecretDialog.vue";
+import * as api from '@/api/iot'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false }
@@ -153,21 +152,29 @@ const formRules = {
  */
 const handleValidityChange = (val) => {
   const now = new Date()
+  // 定义格式化函数：将日期对象转为 "YYYY-MM-DD 00:00:00" 格式
+  const formatEndTime = (date) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0') // 月份补0
+    const day = String(date.getDate()).padStart(2, '0') // 日期补0
+    return `${year}-${month}-${day} 00:00:00`
+  }
+
   switch (val) {
     case VALIDITY_PERIOD.map.LONG_TERM.value:
-      formData.endTime = '2029-12-31'
+      formData.endTime = '2029-12-31 00:00:00'
       break
     case VALIDITY_PERIOD.map.THREE_YEARS.value:
       now.setFullYear(now.getFullYear() + 3)
-      formData.endTime = now.toISOString().split('T')[0]
+      formData.endTime = formatEndTime(now) // 统一格式
       break
     case VALIDITY_PERIOD.map.ONE_YEAR.value:
       now.setFullYear(now.getFullYear() + 1)
-      formData.endTime = now.toISOString().split('T')[0]
+      formData.endTime = formatEndTime(now) // 统一格式
       break
     case VALIDITY_PERIOD.map.THREE_MONTHS.value:
       now.setMonth(now.getMonth() + 3)
-      formData.endTime = now.toISOString().split('T')[0]
+      formData.endTime = formatEndTime(now) // 统一格式
       break
     case VALIDITY_PERIOD.map.CUSTOMIZABLE.value:
       formData.endTime = ''
@@ -214,46 +221,25 @@ const handleSubmit = async () => {
   if (!formRef.value) return
   try {
     await formRef.value.validate()
-    // todo 判断id是否为空，为空调用新增方法，不为空调用修改方法
     if (formData.id) {
-      // todo 调用修改接口
+      // 编辑逻辑
       console.log("提交数据", { ...formData })
-      // 关闭弹窗
       dialogVisible.value = false;
-      // 调用父界面的刷新
       emit('edit-success')
       ElMessage.success('修改成功')
     } else {
-      // todo 调用新增接口，返回key和secret
-      console.log("提交数据", { ...formData })
-      // 模拟生成密钥
-      generateKeys()
-      // 打开密钥弹窗
+      // 新增逻辑
+      const res = await api.addApiApplication({ ...formData })
+      appKey.value = res.appKey
+      appSecret.value = res.appSecret
       secretDialogVisible.value = true
       ElMessage.success('提交成功')
-      // emit('addSuccess', { ...formData })
     }
   } catch (e) {
     console.log('验证失败', e)
+    // 补充：表单验证失败时提示用户
+    ElMessage.error('表单填写有误，请检查')
   }
-}
-
-/**
- * @Description 模拟生成密钥对接可以删除
- * @author Huang Jialin
- * @date 2026/4/14 17:01
- */
-// 生成随机密钥（真实项目由后端返回）
-const generateKeys = () => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-  let key = ''
-  let secret = ''
-  for (let i = 0; i < 32; i++) {
-    key += chars.charAt(Math.floor(Math.random() * chars.length))
-    secret += chars.charAt(Math.floor(Math.random() * chars.length))
-  }
-  appKey.value = 'AKID' + key
-  appSecret.value = secret
 }
 
 const handleCancel = () => {
