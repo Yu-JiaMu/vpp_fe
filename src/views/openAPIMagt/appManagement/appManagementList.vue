@@ -41,7 +41,7 @@
         <el-table-column label="操作" fixed="right" width="150">
           <template #default="{ row }">
             <el-button link type="primary" @click.prevent="viewDetails(row)">详情</el-button>
-            <el-button link type="danger" @click.prevent="deleteProduct(row)">删除</el-button>
+            <el-button link type="danger" @click.prevent="deleteApp(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -232,13 +232,19 @@
     })
   }
 
-  async function deleteProduct(row) {
+  /**
+   * @Description 调用应用删除接口
+   * @author Huang Jialin
+   * @date 2026/4/15 10:32
+   */
+  async function deleteApp(row) {
     try {
-      await ElMessageBox.confirm('确定删除该产品吗？', '提示', {
+      await ElMessageBox.confirm('确定删除该应用吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
+      // todo 修改删除接口
       await api.apiDeleteProduct([row.id])
       ElMessage.success('删除成功')
       getTableData()

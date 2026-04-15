@@ -98,6 +98,7 @@
       :app-name="formData.appName"
       :app-key="appKey"
       :app-secret="appSecret"
+      @close-dialog="handleCloseDialog"
   />
 </template>
 
@@ -112,7 +113,7 @@ import AppSecretDialog from "@views/openAPIMagt/appManagement/dialog/AppSecretDi
 const props = defineProps({
   modelValue: { type: Boolean, default: false }
 })
-const emit = defineEmits(['update:modelValue', 'success'])
+const emit = defineEmits(['update:modelValue', 'add-success'])
 
 const dialogVisible = computed({
   get: () => props.modelValue,
@@ -237,7 +238,7 @@ const handleSubmit = async () => {
   try {
     await formRef.value.validate()
 
-    // 模拟提交
+    // todo 调用新增接口，返回key和secret
     console.log("提交数据", { ...formData })
 
     // 模拟生成密钥
@@ -277,6 +278,14 @@ const handleCancel = () => {
   } else {
     emit('update:modelValue', false)
   }
+}
+/**
+ * @Description 关闭弹窗
+ * @author Huang Jialin
+ * @date 2026/4/15 10:23
+ */
+const handleCloseDialog = () => {
+  emit('add-success')
 }
 
 const isFormDirty = () => {

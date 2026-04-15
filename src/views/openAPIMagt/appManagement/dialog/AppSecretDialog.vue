@@ -56,7 +56,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'close-dialog'])
 
 const visible = computed({
   get: () => props.modelValue,
@@ -77,6 +77,7 @@ const handleCopy = async (type) => {
 // 关闭
 const handleClose = () => {
   visible.value = false
+  emit('close-dialog')
 }
 </script>
 
