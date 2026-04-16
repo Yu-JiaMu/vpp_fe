@@ -36,11 +36,11 @@
       </el-descriptions-item>
 
       <el-descriptions-item label="有效期">
-        {{ appInfo.endTime }}
+        {{ formatDate(appInfo.createTime) }} 至 {{ formatDate(appInfo.endTime) }}
       </el-descriptions-item>
 
       <el-descriptions-item label="创建人">
-        {{ appInfo.createBy }}
+        {{ appInfo.createUser }}
       </el-descriptions-item>
 
       <el-descriptions-item label="创建时间">
@@ -52,7 +52,7 @@
       </el-descriptions-item>
 
       <el-descriptions-item label="最后调用时间">
-        {{ appInfo.lastReqTime }}
+        {{ appInfo.lastRequestTime }}
       </el-descriptions-item>
 
       <el-descriptions-item label="描述" :span="2">
@@ -87,6 +87,20 @@
   const appMangementDialogRef = ref(null)
 
   /**
+   * @Description 时间格式化 YYYY-MM-DD
+   * @author Huang Jialin
+   * @date 2026/4/14 15:09
+   */
+  const formatDate = (dateStr) => {
+    if (!dateStr) return ''
+    const date = new Date(dateStr)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  /**
    * @Description 打开编辑弹窗
    * @author Huang Jialin
    * @date 2026/4/15 11:34
@@ -94,7 +108,6 @@
   const handleEdit = async (data) => {
     // 1. 先打开弹窗，让组件渲染
     dialogVisible.value = true
-    console.log(dialogVisible.value)
     // 2. 等待 DOM 更新完成（组件实例化完毕）
     await nextTick()
     // 3. 安全调用初始化方法

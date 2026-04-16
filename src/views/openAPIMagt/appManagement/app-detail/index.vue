@@ -8,24 +8,20 @@
       <div class="flex-1">
         <div class="flex items-center gap-2 mb-1.5">
           <span class="text-base text-gray-800 font-scMedium">
-            <!--todo 替换-->
-            {{ product.name }}
+            {{ appInfo.appName }}
           </span>
-          <!--todo 替换-->
-          <el-switch v-model="product.enabled" size="small" @change="toggleEnable(product)" />
+          <el-switch :model-value="appInfo.appStatus===APP_STATUS.map.ENABLE.value" @change="toggleEnable(appInfo)" />
         </div>
         <div class="text-sm">
           Key：
           <span class="text-g-505658">
-            <!--todo 替换-->
-            ACEbxcvdfa9527
+            {{ appInfo.appKey }}
           </span>
           <span class="secret-label">
             <!--todo 替换-->
             Secret：
           </span>
           <span class="text-g-505658">
-            <!--todo 替换-->
             *******************
           </span>
         </div>
@@ -59,9 +55,11 @@
   import * as api from '@/api/iot'
   import BaseInfo from './components/base-info.vue'
   import ExtendedField from './components/extended-field/index.vue'
-  import { ElMessageBox } from 'element-plus'
+  import {ElMessage, ElMessageBox} from 'element-plus'
   import { onBeforeRouteLeave } from 'vue-router'
   import ReqRecord from "@views/deviceAccess/product/product-detail/components/req-record.vue";
+  import {detailApiApplication} from "@/api/iot";
+  import {APP_STATUS} from "@/enums/index.js";
 
   const route = useRoute()
   const router = useRouter()
@@ -147,46 +145,59 @@
   }
 
   const getDetail = async () => {
-    console.log('获取产品详情');
     try {
       const id = route.query.id
       if (!id) return
-
-      // todo 修改接口
-      const res = await api.apiGetProductDetail(id)
+      const res = await api.detailApiApplication({ id: id})
       if (res) {
-        product.value = res
-      }
-      appInfo.value = {
-        appName: "而往往如此111",
-        id: "2013452228110716928",
-        endTime: "2026-04-14",
-        appStatus: "enable",
-        lastReqTime: "2026-04-09 16:07:57",
-        createTime: "2026-04-01 15:33:30",
-        updateTime: "2026-04-01 15:33:30",
-        createBy: "管理员",
-        appKey: "ACEbxcvdfa9527",
-        appSecret: "*******************",
-        remark: "获取产品详情失败"
+        appInfo.value = res
       }
     } catch (error) {
-      console.error('获取产品详情失败:', error)
-      ElMessage.error('获取产品详情失败')
+      console.error('获取应用详情失败:', error)
+      ElMessage.error('获取应用详情失败')
     }
   }
+  /**
+   * @Description 修改状态
+   * @author Huang Jialin
+   * @date 2026/4/14 16:03
+   */
   async function toggleEnable(row) {
+    // 先记录当前状态，用于失败回滚
+    const oldStatus = row.appStatus;
     try {
-      await ElMessageBox.confirm(`请确认${!row.enabled ? '禁用' : '启用'}该产品吗？`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-      await api.apiEditProduct({ ...row, enabled: row.enabled })
-      ElMessage.success('更新成功')
+      // 计算要切换成的新状态
+      const newStatus = row.appStatus === APP_STATUS.map.DISABLED.value
+          ? APP_STATUS.map.ENABLE.value
+          : APP_STATUS.map.DISABLED.value;
+
+      await ElMessageBox.confirm(
+          `请确认${newStatus === APP_STATUS.map.ENABLE.value ? '启用' : '禁用'}该应用吗？`,
+          '提示',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }
+      );
+
+      // 调用接口
+      await api.updateApiApplication({
+        ...row,
+        appStatus: newStatus
+      });
+      // 接口成功 → 更新状态
+      row.appStatus = newStatus;
+      ElMessage.success('更新成功');
     } catch (error) {
-      row.enabled = !row.enabled // 回滚状态
-      // ElMessage.error('更新失败')
+      // 接口失败 / 取消弹窗 → 都会进这里
+      console.error('更新失败', error);
+      // 回滚状态
+      row.appStatus = oldStatus;
+      // 如果是用户取消弹窗，不提示错误
+      if (error !== 'cancel') {
+        ElMessage.error('更新失败');
+      }
     }
   }
 

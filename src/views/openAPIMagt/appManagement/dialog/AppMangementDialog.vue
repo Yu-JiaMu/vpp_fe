@@ -223,7 +223,7 @@ const handleSubmit = async () => {
     await formRef.value.validate()
     if (formData.id) {
       // 编辑逻辑
-      console.log("提交数据", { ...formData })
+      await api.updateApiApplication({ ...formData })
       dialogVisible.value = false;
       emit('edit-success')
       ElMessage.success('修改成功')
