@@ -55,7 +55,7 @@
   import BaseInfo from './components/base-info.vue'
   import {ElMessage, ElMessageBox} from 'element-plus'
   import { onBeforeRouteLeave } from 'vue-router'
-  import ReqRecord from "@views/deviceAccess/product/product-detail/components/req-record.vue";
+  import ReqRecord from "@views/openAPIMagt/appManagement/app-detail/components/req-record.vue";
   import {APP_STATUS} from "@/enums/index.js";
 
   const route = useRoute()

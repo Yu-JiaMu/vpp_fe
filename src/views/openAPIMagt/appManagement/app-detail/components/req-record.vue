@@ -35,9 +35,9 @@
 </template>
 
 <script setup>
-import * as api from '@/api/iot'
+import * as api from '@/api/iot/index.js'
 import {ElMessage} from "element-plus";
-import {APP_STATUS, REQ_STATUS} from "@/enums/index.js";
+import {APP_STATUS, REQ_STATUS} from "@/enums/index.ts";
 
 const router = useRouter()
 
