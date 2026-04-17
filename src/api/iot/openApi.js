@@ -61,3 +61,12 @@ export function addApiApplication(params) {
 export function detailApiApplication(params) {
   return request.get(SERVICE_API + '/apiApplication/detail', params)
 }
+
+/**
+ * @Description 应用请求日志接口
+ * @author Huang Jialin
+ * @date 2026/4/15 16:38
+ */
+export function reqLogApiApplication(params) {
+  return request.get(SERVICE_API + '/apiApplication/request/log/list', params)
+}

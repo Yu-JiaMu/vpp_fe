@@ -18,7 +18,6 @@
             {{ appInfo.appKey }}
           </span>
           <span class="secret-label">
-            <!--todo 替换-->
             Secret：
           </span>
           <span class="text-g-505658">
@@ -54,11 +53,9 @@
 <script setup>
   import * as api from '@/api/iot'
   import BaseInfo from './components/base-info.vue'
-  import ExtendedField from './components/extended-field/index.vue'
   import {ElMessage, ElMessageBox} from 'element-plus'
   import { onBeforeRouteLeave } from 'vue-router'
   import ReqRecord from "@views/deviceAccess/product/product-detail/components/req-record.vue";
-  import {detailApiApplication} from "@/api/iot";
   import {APP_STATUS} from "@/enums/index.js";
 
   const route = useRoute()
@@ -115,33 +112,9 @@
     })
   }
 
-  const handleThingModelChange = (val) => {
-    modelDirty.value = val
-  }
-
   const handleTabClick = async (nextTab) => {
     if (nextTab === activeTab.value) return
-
-    if (activeTab.value === 'reqRecord' && modelDirty.value) {
-      try {
-        await confirmDiscard()
-        modelDirty.value = false
-        activeTab.value = nextTab
-      } catch (err) {}
-      return
-    }
-
     activeTab.value = nextTab
-  }
-
-  const handleViewDevices = () => {
-    console.log('查看设备列表')
-    router.push({
-      name: 'Device',
-      query: {
-        productId: product.value.id
-      }
-    })
   }
 
   const getDetail = async () => {
@@ -199,12 +172,6 @@
         ElMessage.error('更新失败');
       }
     }
-  }
-
-  const handleSubmitExtendField = async ({ data, msg = '添加成功' }) => {
-    await api.updateProductExpandInfo({ id: product.value.id, expandInfo: data })
-    ElMessage.success(msg)
-    getDetail()
   }
 
   const init = () => {

@@ -181,6 +181,11 @@
     /** 表单项的占位符文本 */
     placeholder?: string
     /** 更多属性配置请参考 ElementPlus 官方文档 */
+    // 新增：日期时间格式配置
+    /** 日期时间显示格式（对应 ElDatePicker 的 format） */
+    format?: string
+    /** 日期时间绑定值格式（对应 ElDatePicker 的 value-format） */
+    valueFormat?: string
   }
 
   // 表单配置
@@ -258,7 +263,23 @@
       }
       // 优先使用 item.props 中的 type，未传则自动补充
       baseProps.type = baseProps.type || dateTypeMap[item.type!]
-      // 范围选择器默认补充 range-separator（可选，优化体验）
+
+      // ===== 新增：自定义日期时间格式 =====
+      // 显示格式（format）：优先用 item.format → item.props.format → 默认值
+      baseProps.format = baseProps.format || item.format || (() => {
+        switch (item.type) {
+          case 'date': return 'YYYY-MM-DD'
+          case 'daterange': return 'YYYY-MM-DD'
+          case 'datetime': return 'YYYY-MM-DD HH:mm:ss'
+          case 'datetimerange': return 'YYYY-MM-DD HH:mm:ss' // 默认时间范围格式
+          default: return 'YYYY-MM-DD'
+        }
+      })()
+
+      // 绑定值格式（valueFormat）：优先用 item.valueFormat → item.props.valueFormat → 默认值
+      baseProps['value-format'] = baseProps['value-format'] || item.valueFormat || baseProps.format
+
+      // 范围选择器默认补充占位符（可选，优化体验）
       if (['daterange', 'datetimerange'].includes(item.type!)) {
         baseProps.rangeSeparator = baseProps.rangeSeparator || '至'
         baseProps.startPlaceholder = baseProps.startPlaceholder || '请输入开始时间'

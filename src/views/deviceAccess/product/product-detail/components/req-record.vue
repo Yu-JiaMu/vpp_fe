@@ -19,13 +19,7 @@
       <el-table-column prop="reqTime" label="请求时间" width="180" sortable="custom" />
       <el-table-column prop="reqId" label="请求ID" min-width="180" />
       <el-table-column prop="id" label="API编号" min-width="180" />
-      <el-table-column prop="appName" label="API名称" min-width="180">
-        <template #default="{ row }">
-            <span class="cursor-pointer" @click.prevent="viewDetails(row)">
-              {{ row.appName }}
-            </span>
-        </template>
-      </el-table-column>
+      <el-table-column prop="appName" label="API名称" min-width="180" />
       <el-table-column prop="响应时间" label="响应时间" width="180" sortable="custom" />
       <el-table-column prop="reqStatus" label="调用状态" width="120">
         <template #default="{ row }">
@@ -37,27 +31,23 @@
     </el-table>
 
     <ArtPagination v-model="pagination" @change="getTableData" />
-    <AppMangementDialog
-        ref="productCategoryDialogRef"
-        v-model="dialogVisible"
-        @add-success="handleSuccess"
-    />
   </ElCard>
 </template>
 
 <script setup>
 import * as api from '@/api/iot'
-import AppMangementDialog from "@views/openAPIMagt/appManagement/dialog/AppMangementDialog.vue";
 import {ElMessage} from "element-plus";
 import {APP_STATUS, REQ_STATUS} from "@/enums/index.js";
 
 const router = useRouter()
 
 const form = reactive({
-  isAsc: 'desc',
-  orderByColumn: 'updateTime',
-  appName: '',
-  id: ''
+  asc: true,
+  apiNumber: '',
+  apiName: '',
+  reqTime: '',
+  startTime: '',
+  endTime: '',
 })
 
 const pagination = reactive({
@@ -71,99 +61,83 @@ const dialogVisible = ref(false); // 记录弹窗是否显示
 const productCategoryList = ref([])
 
 /**
- * @Description 时间格式化 YYYY-MM-DD
- * @author Huang Jialin
- * @date 2026/4/14 15:09
- */
-const formatDate = (dateStr) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-/**
  * @Description 获取列表
  * @author Huang Jialin
  * @date 2026/4/14 14:58
  */
 const getTableData = async () => {
   try {
+    // 解构赋值，排除reqTime，只传递startTime/endTime
+    const { reqTime, ...params } = form;
     const queryParams = {
       pageNum: pagination.current,
       pageSize: pagination.size,
-      ...form
-    }
-    // todo 修改接口
-    const response = await api.apiGetProductList(queryParams)
+      ...params // 此时params包含startTime/endTime，无reqTime
+    };
+    const response = await api.reqLogApiApplication(queryParams);
     if (response) {
-      tableData.value = [
-        {
-          "reqTime": "2026-04-14 15:33:30",
-          "appName": "而往往如此111",
-          "reqId": "2013452228110716928",
-          "endTime": "2026-04-14 15:33:30",
-          "appStatus": "enable",
-          "lastReqTime": "2026-04-09 16:07:57",
-          "createTime": "2026-04-01 15:33:30",
-          "reqStatus": '1'
-        },
-        {
-          "reqTime": "2026-04-14 15:33:30",
-          "appName": "而往往如此111",
-          "reqId": "2016678968400416768",
-          "endTime": "2026-04-14 15:33:30",
-          "appStatus": "disable",
-          "lastReqTime": "2026-04-09 16:07:57",
-          "createTime": "2026-04-01 15:33:30",
-          "reqStatus": '0'
-        },
-      ]
-      pagination.total = response.total || 0
+      tableData.value = response.rows;
+      pagination.total = response.total || 0;
     }
   } catch (error) {
-    console.error('获取应用列表失败:', error)
-    ElMessage.error('获取应用列表失败')
+    console.error('获取应用列表失败:', error);
+    ElMessage.error('获取应用列表失败');
   }
-}
+};
 
 // 表单配置
 const formItems = computed(() => [
   {
     label: 'API编号',
-    key: 'appName',
+    key: 'apiNumber',
     type: 'input',
-    placeholder: '请输入应用名称',
+    placeholder: '请输入API编号',
     clearable: true,
     span: 5
   },
   {
     label: 'API名称',
-    key: 'id',
+    key: 'apiName',
     type: 'input',
-    placeholder: '请输入应用编号',
+    placeholder: '请输入apiName',
     clearable: true,
     span: 5
   },
   {
     label: '请求时间',
-    key: 'reqTime', // 对应form中的reqTime字段
+    key: 'reqTime',
     type: 'datetimerange', // 时间范围选择器类型
+    onChange: (val) => {
+      if (val && val.length === 2) {
+        form.startTime = val[0]; // 开始时间
+        form.endTime = val[1];   // 结束时间
+      } else {
+        form.startTime = '';
+        form.endTime = '';
+      }
+    },
     span: 11,
   }
 ])
 
 function onSearch() {
-  pagination.current = 1
-  getTableData()
+  pagination.current = 1;
+  getTableData();
 }
 
 const tableRef = useTemplateRef('tableRef')
+
 function onReset() {
-  pagination.current = 1
-  tableRef.value?.clearSort()
-  getTableData()
+  pagination.current = 1;
+  tableRef.value?.clearSort();
+  // 重置时间相关字段
+  form.reqTime = '';
+  form.startTime = '';
+  form.endTime = '';
+  // 重置其他表单字段（如果需要）
+  form.apiNumber = '';
+  form.apiName = '';
+  getTableData();
 }
 
 function handleSort({ order, prop }) {
@@ -171,141 +145,6 @@ function handleSort({ order, prop }) {
   form.orderByColumn = prop
   form.isAsc = order
   getTableData()
-}
-
-/**
- * @Description 打开弹窗
- * @author Huang Jialin
- * @date 2026/4/14 13:23
- */
-const openDialog = async (type = 'add', data = null) => {
-  dialogVisible.value = true
-  await nextTick()
-  if (type === 'add') return
-}
-
-/**
- * @Description 表单提交成功后回调内容
- * @author Huang Jialin
- * @date 2026/4/14 13:23
- */
-const handleSuccess = async (formData) => {
-  console.log('表单提交成功:', formData)
-  try {
-    dialogVisible.value = false
-    await nextTick()
-    pagination.current = 1
-    getTableData()
-  } catch (error) {
-    console.error('新增失败:', error)
-    ElMessage.error('新增失败，请稍后重试')
-  }
-}
-
-/**
- * @Description 编辑成功后回调内容。
- * @author Huang Jialin
- * @date 2026/4/14 13:30
- */
-const handleEditSuccess = async () => {
-  // 刷新表格数据
-  pagination.current = 1
-  getTableData()
-}
-
-/**
- * @Description 打开详情页面
- * @author Huang Jialin
- * @date 2026/4/15 10:40
- */
-function viewDetails(row) {
-  router.push({
-    name: 'appDetail',
-    query: {
-      id: row.id
-    }
-  })
-}
-
-function manageDevices(row) {
-  console.log('管理设备', row)
-  router.push({
-    name: 'Device',
-    query: {
-      productId: row.id
-    }
-  })
-}
-
-/**
- * @Description 调用应用删除接口
- * @author Huang Jialin
- * @date 2026/4/15 10:32
- */
-async function deleteApp(row) {
-  try {
-    await ElMessageBox.confirm('确定删除该应用吗？', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
-    // todo 修改删除接口
-    await api.apiDeleteProduct([row.id])
-    ElMessage.success('删除成功')
-    getTableData()
-  } catch (error) {
-    if (error === 'cancel') {
-      console.log('已取消删除')
-    } else {
-      console.error('删除失败:', error)
-      ElMessage.error('删除失败')
-    }
-  }
-}
-
-/**
- * @Description 修改状态
- * @author Huang Jialin
- * @date 2026/4/14 16:03
- */
-async function toggleEnable(row) {
-  // 先记录当前状态，用于失败回滚
-  const oldStatus = row.appStatus;
-  try {
-    // 计算要切换成的新状态
-    const newStatus = row.appStatus === APP_STATUS.map.DISABLED.value
-        ? APP_STATUS.map.ENABLE.value
-        : APP_STATUS.map.DISABLED.value;
-
-    await ElMessageBox.confirm(
-        `请确认${newStatus === APP_STATUS.map.ENABLE.value ? '启用' : '禁用'}该应用吗？`,
-        '提示',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }
-    );
-
-    // 调用接口
-    await api.apiEditProduct({
-      ...row,
-      appStatus: newStatus
-    });
-    // 接口成功 → 更新状态
-    row.appStatus = newStatus;
-    ElMessage.success('更新成功');
-
-  } catch (error) {
-    // 接口失败 / 取消弹窗 → 都会进这里
-    console.error('更新失败', error);
-    // 回滚状态
-    row.appStatus = oldStatus;
-    // 如果是用户取消弹窗，不提示错误
-    if (error !== 'cancel') {
-      ElMessage.error('更新失败');
-    }
-  }
 }
 
 onActivated(() => {
