@@ -296,3 +296,38 @@ body {
     -webkit-tap-highlight-color: transparent;
   }
 }
+
+.tooltip-desc {
+  width: 26px;
+  height: 19px;
+  font-size: 13px;
+  font-family: Source Han Sans SC, Source Han Sans SC-Regular;
+  font-weight: 400;
+  text-align: left;
+  color: #303537;
+}
+.tooltip-cont {
+  width: 180px;
+  height: 34px;
+  font-size: 12px;
+  font-family: Source Han Sans SC, Source Han Sans SC-Regular;
+  font-weight: 400;
+  text-align: left;
+  color: #767c80;
+}
+.tooltip-link {
+  width: 180px;
+  height: 34px;
+  font-size: 12px;
+  font-family: Source Han Sans SC, Source Han Sans SC-Regular;
+  font-weight: 400;
+  text-align: left;
+  color: #1464ee;
+}
+.tooltip-underline{
+  width: 180px;
+  height: 0px;
+  border: 1px solid #ced1d9;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}

@@ -149,6 +149,15 @@ export const energyIot: AppRouteRecord = {
             activePath: '/energyIot/openAPIMagt/appManagement'
           }
         },
+        {
+          path: 'interfaceDebugList',
+          name: 'InterfaceDebugList',
+          component: '/openAPIMagt/interfaceList/interfaceDebugList',
+          meta: {
+            title: '接口列表',
+            keepAlive: true
+          }
+        }
       ]
     }
   ]
