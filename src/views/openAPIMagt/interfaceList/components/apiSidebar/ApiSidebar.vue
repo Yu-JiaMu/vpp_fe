@@ -106,6 +106,8 @@ const handleNodeClick = (node) => {
     }
   }
 
+  // ... existing code ...
+
   .sidebar-tree {
     flex: 1;
     overflow-y: auto;
@@ -114,45 +116,60 @@ const handleNodeClick = (node) => {
       display: flex;
       flex-direction: column;
       padding: 4px 0;
+      width: 100%;
+      word-wrap: break-word;
+      word-break: break-all;
     }
 
     :deep(.node-label-level1) {
-      width: 60px;
-      height: 21px;
+      max-width: 100%;
+      min-height: 21px;
       font-size: 15px;
       font-family: Source Han Sans SC, Source Han Sans SC-Bold;
       font-weight: 700;
       text-align: left;
       color: #303537;
+      white-space: normal;
+      word-wrap: break-word;
+      word-break: break-word;
+      line-height: 1.4;
     }
 
     :deep(.node-label-level2) {
-      width: 154px;
-      height: 20px;
+      max-width: 100%;
+      min-height: 20px;
       font-size: 14px;
       font-family: Source Han Sans SC, Source Han Sans SC-Regular;
       font-weight: 400;
       text-align: left;
       color: #303537;
-      line-height: 16px;
+      line-height: 1.4;
+      white-space: normal;
+      word-wrap: break-word;
+      word-break: break-word;
     }
 
     :deep(.node-id) {
-      width: 79px;
-      height: 17px;
+      max-width: 100%;
+      min-height: 17px;
       font-size: 12px;
       font-family: Source Han Sans SC, Source Han Sans SC-Regular;
       font-weight: 400;
       text-align: left;
       color: #afb2b8;
-      line-height: 16px;
+      line-height: 1.4;
+      white-space: normal;
+      word-wrap: break-word;
+      word-break: break-all;
     }
 
     :deep(.el-tree-node__content) {
       height: auto !important;
       padding: 6px 4px;
       line-height: 1.4;
+      align-items: flex-start !important;
     }
   }
 }
 </style>
+

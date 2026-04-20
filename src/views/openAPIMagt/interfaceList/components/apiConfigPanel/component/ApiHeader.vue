@@ -26,24 +26,33 @@ defineProps({
   border-bottom: 1px solid #eee;
 
   .api-title {
-    width: 111px;
-    height: 24px;
+    max-width: 100%;
+    min-height: 24px;
     font-size: 16px;
     font-family: Source Han Sans SC, Source Han Sans SC-Bold;
     font-weight: 700;
     text-align: left;
     color: #303537;
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+    line-height: 1.4;
+    margin: 0;
   }
 
   .api-desc {
-    width: 280px;
-    height: 20px;
+    max-width: 100%;
+    min-height: 20px;
     font-size: 14px;
     font-family: Source Han Sans SC, Source Han Sans SC-Regular;
     font-weight: 400;
     text-align: left;
     color: #505658;
-    line-height: 16px;
+    line-height: 1.6;
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+    margin: 8px 0 0 0;
   }
 }
 </style>

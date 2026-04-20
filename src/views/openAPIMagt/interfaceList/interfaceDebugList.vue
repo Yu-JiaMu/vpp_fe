@@ -252,7 +252,120 @@ const apiResult = ref({
   requestHeaders: '{"authorization": "Bearer xxx","authorization": "Bearer xxx"}' // 请求头
 })
 
-const callHistory = ref([])
+const callHistory = ref([
+  {
+    time: '2026-03-31 12:00:00',
+    api: 'QueryProduct',
+    success: true,
+    costTime: '188',
+    params: {
+      PageSize: 1,
+      CurrentPage: 1,
+      SourceIp: '182.148.54.253'
+    }
+  },
+  {
+    time: '2026-03-31 11:55:30',
+    api: 'QueryProduct',
+    success: true,
+    costTime: '205',
+    params: {
+      PageSize: 10,
+      CurrentPage: 1,
+      SourceIp: '192.168.1.100'
+    }
+  },
+  {
+    time: '2026-03-31 11:50:15',
+    api: 'QueryProduct',
+    success: true,
+    costTime: '156',
+    params: {
+      PageSize: 20,
+      CurrentPage: 2,
+      SourceIp: '10.0.0.55'
+    }
+  },
+  {
+    time: '2026-03-31 11:45:22',
+    api: 'QueryProduct',
+    success: true,
+    costTime: '234',
+    params: {
+      PageSize: 5,
+      CurrentPage: 1,
+      SourceIp: '172.16.0.88'
+    }
+  },
+  {
+    time: '2026-03-31 11:40:10',
+    api: 'QueryProduct',
+    success: true,
+    costTime: '178',
+    params: {
+      PageSize: 15,
+      CurrentPage: 3,
+      SourceIp: '192.168.2.200'
+    }
+  },
+  {
+    time: '2026-03-31 11:35:05',
+    api: 'QueryProduct',
+    success: true,
+    costTime: '199',
+    params: {
+      PageSize: 8,
+      CurrentPage: 1,
+      SourceIp: '10.10.10.10'
+    }
+  },
+  {
+    time: '2026-03-31 11:30:48',
+    api: 'QueryProduct',
+    success: true,
+    costTime: '167',
+    params: {
+      PageSize: 12,
+      CurrentPage: 2,
+      SourceIp: '192.168.0.1'
+    }
+  },
+  {
+    time: '2026-03-31 11:25:33',
+    api: 'QueryProduct',
+    success: true,
+    costTime: '211',
+    params: {
+      PageSize: 10,
+      CurrentPage: 1,
+      SourceIp: '172.16.8.99'
+    }
+  },
+  {
+    time: '2026-03-31 11:20:17',
+    api: 'QueryProduct',
+    success: false,
+    costTime: '0',
+    params: {
+      PageSize: 10,
+      CurrentPage: 1,
+      SourceIp: '192.168.1.50',
+      ErrorMsg: '网络请求超时'
+    }
+  },
+  {
+    time: '2026-03-31 11:15:02',
+    api: 'QueryProduct',
+    success: false,
+    costTime: '0',
+    params: {
+      PageSize: 5,
+      CurrentPage: 1,
+      SourceIp: '10.0.0.25',
+      ErrorMsg: '认证失败'
+    }
+  }
+])
 
 const handleNodeClick = (node) => {
   if (node.id) {
