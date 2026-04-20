@@ -7,19 +7,22 @@
         "label": "查询所有设备的列表信息",
         "id": "QueryProduct",
         "desc": "调用该接口查看指定设备上报属性的数据快照",
-        "level": 2
+        "level": 2,
+        "docPath": "/src/assets/openapi/docs/create-device.md"
       },
       {
         "label": "查询设备详情-运行状态",
         "id": "QueryDeviceStatus",
         "desc": "查看设备实时运行状态",
-        "level": 2
+        "level": 2,
+        "docPath": "/src/assets/openapi/docs/delete-device.md"
       },
       {
         "label": "查询设备详情-日志管理",
         "id": "QueryDeviceLog",
         "desc": "查看设备历史操作日志",
-        "level": 2
+        "level": 2,
+        "docPath": "/src/assets/openapi/docs/query-product.md"
       }
     ]
   }

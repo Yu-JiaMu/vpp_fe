@@ -6,7 +6,7 @@
       class="right-tabs"
     >
       <el-tab-pane label="文档" name="doc">
-        <ApiDoc :api-info="apiInfo" :params="params" />
+        <ApiDoc :doc-path="apiInfo.docPath" />
       </el-tab-pane>
 
       <el-tab-pane label="调用结果" name="result">
@@ -28,11 +28,9 @@
 </template>
 
 <script setup>
-
-
-import ApiDoc from "@views/openAPIMagt/interfaceList/components/apiRightPanel/component/ApiDoc.vue";
-import ApiResult from "@views/openAPIMagt/interfaceList/components/apiRightPanel/component/ApiResult.vue";
-import CallHistory from "@views/openAPIMagt/interfaceList/components/apiRightPanel/component/CallHistory.vue";
+import ApiDoc from './component/ApiDoc.vue'
+import ApiResult from './component/ApiResult.vue'
+import CallHistory from './component/CallHistory.vue'
 
 defineProps({
   activeTab: {
@@ -42,12 +40,7 @@ defineProps({
   apiInfo: {
     type: Object,
     required: true,
-    default: () => ({ doc: '' })
-  },
-  params: {
-    type: Array,
-    required: true,
-    default: () => []
+    default: () => ({ docPath: '' })
   },
   apiResult: {
     type: Object,

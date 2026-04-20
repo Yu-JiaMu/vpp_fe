@@ -39,7 +39,7 @@ const appSecret = ref('')
 const currentApi = ref({
   title: 'QueryProduct',
   desc: '调用该接口查看指定设备上报属性的数据快照',
-  doc: '该接口用于查询IoT平台中所有设备的列表信息，支持按设备标识、名称、产品等条件筛选，并支持分页查询。'
+  docPath: '/src/assets/openapi/docs/query-product.md'
 })
 
 const inputParams = reactive([
@@ -150,7 +150,7 @@ const pageParams = reactive([
 ])
 
 const activeTab = ref('params')
-const rightActiveTab = ref('result')
+const rightActiveTab = ref('doc')
 const resultTab = ref('response')
 
 const apiResult = ref({
@@ -168,7 +168,7 @@ const handleNodeClick = (node) => {
     currentApi.value = {
       title: node.id,
       desc: node.desc || '',
-      doc: `该接口用于${node.label}，支持条件筛选和分页查询。`
+      docPath: node.docPath || `/src/assets/openapi/docs/${node.id.toLowerCase()}.md`
     }
     inputParams.forEach(item => item.value = '')
     pageParams.forEach(item => item.value = 10)
