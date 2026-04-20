@@ -88,10 +88,41 @@ defineEmits(['update:activeTab', 'update:resultTab', 'recall'])
 
     :deep(.el-tabs__header) {
       flex-shrink: 0;
+      margin: 0 0 16px 0;
+    }
+
+    :deep(.el-tab-pane) {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    :deep(.el-tabs__item) {
+      height: 29px;
+      font-size: 13px;
+      font-family: Source Han Sans SC, Source Han Sans SC-Bold;
+      font-weight: 700;
+      text-align: left;
+      color: #303537;
+      padding-bottom: 10px;
+    }
+
+    :deep(.el-tabs__item.is-active) {
+      height: 29px;
+      font-size: 13px;
+      font-family: Source Han Sans SC, Source Han Sans SC-Bold;
+      font-weight: 700;
+      text-align: left;
+      color: #1464ee;
+    }
+
+    :deep(.el-tabs__item:hover) {
+      color: #1464ee;
     }
 
     :deep(.el-tabs__content) {
       flex: 1;
+      padding: 0;
       overflow-y: auto;
     }
   }

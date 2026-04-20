@@ -12,6 +12,8 @@ import '@/assets/styles/hu-common.scss'
 import '@/assets/styles/common.scss'
 import '@/assets/styles/core/font.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import JsonViewer from "vue3-json-viewer";
+import "vue3-json-viewer/dist/vue3-json-viewer.css"
 
 
 document.addEventListener(
@@ -30,4 +32,5 @@ setupGlobDirectives(app)
 setupErrorHandle(app)
 
 app.use(language)
+app.use(JsonViewer)
 app.mount('#app')
