@@ -1,24 +1,21 @@
 <template>
   <div class="history-content">
-    <!-- 筛选区域 -->
-    <div class="filter-bar">
-      <div class="filter-item">
-        <span class="filter-label">调用状态</span>
-        <el-select v-model="filterStatus" placeholder="全部" clearable class="filter-select">
-          <el-option label="调用成功" value="success" />
-          <el-option label="调用失败" value="error" />
-        </el-select>
-      </div>
-      <el-button type="primary" @click="handleSearch" class="search-btn">搜索</el-button>
-      <el-button @click="handleReset" class="reset-btn">
-        <el-icon><RefreshRight /></el-icon>
-        重置
-      </el-button>
-    </div>
-
-    <!-- 表格区域 -->
-    <div class="table-container" v-if="filteredHistory.length > 0">
-      <el-table :data="filteredHistory" border class="history-table">
+    <ArtSearchBar
+        ref="searchBarRef"
+        v-model="form"
+        :items="formItems"
+        @search="handleSearch"
+        @reset="handleReset"
+    >
+    </ArtSearchBar>
+    <div class="table-container">
+      <el-table
+          :data="filteredHistory"
+          ref="tableRef"
+          border
+          style="width: 100%"
+          class="history-table"
+      >
         <el-table-column label="请求时间" width="180" align="center">
           <template #default="{ row }">
             <span class="time-text">{{ row.time }}</span>
@@ -38,10 +35,10 @@
             <div class="action-cell">
               <!-- 查看调用参数 -->
               <el-popover
-                placement="right"
-                :width="320"
-                trigger="hover"
-                popper-class="param-popover"
+                  placement="right"
+                  :width="320"
+                  trigger="hover"
+                  popper-class="param-popover"
               >
                 <template #reference>
                   <el-button link type="primary" class="action-btn">查看调用参数</el-button>
@@ -57,12 +54,6 @@
           </template>
         </el-table-column>
       </el-table>
-    </div>
-
-    <!-- 空状态 -->
-    <div v-else class="empty-state">
-      <el-icon :size="48"><Document /></el-icon>
-      <p>暂无调用历史</p>
     </div>
   </div>
 </template>
@@ -80,9 +71,33 @@ const props = defineProps({
   }
 })
 
+const form = reactive({
+  filterStatus: ""
+})
+
+const formItems = computed(() => [
+  {
+    label: '调用状态',
+    key: 'filterStatus',
+    type: 'select',
+    width: '100%',
+    span: 10,
+    props: {
+      placeholder: '全部',
+      options: filterStatusCode.value,
+      clearable: true
+    }
+  }
+]);
+
+const filterStatusCode = ref([
+  { label: '调用成功', value: "success" },
+  { label: '调用失败', value: "error" }
+])
+
 const emit = defineEmits(['recall'])
 
-const filterStatus = ref('')
+// const filterStatus = ref('')
 
 // 筛选后的历史记录
 const filteredHistory = computed(() => {
@@ -92,9 +107,9 @@ const filteredHistory = computed(() => {
   result.sort((a, b) => new Date(b.time) - new Date(a.time))
 
   // 按状态筛选
-  if (filterStatus.value === 'success') {
+  if (form.filterStatus === 'success') {
     result = result.filter(item => item.success)
-  } else if (filterStatus.value === 'error') {
+  } else if (form.filterStatus === 'error') {
     result = result.filter(item => !item.success)
   }
 
@@ -108,7 +123,7 @@ const handleSearch = () => {
 
 // 重置
 const handleReset = () => {
-  filterStatus.value = ''
+  form.filterStatus = ''
 }
 
 // 格式化 JSON
@@ -203,27 +218,7 @@ watch(
 
   // 表格容器
   .table-container {
-    border: 1px solid #e4e7ed;
-    border-radius: 4px;
-    overflow: hidden;
-    max-height: calc(100vh - 300px);
-    display: flex;
-    flex-direction: column;
-
     .history-table {
-      width: 100%;
-      flex: 1;
-      overflow: hidden;
-
-      :deep(.el-table__header) {
-        th {
-          background: #f5f7fa;
-          color: #606266;
-          font-weight: 500;
-          text-align: center;
-        }
-      }
-
       :deep(.el-table__body) {
         td {
           text-align: center;
@@ -232,7 +227,7 @@ watch(
 
       :deep(.el-table__body-wrapper) {
         overflow-y: auto;
-        max-height: calc(100vh - 350px);
+        max-height: calc(100vh - 386px);
 
         // 滚动条美化
         &::-webkit-scrollbar {
