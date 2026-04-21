@@ -32,15 +32,6 @@
         "hasPage": true
       },
       {
-        "id": "10004",
-        "label": "查询指定设备上报的所有属性历史数据",
-        "apiPath": "getDevicePropertyHistory（待定）",
-        "desc": "调用该接口查询指定设备上报的所有属性历史数据",
-        "level": 2,
-        "docPath": "/src/assets/openapi/docs/query-product.md",
-        "hasPage": true
-      },
-      {
         "id": "10005",
         "label": "查询指定设备上报的指定属性历史数据",
         "apiPath": "getDevicePropertyHistory",
