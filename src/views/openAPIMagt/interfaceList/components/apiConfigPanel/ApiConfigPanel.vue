@@ -12,6 +12,7 @@
           <ParamsForm
             :input-params="inputParams"
             :page-params="pageParams"
+            :api-info="apiInfo"
           />
         </el-tab-pane>
 

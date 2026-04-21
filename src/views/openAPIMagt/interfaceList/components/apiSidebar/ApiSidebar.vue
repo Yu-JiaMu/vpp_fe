@@ -26,7 +26,7 @@
           >
             {{ node.label }}
           </div>
-          <div class="node-id" v-if="data.id">{{ data.id }}</div>
+          <div class="node-id" v-if="data.apiPath">{{ data.apiPath }}</div>
         </div>
       </template>
     </el-tree>

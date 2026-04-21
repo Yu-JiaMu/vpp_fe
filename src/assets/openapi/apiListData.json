@@ -4,25 +4,68 @@
     "level": 1,
     "children": [
       {
-        "label": "查询所有设备的列表信息",
-        "id": "QueryProduct",
-        "desc": "调用该接口查看指定设备上报属性的数据快照",
+        "id": "10001",
+        "label": "查询所有设备列表信息",
+        "apiPath": "remote.apiApplication.valid.core.info",
+        "method": "GET",
+        "desc": "调用该接口查询所有设备列表信息",
         "level": 2,
-        "docPath": "/src/assets/openapi/docs/create-device.md"
+        "docPath": "/src/assets/openapi/docs/create-device.md",
+        "hasPage": true
       },
       {
-        "label": "查询设备详情-运行状态",
-        "id": "QueryDeviceStatus",
-        "desc": "查看设备实时运行状态",
+        "id": "10002",
+        "label": "查询指定网关设备下的子设备列表信息",
+        "apiPath": "remote.apiApplication.valid.core.info2",
+        "desc": "调用该接口查询指定网关设备下的子设备列表信息",
         "level": 2,
-        "docPath": "/src/assets/openapi/docs/delete-device.md"
+        "docPath": "/src/assets/openapi/docs/delete-device.md",
+        "hasPage": false
       },
       {
-        "label": "查询设备详情-日志管理",
-        "id": "QueryDeviceLog",
-        "desc": "查看设备历史操作日志",
+        "id": "10003",
+        "label": "查询指定设备上报的属性最新快照",
+        "apiPath": "remote.apiApplication.valid.core.info3",
+        "desc": "调用该接口查询指定设备上报的属性最新快照",
         "level": 2,
-        "docPath": "/src/assets/openapi/docs/query-product.md"
+        "docPath": "/src/assets/openapi/docs/query-product.md",
+        "hasPage": true
+      },
+      {
+        "id": "10004",
+        "label": "查询指定设备上报的所有属性历史数据",
+        "apiPath": "remote.apiApplication.valid.core.info4",
+        "desc": "调用该接口查询指定设备上报的所有属性历史数据",
+        "level": 2,
+        "docPath": "/src/assets/openapi/docs/query-product.md",
+        "hasPage": true
+      },
+      {
+        "id": "10005",
+        "label": "查询指定设备上报的指定属性历史数据",
+        "apiPath": "remote.apiApplication.valid.core.info5",
+        "desc": "调用该接口查询指定设备上报的指定属性历史数据",
+        "level": 2,
+        "docPath": "/src/assets/openapi/docs/query-product.md",
+        "hasPage": true
+      },
+      {
+        "id": "10006",
+        "label": "查询指定设备的日志信息",
+        "apiPath": "remote.apiApplication.valid.core.info6",
+        "desc": "调用该接口查询指定设备的日志信息",
+        "level": 2,
+        "docPath": "/src/assets/openapi/docs/query-product.md",
+        "hasPage": true
+      },
+      {
+        "id": "10007",
+        "label": "查询指定设备的拓展字段",
+        "apiPath": "remote.apiApplication.valid.core.info7",
+        "desc": "调用该接口查询指定设备的拓展字段",
+        "level": 2,
+        "docPath": "/src/assets/openapi/docs/query-product.md",
+        "hasPage": false
       }
     ]
   }

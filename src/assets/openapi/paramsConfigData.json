@@ -1,0 +1,92 @@
+[
+  {
+    "key": "identifier",
+    "label": "Identifier",
+    "cnLabel": "设备标识符",
+    "type": "input",
+    "isRequired": ["10003", "10004", "10005", "10006", "10007"],
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">设备标识符。可在</span><span class=\"tooltip-link\">【设备接入-设备】</span> <span class=\"tooltip-cont\"><br/>模块页面查看</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">213123131231</span>",
+    "value": "",
+    "needId": ["10001", "10003", "10004", "10005", "10006", "10007"]
+  },
+  {
+    "key": "identifier",
+    "label": "Identifier",
+    "cnLabel": "设备名称",
+    "type": "input",
+    "isRequired": [],
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">设备名称。可在</span><span class=\"tooltip-link\">【设备接入-设备】</span> <span class=\"tooltip-cont\"><br/>模块页面查看</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">213123131231</span>",
+    "value": "",
+    "needId": ["10001"]
+  },
+  {
+    "key": "identifier",
+    "label": "Identifier",
+    "cnLabel": "所属产品",
+    "type": "input",
+    "isRequired": [],
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">指同一类产品下的设备。可在</span><span class=\"tooltip-link\">【设备接入-产品】</span> <span class=\"tooltip-cont\"><br/>模块页面查看</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">213123131231</span>",
+    "value": "",
+    "needId": ["10001"]
+  },
+  {
+    "key": "identifier",
+    "label": "Identifier",
+    "cnLabel": "状态",
+    "type": "input",
+    "isRequired": [],
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">设备状态。状态分为在线、离线、<br/>未激活。可在</span><span class=\"tooltip-link\">【设备接入-设备】</span> <span class=\"tooltip-cont\"><br/>模块页面查看设备的状态</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">213123131231</span>",
+    "value": "",
+    "needId": ["10001"]
+  },
+  {
+    "key": "identifier",
+    "label": "Identifier",
+    "cnLabel": "节点类型",
+    "type": "input",
+    "isRequired": [],
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">设备的节点类型。分为网关设备、</span><span class=\"tooltip-cont\"><br/>直连设备、网关子设备。</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">213123131231</span>",
+    "value": "",
+    "needId": ["10001"]
+  },
+  {
+    "key": "identifier",
+    "label": "ParentIdentifier",
+    "cnLabel": "父级网关设备标识符",
+    "type": "input",
+    "isRequired": [],
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">填写上级设备的标识符。</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">213123131231</span>",
+    "value": "",
+    "needId": ["10002"]
+  },
+  {
+    "key": "identifier",
+    "label": "ParentIdentifier",
+    "cnLabel": "功能点名称",
+    "type": "input",
+    "isRequired": [],
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">功能点的属性名称。可在</span><span class=\"tooltip-link\">【设备接入-产品】</span> <span class=\"tooltip-cont\"><br/>详情页面的物模型查看</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">功能点111</span>",
+    "value": "",
+    "needId": ["10003"]
+  },
+  {
+    "key": "identifier",
+    "label": "ParentIdentifier",
+    "cnLabel": "功能点标识符",
+    "type": "input",
+    "isRequired": ["10005"],
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">功能点标识符。可在</span><span class=\"tooltip-link\">【设备接入-产品】</span> <span class=\"tooltip-cont\"><br/>详情页面的物模型查看</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">功能点111</span>",
+    "value": "",
+    "needId": ["10004", "10005", "10006", "10007"]
+  },
+  {
+    "key": "identifier",
+    "label": "ParentIdentifier",
+    "cnLabel": "起止日期",
+    "type": "daterange",
+    "isRequired": [],
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">查询的开始日期和结束日期</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">2026-04-20至2027-04-20</span>",
+    "value": "",
+    "needId": ["10004", "10005", "10006"]
+  }
+]

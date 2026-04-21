@@ -1,0 +1,20 @@
+[
+  {
+    "key": "pageSize",
+    "label": "PageSize",
+    "cnLabel": "指定返回结果中每页显示的产品数量",
+    "type": "pageSize",
+    "required": true,
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">指定返回结果中每页显示的设备</span><span class=\"tooltip-cont\"><br/>数量，最大100</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">10</span>",
+    "value": ""
+  },
+  {
+    "key": "CurrentPage",
+    "label": "CurrentPage",
+    "cnLabel": "指定显示返回结果中的第几页",
+    "type": "currentPage",
+    "required": true,
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">指定返回结果中的第几页</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">1</span>",
+    "value": ""
+  }
+]

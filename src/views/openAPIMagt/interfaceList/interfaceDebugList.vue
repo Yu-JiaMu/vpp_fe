@@ -32,122 +32,26 @@ import * as api from '@/api/iot'
 import ApiSidebar from "@views/openAPIMagt/interfaceList/components/apiSidebar/ApiSidebar.vue";
 import ApiConfigPanel from "@views/openAPIMagt/interfaceList/components/apiConfigPanel/ApiConfigPanel.vue";
 import ApiRightPanel from "@views/openAPIMagt/interfaceList/components/apiRightPanel/ApiRightPanel.vue";
+import paramsConfigData from '@/assets/openapi/paramsConfigData.json'
+import pageParamsConfigData from '@/assets/openapi/pageParamsConfigData.json'
 
 const appKey = ref('')
 const appSecret = ref('')
 
 const currentApi = ref({
-  title: 'QueryProduct',
-  desc: '调用该接口查看指定设备上报属性的数据快照',
-  docPath: '/src/assets/openapi/docs/query-product.md'
+  "id": "10001",
+  "label": "查询所有设备列表信息",
+  "apiPath": "remote.apiApplication.valid.core.info",
+  "method": "GET",
+  "desc": "调用该接口查询所有设备列表信息",
+  "level": 2,
+  "docPath": "/src/assets/openapi/docs/create-device.md",
+  "hasPage": true
 })
 
-const inputParams = reactive([
-  {
-    key: 'identifier',
-    label: 'Identifier',
-    cnLabel: '设备标识符',
-    type: 'input',
-    required: false,
-    desc: '<div class="tooltip-desc">描述</div>' +
-        '<span class="tooltip-cont">设备标识符。可在</span>' +
-        '<span class="tooltip-link">【设备接入-设备】</span> ' +
-        '<span class="tooltip-cont"><br/>模块页面查看</span>' +
-        '<hr class="tooltip-underline"/>' +
-        '<div class="tooltip-desc">示例</div>' +
-        '<span class="tooltip-cont">213123131231</span>',
-    value: ''
-  },
-  {
-    key: 'identifier',
-    label: 'Identifier',
-    cnLabel: '设备名称',
-    type: 'input',
-    required: false,
-    desc: '<div class="tooltip-desc">描述</div>' +
-        '<span class="tooltip-cont">设备名称。可在</span>' +
-        '<span class="tooltip-link">【设备接入-设备】</span> ' +
-        '<span class="tooltip-cont"><br/>模块页面查看</span>' +
-        '<hr class="tooltip-underline"/>' +
-        '<div class="tooltip-desc">示例</div>' +
-        '<span class="tooltip-cont">213123131231</span>',
-    value: ''
-  },
-  {
-    key: 'identifier',
-    label: 'Identifier',
-    cnLabel: '所属产品',
-    type: 'input',
-    required: false,
-    desc: '<div class="tooltip-desc">描述</div>' +
-        '<span class="tooltip-cont">指同一类产品下的设备。可在</span>' +
-        '<span class="tooltip-link">【设备接入-产品】</span> ' +
-        '<span class="tooltip-cont"><br/>模块页面查看</span>' +
-        '<hr class="tooltip-underline"/>' +
-        '<div class="tooltip-desc">示例</div>' +
-        '<span class="tooltip-cont">213123131231</span>',
-    value: ''
-  },
-  {
-    key: 'identifier',
-    label: 'Identifier',
-    cnLabel: '状态',
-    type: 'input',
-    required: false,
-    desc: '<div class="tooltip-desc">描述</div>' +
-        '<span class="tooltip-cont">设备状态。状态分为在线、离线、<br/>未激活。可在</span>' +
-        '<span class="tooltip-link">【设备接入-设备】</span> ' +
-        '<span class="tooltip-cont"><br/>模块页面查看设备的状态</span>' +
-        '<hr class="tooltip-underline"/>' +
-        '<div class="tooltip-desc">示例</div>' +
-        '<span class="tooltip-cont">213123131231</span>',
-    value: ''
-  },
-  {
-    key: 'identifier',
-    label: 'Identifier',
-    cnLabel: '节点类型',
-    type: 'input',
-    required: false,
-    desc: '<div class="tooltip-desc">描述</div>' +
-        '<span class="tooltip-cont">设备的节点类型。分为网关设备、</span>' +
-        '<span class="tooltip-cont"><br/>直连设备、网关子设备。</span>' +
-        '<hr class="tooltip-underline"/>' +
-        '<div class="tooltip-desc">示例</div>' +
-        '<span class="tooltip-cont">213123131231</span>',
-    value: ''
-  },
-])
+const inputParams = reactive(paramsConfigData);
 
-const pageParams = reactive([
-  {
-    key: 'pageSize',
-    label: 'PageSize',
-    cnLabel: '指定返回结果中每页显示的产品数量',
-    type: 'pageSize',
-    required: true,
-    desc: '<div class="tooltip-desc">描述</div>' +
-        '<span class="tooltip-cont">指定返回结果中每页显示的设备</span>' +
-        '<span class="tooltip-cont"><br/>数量，最大100</span>' +
-        '<hr class="tooltip-underline"/>' +
-        '<div class="tooltip-desc">示例</div>' +
-        '<span class="tooltip-cont">10</span>',
-    value: ''
-  },
-  {
-    key: 'CurrentPage',
-    label: 'CurrentPage',
-    cnLabel: '指定显示返回结果中的第几页',
-    type: 'currentPage',
-    required: true,
-    desc: '<div class="tooltip-desc">描述</div>' +
-        '<span class="tooltip-cont">指定返回结果中的第几页</span>' +
-        '<hr class="tooltip-underline"/>' +
-        '<div class="tooltip-desc">示例</div>' +
-        '<span class="tooltip-cont">1</span>',
-    value: ''
-  },
-])
+const pageParams = reactive(pageParamsConfigData)
 
 const activeTab = ref('params')
 const rightActiveTab = ref('doc')
@@ -370,9 +274,12 @@ const callHistory = ref([
 const handleNodeClick = (node) => {
   if (node.id) {
     currentApi.value = {
-      title: node.id,
+      id: node.id,
+      label: node.label,
+      apiPath: node.apiPath,
       desc: node.desc || '',
-      docPath: node.docPath || `/src/assets/openapi/docs/${node.id.toLowerCase()}.md`
+      docPath: node.docPath || `/src/assets/openapi/docs/${node.id.toLowerCase()}.md`,
+      hasPage: node.hasPage
     }
     inputParams.forEach(item => item.value = '')
     pageParams.forEach(item => item.value = 10)

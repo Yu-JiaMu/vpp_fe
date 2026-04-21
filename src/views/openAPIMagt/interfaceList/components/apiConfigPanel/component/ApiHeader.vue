@@ -1,6 +1,6 @@
 <template>
   <div class="api-header">
-    <h2 class="api-title">{{ apiInfo.title }}</h2>
+    <h2 class="api-title">{{ apiInfo.apiPath }}</h2>
     <p class="api-desc">{{ apiInfo.desc }}</p>
   </div>
 </template>
