@@ -1,7 +1,7 @@
 [
   {
-    "key": "identifier",
-    "label": "Identifier",
+    "key": "deviceIdentifier",
+    "label": "DeviceIdentifier",
     "cnLabel": "设备标识符",
     "type": "input",
     "isRequired": ["10003", "10004", "10005", "10006", "10007"],
@@ -10,8 +10,8 @@
     "needId": ["10001", "10003", "10004", "10005", "10006", "10007"]
   },
   {
-    "key": "identifier",
-    "label": "Identifier",
+    "key": "identifier2",
+    "label": "Identifier2",
     "cnLabel": "设备名称",
     "type": "input",
     "isRequired": [],
@@ -20,8 +20,8 @@
     "needId": ["10001"]
   },
   {
-    "key": "identifier",
-    "label": "Identifier",
+    "key": "identifier3",
+    "label": "Identifier3",
     "cnLabel": "所属产品",
     "type": "input",
     "isRequired": [],
@@ -30,8 +30,8 @@
     "needId": ["10001"]
   },
   {
-    "key": "identifier",
-    "label": "Identifier",
+    "key": "identifier4",
+    "label": "Identifier4",
     "cnLabel": "状态",
     "type": "input",
     "isRequired": [],
@@ -40,8 +40,8 @@
     "needId": ["10001"]
   },
   {
-    "key": "identifier",
-    "label": "Identifier",
+    "key": "identifier5",
+    "label": "Identifier5",
     "cnLabel": "节点类型",
     "type": "input",
     "isRequired": [],
@@ -50,8 +50,8 @@
     "needId": ["10001"]
   },
   {
-    "key": "identifier",
-    "label": "ParentIdentifier",
+    "key": "identifier6",
+    "label": "ParentIdentifier6",
     "cnLabel": "父级网关设备标识符",
     "type": "input",
     "isRequired": [],
@@ -60,8 +60,8 @@
     "needId": ["10002"]
   },
   {
-    "key": "identifier",
-    "label": "ParentIdentifier",
+    "key": "searchIdentifier",
+    "label": "SearchIdentifier",
     "cnLabel": "功能点名称",
     "type": "input",
     "isRequired": [],
@@ -70,8 +70,8 @@
     "needId": ["10003"]
   },
   {
-    "key": "identifier",
-    "label": "ParentIdentifier",
+    "key": "pointIdentifier",
+    "label": "PointIdentifier",
     "cnLabel": "功能点标识符",
     "type": "input",
     "isRequired": ["10005"],
@@ -80,8 +80,8 @@
     "needId": ["10004", "10005", "10006", "10007"]
   },
   {
-    "key": "identifier",
-    "label": "ParentIdentifier",
+    "key": "startEndTime",
+    "label": "StartEndTime",
     "cnLabel": "起止日期",
     "type": "daterange",
     "isRequired": [],

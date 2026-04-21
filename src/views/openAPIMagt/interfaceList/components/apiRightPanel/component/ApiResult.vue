@@ -67,32 +67,40 @@
 
     <!-- 请求信息 -->
     <div v-if="activeTab === 'request'" class="tab-content">
-      <!-- 请求头 -->
-      <div class="result-section">
-        <h3 class="section-title">
-          <img src="@imgs/icon/icon-info.png" class="w-5 h-5 mr-2.5" alt="" />
-          Request Header
-        </h3>
-        <div class="json-box">
-          <el-button link type="primary" @click="copyJson(result.requestHeaders, '请求头')" class="copy-btn">
-            <el-icon><CopyDocument /></el-icon>复制
-          </el-button>
-          <json-viewer :value="showData.requestHeaders" expand-depth="3" class="json-viewer" />
-        </div>
+      <!-- 无调用信息时隐藏 -->
+      <div v-if="!hasResult" class="empty-state">
+        <el-icon :size="48"><Document /></el-icon>
+        <p>暂无调用结果</p>
       </div>
-      <!-- 请求内容 -->
-      <div class="result-section">
-        <h3 class="section-title">
-          <img src="@imgs/icon/icon-info.png" class="w-5 h-5 mr-2.5" alt="" />
-          Request Body
-        </h3>
-        <div class="json-box">
-          <el-button link type="primary" @click="copyJson(result.request, '请求内容')" class="copy-btn">
-            <el-icon><CopyDocument /></el-icon>复制
-          </el-button>
-          <json-viewer :value="showData.request" expand-depth="3" class="json-viewer" />
+      <!-- 有调用信息时展示 -->
+      <template v-else>
+        <!-- 请求头 -->
+        <div class="result-section">
+          <h3 class="section-title">
+            <img src="@imgs/icon/icon-info.png" class="w-5 h-5 mr-2.5" alt="" />
+            Request Header
+          </h3>
+          <div class="json-box">
+            <el-button link type="primary" @click="copyJson(result.requestHeaders, '请求头')" class="copy-btn">
+              <el-icon><CopyDocument /></el-icon>复制
+            </el-button>
+            <json-viewer :value="showData.requestHeaders" expand-depth="3" class="json-viewer" />
+          </div>
         </div>
-      </div>
+        <!-- 请求内容 -->
+        <div class="result-section">
+          <h3 class="section-title">
+            <img src="@imgs/icon/icon-info.png" class="w-5 h-5 mr-2.5" alt="" />
+            Request Body
+          </h3>
+          <div class="json-box">
+            <el-button link type="primary" @click="copyJson(result.request, '请求内容')" class="copy-btn">
+              <el-icon><CopyDocument /></el-icon>复制
+            </el-button>
+            <json-viewer :value="showData.request" expand-depth="3" class="json-viewer" />
+          </div>
+        </div>
+      </template>
     </div>
   </div>
 </template>

@@ -9,8 +9,8 @@
     "value": ""
   },
   {
-    "key": "CurrentPage",
-    "label": "CurrentPage",
+    "key": "pageNum",
+    "label": "PageNum",
     "cnLabel": "指定显示返回结果中的第几页",
     "type": "currentPage",
     "required": true,

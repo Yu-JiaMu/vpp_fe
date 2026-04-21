@@ -81,7 +81,7 @@ const formItems = computed(() => [
     key: 'filterStatus',
     type: 'select',
     width: '100%',
-    span: 10,
+    span: 13,
     props: {
       placeholder: '全部',
       options: filterStatusCode.value,

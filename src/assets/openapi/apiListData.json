@@ -25,7 +25,7 @@
       {
         "id": "10003",
         "label": "查询指定设备上报的属性最新快照",
-        "apiPath": "remote.apiApplication.valid.core.info3",
+        "apiPath": "getDevicePropertySnapshot",
         "desc": "调用该接口查询指定设备上报的属性最新快照",
         "level": 2,
         "docPath": "/src/assets/openapi/docs/query-product.md",
@@ -34,7 +34,7 @@
       {
         "id": "10004",
         "label": "查询指定设备上报的所有属性历史数据",
-        "apiPath": "remote.apiApplication.valid.core.info4",
+        "apiPath": "getDevicePropertyHistory（待定）",
         "desc": "调用该接口查询指定设备上报的所有属性历史数据",
         "level": 2,
         "docPath": "/src/assets/openapi/docs/query-product.md",
@@ -43,7 +43,7 @@
       {
         "id": "10005",
         "label": "查询指定设备上报的指定属性历史数据",
-        "apiPath": "remote.apiApplication.valid.core.info5",
+        "apiPath": "getDevicePropertyHistory",
         "desc": "调用该接口查询指定设备上报的指定属性历史数据",
         "level": 2,
         "docPath": "/src/assets/openapi/docs/query-product.md",

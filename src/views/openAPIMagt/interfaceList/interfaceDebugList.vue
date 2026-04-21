@@ -1,5 +1,5 @@
 <template>
-  <div class="product-page">
+  <div class="product-page" v-loading="loading">
     <ApiSidebar @node-click="handleNodeClick" />
 
     <ApiConfigPanel
@@ -26,17 +26,16 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import * as api from '@/api/iot'
 import ApiSidebar from "@views/openAPIMagt/interfaceList/components/apiSidebar/ApiSidebar.vue";
 import ApiConfigPanel from "@views/openAPIMagt/interfaceList/components/apiConfigPanel/ApiConfigPanel.vue";
 import ApiRightPanel from "@views/openAPIMagt/interfaceList/components/apiRightPanel/ApiRightPanel.vue";
 import paramsConfigData from '@/assets/openapi/paramsConfigData.json'
 import pageParamsConfigData from '@/assets/openapi/pageParamsConfigData.json'
-
-const appKey = ref('')
-const appSecret = ref('')
+import { openApiClient, validateRequiredParams } from '@/views/openAPIMagt/interfaceList/util/openApiSignature'
+const appKey = ref('demo-ak-sm3')
+const appSecret = ref('b8c5504c3ee43ecfe3207abb5b63692f7759d41de7c628f80a92569c151c149d')
 
 const currentApi = ref({
   "id": "10001",
@@ -57,222 +56,25 @@ const activeTab = ref('params')
 const rightActiveTab = ref('doc')
 const resultTab = ref('response')
 
-const apiResult = ref({
-  success: false,              // 是否成功
-  code: 200,                  // 状态码
-  costTime: 188,              // 耗时（毫秒）
-  response: "{\n" +
-      "    \"code\": 200,\n" +
-      "    \"total\": 13,\n" +
-      "    \"rows\": [\n" +
-      "        {\n" +
-      "            \"createTime\": \"2026-04-15 14:06:11\",\n" +
-      "            \"id\": \"2044296202912141312\",\n" +
-      "            \"appName\": \"虚拟电厂\",\n" +
-      "            \"appStatus\": \"enable\",\n" +
-      "            \"endTime\": \"2026-09-10 12:00:00\",\n" +
-      "            \"lastRequestTime\": \"2023-04-01 00:00:00\"\n" +
-      "        },\n" +
-      "        {\n" +
-      "            \"createTime\": \"2026-04-15 14:32:48\",\n" +
-      "            \"id\": \"2044302904684318720\",\n" +
-      "            \"appName\": \"虚拟电厂2\",\n" +
-      "            \"appStatus\": \"disable\",\n" +
-      "            \"endTime\": \"2026-09-10 12:00:00\",\n" +
-      "            \"lastRequestTime\": \"2023-04-01 00:00:00\"\n" +
-      "        },\n" +
-      "        {\n" +
-      "            \"createTime\": \"2026-04-15 14:33:03\",\n" +
-      "            \"id\": \"2044302967787622400\",\n" +
-      "            \"appName\": \"虚拟电厂3\",\n" +
-      "            \"appStatus\": \"enable\",\n" +
-      "            \"endTime\": \"2026-09-10 12:00:00\",\n" +
-      "            \"lastRequestTime\": \"2023-04-01 00:00:00\"\n" +
-      "        },\n" +
-      "        {\n" +
-      "            \"createTime\": \"2026-04-15 14:33:15\",\n" +
-      "            \"id\": \"2044303016307331072\",\n" +
-      "            \"appName\": \"虚拟电厂4\",\n" +
-      "            \"appStatus\": \"disable\",\n" +
-      "            \"endTime\": \"2026-09-10 12:00:00\",\n" +
-      "            \"lastRequestTime\": \"2023-04-01 00:00:00\"\n" +
-      "        },\n" +
-      "        {\n" +
-      "            \"createTime\": \"2026-04-15 14:33:41\",\n" +
-      "            \"id\": \"2044303123161419776\",\n" +
-      "            \"appName\": \"虚拟电厂6\",\n" +
-      "            \"appStatus\": \"disable\",\n" +
-      "            \"endTime\": \"2026-09-10 12:00:00\",\n" +
-      "            \"lastRequestTime\": \"2023-04-01 00:00:00\"\n" +
-      "        },\n" +
-      "        {\n" +
-      "            \"createTime\": \"2026-04-15 14:33:48\",\n" +
-      "            \"id\": \"2044303153943416832\",\n" +
-      "            \"appName\": \"虚拟电厂8\",\n" +
-      "            \"appStatus\": \"disable\",\n" +
-      "            \"endTime\": \"2026-09-10 12:00:00\",\n" +
-      "            \"lastRequestTime\": \"2023-04-01 00:00:00\"\n" +
-      "        },\n" +
-      "        {\n" +
-      "            \"createTime\": \"2026-04-15 14:33:54\",\n" +
-      "            \"id\": \"2044303180149428224\",\n" +
-      "            \"appName\": \"虚拟电厂10\",\n" +
-      "            \"appStatus\": \"disable\",\n" +
-      "            \"endTime\": \"2026-09-10 12:00:00\",\n" +
-      "            \"lastRequestTime\": \"2023-04-01 00:00:00\"\n" +
-      "        },\n" +
-      "        {\n" +
-      "            \"createTime\": \"2026-04-15 14:34:01\",\n" +
-      "            \"id\": \"2044303208427425792\",\n" +
-      "            \"appName\": \"虚拟电厂12\",\n" +
-      "            \"appStatus\": \"disable\",\n" +
-      "            \"endTime\": \"2026-09-10 12:00:00\",\n" +
-      "            \"lastRequestTime\": \"2023-04-01 00:00:00\"\n" +
-      "        },\n" +
-      "        {\n" +
-      "            \"createTime\": \"2026-04-15 14:34:07\",\n" +
-      "            \"id\": \"2044303233660358656\",\n" +
-      "            \"appName\": \"虚拟电厂5\",\n" +
-      "            \"appStatus\": \"disable\",\n" +
-      "            \"endTime\": \"2026-09-10 12:00:00\",\n" +
-      "            \"lastRequestTime\": \"2023-04-01 00:00:00\"\n" +
-      "        },\n" +
-      "        {\n" +
-      "            \"createTime\": \"2026-04-15 14:34:17\",\n" +
-      "            \"id\": \"2044303276173824000\",\n" +
-      "            \"appName\": \"虚拟电厂7\",\n" +
-      "            \"appStatus\": \"enable\",\n" +
-      "            \"endTime\": \"2026-09-10 12:00:00\",\n" +
-      "            \"lastRequestTime\": \"2023-04-01 00:00:00\"\n" +
-      "        }\n" +
-      "    ],\n" +
-      "    \"msg\": \"\"\n" +
-      "}", // 响应体 JSON 字符串
-  request: '{"params": {...}}', // 请求体 JSON 字符串
-  responseHeaders: "{\n" +
-      "    \"code\": 401,\n" +
-      "    \"msg\": \"登录状态已过期\"\n" +
-      "}", // 响应头
-  requestHeaders: '{"authorization": "Bearer xxx","authorization": "Bearer xxx"}' // 请求头
+const apiResult = ref({})
+
+// loading 状态
+const loading = ref(false)
+
+// 调用历史 - 使用 ref 以便手动更新
+const callHistory = ref([])
+
+// 更新调用历史的辅助函数
+const updateCallHistory = () => {
+  callHistory.value = openApiClient.getCallHistory(currentApi.value.id)
+}
+
+onMounted(() => {
+ updateCallHistory()
 })
 
-const callHistory = ref([
-  {
-    time: '2026-03-31 12:00:00',
-    api: 'QueryProduct',
-    success: true,
-    costTime: '188',
-    params: {
-      PageSize: 1,
-      CurrentPage: 1,
-      SourceIp: '182.148.54.253'
-    }
-  },
-  {
-    time: '2026-03-31 11:55:30',
-    api: 'QueryProduct',
-    success: true,
-    costTime: '205',
-    params: {
-      PageSize: 10,
-      CurrentPage: 1,
-      SourceIp: '192.168.1.100'
-    }
-  },
-  {
-    time: '2026-03-31 11:50:15',
-    api: 'QueryProduct',
-    success: true,
-    costTime: '156',
-    params: {
-      PageSize: 20,
-      CurrentPage: 2,
-      SourceIp: '10.0.0.55'
-    }
-  },
-  {
-    time: '2026-03-31 11:45:22',
-    api: 'QueryProduct',
-    success: true,
-    costTime: '234',
-    params: {
-      PageSize: 5,
-      CurrentPage: 1,
-      SourceIp: '172.16.0.88'
-    }
-  },
-  {
-    time: '2026-03-31 11:40:10',
-    api: 'QueryProduct',
-    success: true,
-    costTime: '178',
-    params: {
-      PageSize: 15,
-      CurrentPage: 3,
-      SourceIp: '192.168.2.200'
-    }
-  },
-  {
-    time: '2026-03-31 11:35:05',
-    api: 'QueryProduct',
-    success: true,
-    costTime: '199',
-    params: {
-      PageSize: 8,
-      CurrentPage: 1,
-      SourceIp: '10.10.10.10'
-    }
-  },
-  {
-    time: '2026-03-31 11:30:48',
-    api: 'QueryProduct',
-    success: true,
-    costTime: '167',
-    params: {
-      PageSize: 12,
-      CurrentPage: 2,
-      SourceIp: '192.168.0.1'
-    }
-  },
-  {
-    time: '2026-03-31 11:25:33',
-    api: 'QueryProduct',
-    success: true,
-    costTime: '211',
-    params: {
-      PageSize: 10,
-      CurrentPage: 1,
-      SourceIp: '172.16.8.99'
-    }
-  },
-  {
-    time: '2026-03-31 11:20:17',
-    api: 'QueryProduct',
-    success: false,
-    costTime: '0',
-    params: {
-      PageSize: 10,
-      CurrentPage: 1,
-      SourceIp: '192.168.1.50',
-      ErrorMsg: '网络请求超时'
-    }
-  },
-  {
-    time: '2026-03-31 11:15:02',
-    api: 'QueryProduct',
-    success: false,
-    costTime: '0',
-    params: {
-      PageSize: 5,
-      CurrentPage: 1,
-      SourceIp: '10.0.0.25',
-      ErrorMsg: '认证失败'
-    }
-  }
-])
-
 const handleNodeClick = (node) => {
-  if (node.id) {
+  if (node.id !== currentApi.value.id) {
     currentApi.value = {
       id: node.id,
       label: node.label,
@@ -281,8 +83,9 @@ const handleNodeClick = (node) => {
       docPath: node.docPath || `/src/assets/openapi/docs/${node.id.toLowerCase()}.md`,
       hasPage: node.hasPage
     }
+    updateCallHistory()
     inputParams.forEach(item => item.value = '')
-    pageParams.forEach(item => item.value = 10)
+    pageParams.forEach(item => item.value = 1)
   }
 }
 
@@ -299,54 +102,119 @@ const handleClearParams = () => {
 }
 
 const handleCallApi = async () => {
+  // 防止重复点击
+  if (loading.value) {
+    return
+  }
+
+  if (!appKey.value || !appSecret.value) {
+    activeTab.value = 'auth'
+    ElMessage.error('请填写密钥')
+    return
+  }
+  if (activeTab.value === 'auth') {
+    ElMessage.success('保存成功')
+    activeTab.value = 'params'
+    return
+  }
+
+  // 开启 loading
+  loading.value = true
+
   try {
+    const { valid, missingParams } = validateRequiredParams(inputParams, pageParams, currentApi.value.id)
+    if (!valid) {
+      ElMessage.warning(`请填写必填参数：${missingParams.join('、')}`)
+      return
+    }
     const params = {}
     inputParams.forEach(item => {
-      if (item.value) params[item.key] = item.value
+      console.log(item.value.type)
+      // 如果item为list
+      if (item.value!==null && item.value){
+        console.log("item", item.value)
+        if (item.type === 'daterange') {
+          params['startTime']= formatDate(item.value[0])
+          params['endTime']= formatDate(item.value[1])
+        } else {
+          params[item.key] = item.value
+        }
+      }
     })
-    pageParams.forEach(item => {
-      params[item.key] = item.value
-    })
-
-    const startTime = Date.now()
-    const res = await api.queryProductList({
-      ...params,
-      appKey: appKey.value,
-      appSecret: appSecret.value
-    })
-    const costTime = ((Date.now() - startTime) / 1000).toFixed(2)
-
-    apiResult.value = {
-      success: res.code === 200,
-      code: res.code || 200,
-      costTime,
-      response: JSON.stringify(res, null, 2),
-      request: JSON.stringify(params, null, 2)
+    if (currentApi.value.hasPage){
+      pageParams.forEach(item => {
+        params[item.key] = item.value
+      })
     }
-
-    callHistory.value.unshift({
-      time: new Date().toLocaleString(),
-      api: currentApi.value.title,
-      success: res.code === 200,
-      costTime
+    // 发起请求
+    const result = await openApiClient.request({
+      gatewayUrl: import.meta.env.VITE_OPENAPI_GATEWAY_URL,
+      accessKey: appKey.value,
+      secretKey: appSecret.value,
+      action: currentApi.value.apiPath,
+      signMethod: 'SM3',
+      httpMethod: 'GET',
+      extraParams: params,
+      apiId: currentApi.value.id  // 接口 ID，用于缓存
     })
-
-    ElMessage.success(res.code === 200 ? '调用成功' : '调用失败')
+    rightActiveTab.value='result'
+    console.log('接口返回:', result);
+    apiResult.value = {
+      success: result.success,
+      code: result.data.code,
+      costTime: result.costTime,
+      response: result.data,
+      responseHeaders: JSON.stringify(result.responseHeaders, null, 2),
+      request: JSON.stringify(params, null, 2),
+      requestHeaders: JSON.stringify(result.requestHeaders, null, 2)
+    }
+    updateCallHistory()
+    if (result.success){
+      ElMessage.success('调用成功')
+    }else{
+      ElMessage.error('调用失败')
+    }
   } catch (e) {
-    console.error('接口调用失败:', e)
+    console.log('接口异常:', e)
     apiResult.value = {
       success: false,
       code: -100,
       costTime: 0,
       response: '接口调用异常，请检查参数或网络',
-      request: JSON.stringify(inputParams, null, 2)
+      request: {}
     }
+    openApiClient.saveCallHistory(currentApi.value.id, currentApi.value.apiPath, {
+      success: false,
+      code: -100,
+      costTime: 0,
+      response: '接口调用异常，请检查参数或网络',
+      request: {}
+    })
+    updateCallHistory()
+    rightActiveTab.value='result'
     ElMessage.error('接口调用失败')
+  } finally {
+    // 关闭 loading
+    loading.value = false
   }
 }
 
 const reCallApi = (row) => {
   handleCallApi()
+}
+
+/**
+ * @Description 时间格式化 YYYY-MM-DD
+ * @author Huang Jialin
+ * @date 2026/4/14 15:09
+ */
+const formatDate = (dateStr) => {
+  if (!dateStr) return ''
+  const date = new Date(dateStr)
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 </script>
 
