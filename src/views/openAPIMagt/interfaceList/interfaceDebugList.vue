@@ -34,8 +34,8 @@ import ApiRightPanel from "@views/openAPIMagt/interfaceList/components/apiRightP
 import paramsConfigData from '@/assets/openapi/paramsConfigData.json'
 import pageParamsConfigData from '@/assets/openapi/pageParamsConfigData.json'
 import { openApiClient, validateRequiredParams } from '@/views/openAPIMagt/interfaceList/util/openApiSignature'
-const appKey = ref('demo-ak-sm3')
-const appSecret = ref('b8c5504c3ee43ecfe3207abb5b63692f7759d41de7c628f80a92569c151c149d')
+const appKey = ref('')
+const appSecret = ref('')
 
 const currentApi = ref({
   "id": "10001",
