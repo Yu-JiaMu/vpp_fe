@@ -31,20 +31,20 @@ import { ElMessage } from 'element-plus'
 import ApiSidebar from "@views/openAPIMagt/interfaceList/components/apiSidebar/ApiSidebar.vue";
 import ApiConfigPanel from "@views/openAPIMagt/interfaceList/components/apiConfigPanel/ApiConfigPanel.vue";
 import ApiRightPanel from "@views/openAPIMagt/interfaceList/components/apiRightPanel/ApiRightPanel.vue";
-import paramsConfigData from '@/assets/openapi/paramsConfigData.json'
-import pageParamsConfigData from '@/assets/openapi/pageParamsConfigData.json'
+import paramsConfigData from '@/../public/openapi/paramsConfigData.json'
+import pageParamsConfigData from '@/../public/openapi/pageParamsConfigData.json'
 import { openApiClient, validateRequiredParams } from '@/views/openAPIMagt/interfaceList/util/openApiSignature'
-const appKey = ref('')
-const appSecret = ref('')
+const appKey = ref('demo-ak-sm3')
+const appSecret = ref('b8c5504c3ee43ecfe3207abb5b63692f7759d41de7c628f80a92569c151c149d')
 
 const currentApi = ref({
   "id": "10001",
   "label": "查询所有设备列表信息",
-  "apiPath": "remote.apiApplication.valid.core.info",
+  "apiPath": "getDeviceList",
   "method": "GET",
   "desc": "调用该接口查询所有设备列表信息",
   "level": 2,
-  "docPath": "/src/assets/openapi/docs/create-device.md",
+  "docPath": "/../public/openapi/docs/IotDeviceOpenApi_getDeviceList接口文档.md",
   "hasPage": true
 })
 
@@ -129,7 +129,6 @@ const handleCallApi = async () => {
     }
     const params = {}
     inputParams.forEach(item => {
-      console.log(item.value.type)
       // 如果item为list
       if (item.value!==null && item.value){
         console.log("item", item.value)

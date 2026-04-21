@@ -89,6 +89,7 @@
       <div class="dialog-footer flex flex-sp-center">
         <el-button type="info" class="btn-width-177" v-ripple @click="handleCancel">取消</el-button>
         <el-button class="btn-width-177" type="primary" v-ripple @click="handleSubmit"
+                   :loading="loading"
           >确认</el-button
         >
       </div>
@@ -114,6 +115,9 @@ import * as api from '@/api/iot'
 const props = defineProps({
   modelValue: { type: Boolean, default: false }
 })
+
+// loading 状态
+const loading = ref(false)
 const emit = defineEmits(['update:modelValue', 'add-success', 'edit-success'])
 
 const dialogVisible = computed({
@@ -218,9 +222,18 @@ watch(() => props.modelValue, (newVal) => {
  * @date 2026/4/14 17:01
  */
 const handleSubmit = async () => {
+  // 防止重复提交
+  if (loading.value) {
+    return
+  }
+
   if (!formRef.value) return
   try {
     await formRef.value.validate()
+
+    // 开启 loading
+    loading.value = true
+
     if (formData.id) {
       // 编辑逻辑
       await api.updateApiApplication({ ...formData })
@@ -239,6 +252,9 @@ const handleSubmit = async () => {
     console.log('验证失败', e)
     // 补充：表单验证失败时提示用户
     ElMessage.error('表单填写有误，请检查')
+  } finally {
+    // 关闭 loading
+    loading.value = false
   }
 }
 

@@ -6,20 +6,20 @@
       {
         "id": "10001",
         "label": "查询所有设备列表信息",
-        "apiPath": "remote.apiApplication.valid.core.info",
+        "apiPath": "getDeviceList",
         "method": "GET",
         "desc": "调用该接口查询所有设备列表信息",
         "level": 2,
-        "docPath": "/src/assets/openapi/docs/create-device.md",
+        "docPath": "/../public/openapi/docs/IotDeviceOpenApi_getDeviceList接口文档.md",
         "hasPage": true
       },
       {
         "id": "10002",
         "label": "查询指定网关设备下的子设备列表信息",
-        "apiPath": "remote.apiApplication.valid.core.info2",
+        "apiPath": "getDeviceSubdeviceList",
         "desc": "调用该接口查询指定网关设备下的子设备列表信息",
         "level": 2,
-        "docPath": "/src/assets/openapi/docs/delete-device.md",
+        "docPath": "/../public/openapi/docs/IotDeviceOpenApi_getDeviceSubdeviceList接口文档.md",
         "hasPage": false
       },
       {
@@ -52,10 +52,10 @@
       {
         "id": "10007",
         "label": "查询指定设备的拓展字段",
-        "apiPath": "remote.apiApplication.valid.core.info7",
+        "apiPath": "getDeviceExtendInfo",
         "desc": "调用该接口查询指定设备的拓展字段",
         "level": 2,
-        "docPath": "/src/assets/openapi/docs/query-product.md",
+        "docPath": "/../public/openapi/docs/IotDeviceOpenApi_getDeviceExtendInfo接口文档.md",
         "hasPage": false
       }
     ]

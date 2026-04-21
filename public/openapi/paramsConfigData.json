@@ -10,8 +10,8 @@
     "needId": ["10001", "10003", "10004", "10005", "10006", "10007"]
   },
   {
-    "key": "identifier2",
-    "label": "Identifier2",
+    "key": "name",
+    "label": "Name",
     "cnLabel": "设备名称",
     "type": "input",
     "isRequired": [],
@@ -20,8 +20,8 @@
     "needId": ["10001"]
   },
   {
-    "key": "identifier3",
-    "label": "Identifier3",
+    "key": "productName",
+    "label": "ProductName",
     "cnLabel": "所属产品",
     "type": "input",
     "isRequired": [],
@@ -30,8 +30,8 @@
     "needId": ["10001"]
   },
   {
-    "key": "identifier4",
-    "label": "Identifier4",
+    "key": "devState",
+    "label": "DevState",
     "cnLabel": "状态",
     "type": "input",
     "isRequired": [],
@@ -40,8 +40,8 @@
     "needId": ["10001"]
   },
   {
-    "key": "identifier5",
-    "label": "Identifier5",
+    "key": "nodeType",
+    "label": "NodeType",
     "cnLabel": "节点类型",
     "type": "input",
     "isRequired": [],
@@ -50,11 +50,11 @@
     "needId": ["10001"]
   },
   {
-    "key": "identifier6",
-    "label": "ParentIdentifier6",
+    "key": "deviceIdentifier",
+    "label": "DeviceIdentifier",
     "cnLabel": "父级网关设备标识符",
     "type": "input",
-    "isRequired": [],
+    "isRequired": ["10002"],
     "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">填写上级设备的标识符。</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">213123131231</span>",
     "value": "",
     "needId": ["10002"]
