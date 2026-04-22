@@ -26,8 +26,8 @@
       </el-descriptions-item>
 
       <el-descriptions-item label="key">
-        <el-tooltip :content="appInfo.appKey" placement="top">
-          <div class="max-w-[160px] truncate">{{ appInfo.appKey }}</div>
+        <el-tooltip :content="appInfo.id" placement="top">
+          <div class="max-w-[160px] truncate">{{ appInfo.id }}</div>
         </el-tooltip>
       </el-descriptions-item>
 

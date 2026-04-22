@@ -10,7 +10,7 @@
         "method": "GET",
         "desc": "调用该接口查询所有设备列表信息",
         "level": 2,
-        "docPath": "/../public/openapi/docs/IotDeviceOpenApi_getDeviceList接口文档.md",
+        "docPath": "/../public/openapi/docs/IotDeviceOpenApi_List接口文档.md",
         "hasPage": true
       },
       {
@@ -19,7 +19,7 @@
         "apiPath": "getDeviceSubdeviceList",
         "desc": "调用该接口查询指定网关设备下的子设备列表信息",
         "level": 2,
-        "docPath": "/../public/openapi/docs/IotDeviceOpenApi_getDeviceSubdeviceList接口文档.md",
+        "docPath": "/../public/openapi/docs/IotDeviceOpenApi_SubdeviceList接口文档.md",
         "hasPage": false
       },
       {
@@ -55,7 +55,7 @@
         "apiPath": "getDeviceExtendInfo",
         "desc": "调用该接口查询指定设备的拓展字段",
         "level": 2,
-        "docPath": "/../public/openapi/docs/IotDeviceOpenApi_getDeviceExtendInfo接口文档.md",
+        "docPath": "/../public/openapi/docs/IotDeviceOpenApi_ExtendInfo接口文档.md",
         "hasPage": false
       }
     ]

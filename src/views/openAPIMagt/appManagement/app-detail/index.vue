@@ -15,7 +15,7 @@
         <div class="text-sm">
           Key：
           <span class="text-g-505658">
-            {{ appInfo.appKey }}
+            {{ appInfo.id }}
           </span>
           <span class="secret-label">
             Secret：

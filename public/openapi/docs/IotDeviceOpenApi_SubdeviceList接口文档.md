@@ -3,7 +3,7 @@
 ## 查询网关设备下的子设备列表接口
 
 ### 基本信息
-- **接口路径**: `/device/openapi/subdevice/list`
+- **Action**: `getDeviceSubdeviceList`
 - **请求方法**: `GET`
 - **接口描述**: 查询指定网关设备下的所有子设备列表信息
 
