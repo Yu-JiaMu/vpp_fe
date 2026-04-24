@@ -16,18 +16,18 @@
         style="width: 100%"
         @sort-change="handleSort"
     >
-      <el-table-column prop="reqTime" label="请求时间" width="180" sortable="custom" />
-      <el-table-column prop="reqId" label="请求ID" min-width="180" />
-      <el-table-column prop="id" label="API编号" min-width="180" />
-      <el-table-column prop="appName" label="API名称" min-width="180" />
-      <el-table-column prop="响应时间" label="响应时间" width="180" sortable="custom" />
-      <el-table-column prop="reqStatus" label="调用状态" width="120">
+      <el-table-column prop="requestTime" label="请求时间" width="180" sortable="custom" />
+      <el-table-column prop="requestId" label="请求ID" min-width="180" />
+      <el-table-column prop="apiCode" label="API编号" min-width="180" />
+      <el-table-column prop="apiName" label="API名称" min-width="180" />
+      <el-table-column prop="responseTime" label="响应时间" width="180" sortable="custom" />
+      <el-table-column prop="responseStatus" label="调用状态" width="120">
         <template #default="{ row }">
-          <el-tag v-if="row.reqStatus === REQ_STATUS.map.REQ_SECESS.value" type="success">调用成功</el-tag>
+          <el-tag v-if="row.responseStatus === REQ_STATUS.map.REQ_SECESS.value" type="success">调用成功</el-tag>
           <el-tag v-else type="danger">调用失败</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="lastReqTime" label="备注" width="180" />
+      <el-table-column prop="remark" label="备注" width="180" />
     </el-table>
 
     <ArtPagination v-model="pagination" @change="getTableData" />
@@ -37,17 +37,24 @@
 <script setup>
 import * as api from '@/api/iot/index.js'
 import {ElMessage} from "element-plus";
-import {APP_STATUS, REQ_STATUS} from "@/enums/index.ts";
+import {REQ_STATUS} from "@/enums/index.ts";
 
 const router = useRouter()
 
+const props = defineProps({
+  appInfo: {
+    type: Object,
+    default: () => {}
+  }
+})
+
 const form = reactive({
-  asc: true,
-  apiNumber: '',
+  apiCode: '',
   apiName: '',
   reqTime: '',
   startTime: '',
   endTime: '',
+  isAsc: 'desc'
 })
 
 const pagination = reactive({
@@ -72,6 +79,7 @@ const getTableData = async () => {
     const queryParams = {
       pageNum: pagination.current,
       pageSize: pagination.size,
+      accessKey: props.appInfo.id,
       ...params // 此时params包含startTime/endTime，无reqTime
     };
     const response = await api.reqLogApiApplication(queryParams);
@@ -89,7 +97,7 @@ const getTableData = async () => {
 const formItems = computed(() => [
   {
     label: 'API编号',
-    key: 'apiNumber',
+    key: 'apiCode',
     type: 'input',
     placeholder: '请输入API编号',
     clearable: true,
@@ -99,7 +107,7 @@ const formItems = computed(() => [
     label: 'API名称',
     key: 'apiName',
     type: 'input',
-    placeholder: '请输入apiName',
+    placeholder: '请输入API名称',
     clearable: true,
     span: 5
   },
@@ -135,8 +143,10 @@ function onReset() {
   form.startTime = '';
   form.endTime = '';
   // 重置其他表单字段（如果需要）
-  form.apiNumber = '';
+  form.apiCode = '';
   form.apiName = '';
+  form.orderByColumn= '';
+  form.isAsc = '';
   getTableData();
 }
 
@@ -151,7 +161,9 @@ onActivated(() => {
   getTableData()
 })
 
-onMounted(() => {})
+onMounted(() => {
+  getTableData()
+})
 </script>
 
 <style lang="scss" scoped>

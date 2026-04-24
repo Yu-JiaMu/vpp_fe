@@ -164,6 +164,6 @@ export const VALIDITY_PERIOD = createEnum({
 
 // 调用状态
 export const REQ_STATUS = createEnum({
-  REQ_SECESS: { label: '调用成功', value: '1' },
-  REQ_FAIL: { label: '调用失败', value: '0' }
+  REQ_SECESS: { label: '调用成功', value: true },
+  REQ_FAIL: { label: '调用失败', value: false }
 })

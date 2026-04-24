@@ -46,6 +46,7 @@
     <!-- 调用记录 -->
     <ReqRecord
         v-if="activeTab === 'reqRecord'"
+        :appInfo="appInfo"
     ></ReqRecord>
   </div>
 </template>

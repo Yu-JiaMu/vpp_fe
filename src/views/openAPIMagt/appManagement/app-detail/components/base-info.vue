@@ -71,7 +71,6 @@
 <script setup>
   import { validateNameLength, validateCommon, validateDescLength } from '@/utils'
   import { APP_STATUS } from '@/enums'
-  import * as api from '@/api/iot'
   import { nextTick } from 'vue'
   import AppMangementDialog from "@views/openAPIMagt/appManagement/dialog/AppMangementDialog.vue"; // 记得引入 nextTick
   const props = defineProps({
