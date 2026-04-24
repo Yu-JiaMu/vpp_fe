@@ -20,7 +20,7 @@
       <el-table-column prop="requestId" label="请求ID" min-width="180" />
       <el-table-column prop="apiCode" label="API编号" min-width="180" />
       <el-table-column prop="apiName" label="API名称" min-width="180" />
-      <el-table-column prop="responseTime" label="响应时间" width="180" sortable="custom" />
+      <el-table-column prop="responseTime" label="响应时间" width="180" />
       <el-table-column prop="responseStatus" label="调用状态" width="120">
         <template #default="{ row }">
           <el-tag v-if="row.responseStatus === REQ_STATUS.map.REQ_SECESS.value" type="success">调用成功</el-tag>

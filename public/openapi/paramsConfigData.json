@@ -5,7 +5,7 @@
     "cnLabel": "设备标识符",
     "type": "input",
     "isRequired": ["10003", "10004", "10005", "10006", "10007"],
-    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">设备标识符。可在</span><span class=\"tooltip-link\">【设备接入-设备】</span> <span class=\"tooltip-cont\"><br/>模块页面查看</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">213123131231</span>",
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">设备标识符。可在</span><span class=\"tooltip-link\">【设备接入-设备】</span> <span class=\"tooltip-cont\"><br/>模块页面查看</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">1c3944072e821000</span>",
     "value": "",
     "needId": ["10001", "10003", "10004", "10005", "10006", "10007"]
   },
@@ -15,7 +15,7 @@
     "cnLabel": "设备名称",
     "type": "input",
     "isRequired": [],
-    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">设备名称。可在</span><span class=\"tooltip-link\">【设备接入-设备】</span> <span class=\"tooltip-cont\"><br/>模块页面查看</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">213123131231</span>",
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">设备名称。可在</span><span class=\"tooltip-link\">【设备接入-设备】</span> <span class=\"tooltip-cont\"><br/>模块页面查看</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">元联网关</span>",
     "value": "",
     "needId": ["10001"]
   },
@@ -25,7 +25,7 @@
     "cnLabel": "所属产品",
     "type": "input",
     "isRequired": [],
-    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">指同一类产品下的设备。可在</span><span class=\"tooltip-link\">【设备接入-产品】</span> <span class=\"tooltip-cont\"><br/>模块页面查看</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">213123131231</span>",
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">指同一类产品下的设备。可在</span><span class=\"tooltip-link\">【设备接入-产品】</span> <span class=\"tooltip-cont\"><br/>模块页面查看</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">网关产品</span>",
     "value": "",
     "needId": ["10001"]
   },
@@ -35,7 +35,7 @@
     "cnLabel": "状态",
     "type": "input",
     "isRequired": [],
-    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">设备状态。状态分为在线、离线、<br/>未激活。可在</span><span class=\"tooltip-link\">【设备接入-设备】</span> <span class=\"tooltip-cont\"><br/>模块页面查看设备的状态</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">213123131231</span>",
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">设备状态。状态分为在线、离线、<br/>未激活。可在</span><span class=\"tooltip-link\">【设备接入-设备】</span> <span class=\"tooltip-cont\"><br/>模块页面查看设备的状态</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">onLine</span>",
     "value": "",
     "needId": ["10001"]
   },
@@ -45,7 +45,7 @@
     "cnLabel": "节点类型",
     "type": "input",
     "isRequired": [],
-    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">设备的节点类型。分为网关设备、</span><span class=\"tooltip-cont\"><br/>直连设备、网关子设备。</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">213123131231</span>",
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">设备的节点类型。分为网关设备、</span><span class=\"tooltip-cont\"><br/>直连设备、网关子设备。</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">direct-connect-device</span>",
     "value": "",
     "needId": ["10001"]
   },
@@ -55,7 +55,7 @@
     "cnLabel": "父级网关设备标识符",
     "type": "input",
     "isRequired": ["10002"],
-    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">填写上级设备的标识符。</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">213123131231</span>",
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">填写上级设备的标识符。</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">1c3944072e821000</span>",
     "value": "",
     "needId": ["10002"]
   },
@@ -65,7 +65,7 @@
     "cnLabel": "功能点名称",
     "type": "input",
     "isRequired": [],
-    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">功能点的属性名称。可在</span><span class=\"tooltip-link\">【设备接入-产品】</span> <span class=\"tooltip-cont\"><br/>详情页面的物模型查看</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">功能点111</span>",
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">功能点的属性名称。可在</span><span class=\"tooltip-link\">【设备接入-产品】</span> <span class=\"tooltip-cont\"><br/>详情页面的物模型查看</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">功能点1</span>",
     "value": "",
     "needId": ["10003"]
   },
@@ -75,9 +75,19 @@
     "cnLabel": "功能点标识符",
     "type": "input",
     "isRequired": ["10005"],
-    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">功能点标识符。可在</span><span class=\"tooltip-link\">【设备接入-产品】</span> <span class=\"tooltip-cont\"><br/>详情页面的物模型查看</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">功能点111</span>",
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">功能点标识符。可在</span><span class=\"tooltip-link\">【设备接入-产品】</span> <span class=\"tooltip-cont\"><br/>详情页面的物模型查看</span><hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">1c3944072e821000</span>",
     "value": "",
-    "needId": ["10004", "10005", "10006", "10007"]
+    "needId": ["10004", "10005", "10007"]
+  },
+  {
+    "key": "logType",
+    "label": "LogType",
+    "cnLabel": "日志类型",
+    "type": "input",
+    "isRequired": [],
+    "desc": "<div class=\"tooltip-desc\">描述</div><span class=\"tooltip-cont\">设备的日志类型。<hr class=\"tooltip-underline\"/><div class=\"tooltip-desc\">示例</div><span class=\"tooltip-cont\">PROPERTY_REPORT</span>",
+    "value": "",
+    "needId": ["10006"]
   },
   {
     "key": "startEndTime",

@@ -83,19 +83,33 @@ const handleNodeClick = (node) => {
       label: node.label,
       apiPath: node.apiPath,
       desc: node.desc || '',
-      docPath: node.docPath || `/src/assets/openapi/docs/${node.id.toLowerCase()}.md`,
+      docPath: node.docPath,
       hasPage: node.hasPage
     }
     updateCallHistory()
     inputParams.forEach(item => item.value = '')
-    pageParams.forEach(item => item.value = 1)
+    pageParams.forEach(item => {
+      if (item.type === 'pageSize'){
+        item.value = 10
+      } else {
+        item.value = 1
+      }
+    })
+    apiResult.value = {}
+    rightActiveTab.value = 'doc'
   }
 }
 
 const handleClearParams = () => {
   if (activeTab.value === 'params'){
     inputParams.forEach(item => item.value = '')
-    pageParams.forEach(item => item.value = 1)
+    pageParams.forEach(item => {
+      if (item.type === 'pageSize'){
+        item.value = 10
+      } else {
+        item.value = 1
+      }
+    })
     ElMessage.success('已清空参数')
   } else {
     appKey.value = ''
@@ -167,7 +181,7 @@ const handleCallApi = async () => {
       costTime: result.costTime,
       response: result.data,
       responseHeaders: JSON.stringify(result.responseHeaders, null, 2),
-      request: JSON.stringify(params, null, 2),
+      request: JSON.stringify(result.requestParams, null, 2),
       requestHeaders: JSON.stringify(result.requestHeaders, null, 2)
     }
     updateCallHistory()
@@ -256,7 +270,7 @@ const formatDate = (dateStr) => {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
+  return `${year}-${month}-${day} 00:00:00`
 }
 </script>
 

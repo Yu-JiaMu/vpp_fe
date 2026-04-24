@@ -43,10 +43,10 @@
       {
         "id": "10006",
         "label": "查询指定设备的日志信息",
-        "apiPath": "remote.apiApplication.valid.core.info6",
+        "apiPath": "getDeviceLog",
         "desc": "调用该接口查询指定设备的日志信息",
         "level": 2,
-        "docPath": "/../public/openapi/docs/",
+        "docPath": "/../public/openapi/docs/getDeviceLog.md",
         "hasPage": true
       },
       {
