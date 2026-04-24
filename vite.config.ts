@@ -16,7 +16,7 @@ import monacoEditorPlugin from 'vite-plugin-monaco-editor'
 export default ({ mode }: { mode: string }) => {
   const root = process.cwd()
   const env = loadEnv(mode, root)
-  const { VITE_VERSION, VITE_PORT, VITE_BASE_URL, VITE_API_URL, VITE_API_PROXY_URL } = env
+  const { VITE_VERSION, VITE_PORT, VITE_BASE_URL, VITE_API_URL, VITE_API_PROXY_URL, VITE_DROP_CONSOLE } = env
 
   console.log(`🚀 API_URL = ${VITE_API_URL}`)
   console.log(`🚀 VERSION = ${VITE_VERSION}`)
@@ -61,7 +61,7 @@ export default ({ mode }: { mode: string }) => {
       terserOptions: {
         compress: {
           // 生产环境去除 console
-          drop_console: true,
+          drop_console: VITE_DROP_CONSOLE === 'true',
           // 生产环境去除 debugger
           drop_debugger: true
         }

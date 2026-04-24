@@ -146,6 +146,23 @@ function toBase64(uint8arr: Uint8Array): string {
   return btoa(String.fromCharCode(...uint8arr))
 }
 
+/**
+ * 生成 UUID v4
+ * 兼容不支持 crypto.randomUUID 的环境
+ */
+function generateUUID(): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+
+  // 降级方案:手动生成 UUID v4
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}
+
 function formatDateTime(date: Date): string {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -257,7 +274,7 @@ export class OpenApiSignatureClient {
     try {
       const path = OpenApiSignatureClient.DEFAULT_PATH
       const timestamp = String(Date.now())
-      const nonce = crypto.randomUUID()
+      const nonce = generateUUID()
 
       // 构建查询参数（按字母序排序）
       const params = new Map<string, string>()

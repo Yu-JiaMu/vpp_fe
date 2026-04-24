@@ -36,8 +36,10 @@ import ApiRightPanel from "@views/openAPIMagt/interfaceList/components/apiRightP
 import paramsConfigData from '@/../public/openApiData/paramsConfigData.json'
 import pageParamsConfigData from '@/../public/openApiData/pageParamsConfigData.json'
 import { openApiClient, validateRequiredParams } from '@/views/openAPIMagt/interfaceList/util/openApiSignature'
-const appKey = ref('demo-ak-sm3')
-const appSecret = ref('b8c5504c3ee43ecfe3207abb5b63692f7759d41de7c628f80a92569c151c149d')
+const appKey = ref('')
+const appSecret = ref('')
+// const appKey = ref('demo-ak-sm3')
+// const appSecret = ref('b8c5504c3ee43ecfe3207abb5b63692f7759d41de7c628f80a92569c151c149d')
 
 const currentApi = ref({
   "id": "10001",
@@ -177,7 +179,7 @@ const handleCallApi = async () => {
     console.log('接口返回:', result);
     apiResult.value = {
       success: result.success,
-      code: result.data.code,
+      code: result.data?.code ?? -1,
       costTime: result.costTime,
       response: result.data,
       responseHeaders: JSON.stringify(result.responseHeaders, null, 2),
