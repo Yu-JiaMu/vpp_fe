@@ -199,8 +199,37 @@ const handleCallApi = async () => {
 }
 
 const reCallApi = (row) => {
+  console.log("重新调用参数:", row.params);
+
+  if (!row.params) {
+    ElMessage.warning('该记录没有参数信息')
+    return
+  }
+
+  // 将历史参数填充到表单
+  inputParams.forEach(item => {
+    if (row.params[item.key] !== undefined) {
+      item.value = row.params[item.key]
+    }
+  })
+
+  // 填充分页参数
+  if (row.params.PageSize !== undefined) {
+    const pageSizeParam = pageParams.find(p => p.key === 'PageSize')
+    if (pageSizeParam) pageSizeParam.value = row.params.PageSize
+  }
+  if (row.params.CurrentPage !== undefined) {
+    const currentPageParam = pageParams.find(p => p.key === 'CurrentPage')
+    if (currentPageParam) currentPageParam.value = row.params.CurrentPage
+  }
+
+  // 切换到参数配置 Tab
+  activeTab.value = 'params'
+
+  // 发起调用
   handleCallApi()
 }
+
 
 /**
  * @Description 时间格式化 YYYY-MM-DD
