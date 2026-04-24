@@ -66,11 +66,33 @@ const visible = computed({
 // 复制
 const handleCopy = async (type) => {
   const text = type === 'key' ? props.appKey : props.appSecret
+
   try {
-    await navigator.clipboard.writeText(text)
-    ElMessage.success('复制成功')
+    // 优先使用现代 API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text)
+      ElMessage.success('复制成功')
+    } else {
+      // 降级方案:使用传统方法
+      const textarea = document.createElement('textarea')
+      textarea.value = text
+      textarea.style.position = 'fixed'
+      textarea.style.opacity = '0'
+      document.body.appendChild(textarea)
+      textarea.select()
+
+      const successful = document.execCommand('copy')
+      document.body.removeChild(textarea)
+
+      if (successful) {
+        ElMessage.success('复制成功')
+      } else {
+        ElMessage.error('复制失败，请手动复制')
+      }
+    }
   } catch (err) {
-    ElMessage.error('复制失败')
+    console.error('复制失败:', err)
+    ElMessage.error('复制失败，请手动复制')
   }
 }
 

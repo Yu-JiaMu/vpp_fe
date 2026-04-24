@@ -40,7 +40,7 @@ const appKey = ref('')
 const appSecret = ref('')
 // const appKey = ref('demo-ak-sm3')
 // const appSecret = ref('b8c5504c3ee43ecfe3207abb5b63692f7759d41de7c628f80a92569c151c149d')
-
+// c7af96cb29bb0601fa645c61a8806373305f0a11231cb3e724939f5c37d9b6b2
 const currentApi = ref({
   "id": "10001",
   "label": "查询所有设备列表信息",
