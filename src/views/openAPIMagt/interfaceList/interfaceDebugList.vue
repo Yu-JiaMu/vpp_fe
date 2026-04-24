@@ -33,8 +33,8 @@ import { ElMessage } from 'element-plus'
 import ApiSidebar from "@views/openAPIMagt/interfaceList/components/apiSidebar/ApiSidebar.vue";
 import ApiConfigPanel from "@views/openAPIMagt/interfaceList/components/apiConfigPanel/ApiConfigPanel.vue";
 import ApiRightPanel from "@views/openAPIMagt/interfaceList/components/apiRightPanel/ApiRightPanel.vue";
-import paramsConfigData from '@/../public/openapi/paramsConfigData.json'
-import pageParamsConfigData from '@/../public/openapi/pageParamsConfigData.json'
+import paramsConfigData from '@/../public/openApiData/paramsConfigData.json'
+import pageParamsConfigData from '@/../public/openApiData/pageParamsConfigData.json'
 import { openApiClient, validateRequiredParams } from '@/views/openAPIMagt/interfaceList/util/openApiSignature'
 const appKey = ref('demo-ak-sm3')
 const appSecret = ref('b8c5504c3ee43ecfe3207abb5b63692f7759d41de7c628f80a92569c151c149d')
@@ -46,10 +46,10 @@ const currentApi = ref({
   "method": "GET",
   "desc": "调用该接口查询所有设备列表信息",
   "level": 2,
-  "docPath": "/../public/openapi/docs/IotDeviceOpenApi_List接口文档.md",
+  "docPath": "/openApiData/docs/IotDeviceOpenApi_List接口文档.md",
   "hasPage": true
 })
-const oldDocPath = ref('/../public/openapi/docs/IotDeviceOpenApi_List接口文档.md')
+const oldDocPath = ref('/openApiData/docs/IotDeviceOpenApi_List接口文档.md')
 
 const inputParams = reactive(paramsConfigData);
 

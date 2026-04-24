@@ -1,5 +1,5 @@
 # getDevicePropertySnapshot — 获取设备属性快照
-[OpenAPI 接入指南](/../public/openapi/docs/OpenAPI接入指南.md)
+[OpenAPI 接入指南](/openApiData/docs/OpenAPI接入指南.md)
 ## 基本信息
 
 | 项目     | 说明                            |

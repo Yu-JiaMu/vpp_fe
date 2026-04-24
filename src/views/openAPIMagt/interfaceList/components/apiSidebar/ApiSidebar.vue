@@ -35,7 +35,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import apiListData from '@/../public/openapi/apiListData.json'
+import apiListData from '@/../public/openApiData/apiListData.json'
 
 const emit = defineEmits(['node-click'])
 

@@ -1,6 +1,6 @@
 # IOT设备管理OpenAPI接口文档
 
-[OpenAPI 接入指南](/../public/openapi/docs/OpenAPI接入指南.md)
+[OpenAPI 接入指南](/openApiData/docs/OpenAPI接入指南.md)
 
 ## 查询设备扩展信息接口
 

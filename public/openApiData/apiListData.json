@@ -10,7 +10,7 @@
         "method": "GET",
         "desc": "调用该接口查询所有设备列表信息",
         "level": 2,
-        "docPath": "/../public/openapi/docs/IotDeviceOpenApi_List接口文档.md",
+        "docPath": "/openApiData/docs/IotDeviceOpenApi_List接口文档.md",
         "hasPage": true
       },
       {
@@ -19,7 +19,7 @@
         "apiPath": "getDeviceSubdeviceList",
         "desc": "调用该接口查询指定网关设备下的子设备列表信息",
         "level": 2,
-        "docPath": "/../public/openapi/docs/IotDeviceOpenApi_SubdeviceList接口文档.md",
+        "docPath": "/openApiData/docs/IotDeviceOpenApi_SubdeviceList接口文档.md",
         "hasPage": false
       },
       {
@@ -28,7 +28,7 @@
         "apiPath": "getDevicePropertySnapshot",
         "desc": "调用该接口查询指定设备上报的属性最新快照",
         "level": 2,
-        "docPath": "/../public/openapi/docs/getDevicePropertySnapshot.md",
+        "docPath": "/openApiData/docs/getDevicePropertySnapshot.md",
         "hasPage": true
       },
       {
@@ -37,7 +37,7 @@
         "apiPath": "getDevicePropertyHistory",
         "desc": "调用该接口查询指定设备上报的指定属性历史数据",
         "level": 2,
-        "docPath": "/../public/openapi/docs/getDevicePropertyHistory.md",
+        "docPath": "/openApiData/docs/getDevicePropertyHistory.md",
         "hasPage": true
       },
       {
@@ -46,7 +46,7 @@
         "apiPath": "getDeviceLog",
         "desc": "调用该接口查询指定设备的日志信息",
         "level": 2,
-        "docPath": "/../public/openapi/docs/getDeviceLog.md",
+        "docPath": "/openApiData/docs/getDeviceLog.md",
         "hasPage": true
       },
       {
@@ -55,7 +55,7 @@
         "apiPath": "getDeviceExtendInfo",
         "desc": "调用该接口查询指定设备的拓展字段",
         "level": 2,
-        "docPath": "/../public/openapi/docs/IotDeviceOpenApi_ExtendInfo接口文档.md",
+        "docPath": "/openApiData/docs/IotDeviceOpenApi_ExtendInfo接口文档.md",
         "hasPage": false
       }
     ]
