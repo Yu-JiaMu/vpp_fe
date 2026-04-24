@@ -44,7 +44,7 @@ const currentApi = ref({
   "method": "GET",
   "desc": "调用该接口查询所有设备列表信息",
   "level": 2,
-  "docPath": "/../public/openapi/docs/IotDeviceOpenApi_getDeviceList接口文档.md",
+  "docPath": "/../public/openapi/docs/IotDeviceOpenApi_List接口文档.md",
   "hasPage": true
 })
 
