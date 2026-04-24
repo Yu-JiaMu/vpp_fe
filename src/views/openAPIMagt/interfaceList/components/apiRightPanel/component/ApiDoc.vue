@@ -8,14 +8,14 @@
       <el-icon><WarningFilled /></el-icon>
       <span>{{ error }}</span>
     </div>
-    <div v-else class="markdown-body" v-html="renderedHtml"></div>
+    <div v-else class="markdown-body" v-html="renderedHtml" @click="handleLinkClick"></div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { marked } from 'marked'
-import { Loading, WarningFilled } from '@element-plus/icons-vue'
+import { Loading, WarningFilled, Back } from '@element-plus/icons-vue'
 
 const props = defineProps({
   docPath: {
@@ -25,9 +25,17 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['doc-change', 'doc-return'])
+
 const renderedHtml = ref('')
 const loading = ref(false)
 const error = ref('')
+
+// 文档历史栈
+const docHistory = ref([])
+
+// 是否可以返回
+const canGoBack = computed(() => docHistory.value.length > 1)
 
 const loadAndRenderMarkdown = async () => {
   if (!props.docPath) {
@@ -69,15 +77,54 @@ const loadAndRenderMarkdown = async () => {
   }
 }
 
+// 处理链接点击事件
+const handleLinkClick = (event) => {
+  const target = event.target.closest('a')
+  if (!target) return
+
+  const href = target.getAttribute('href')
+  if (!href) return
+  console.log('点击链接:', href);
+
+  // 检查是否是 MD 文件链接
+  if (href.endsWith('.md')) {
+    console.log("进入1")
+    event.preventDefault()
+
+    // 将当前文档加入历史栈
+    if (props.docPath && !docHistory.value.includes(props.docPath)) {
+      docHistory.value.push(props.docPath)
+    }
+    // 解析相对路径
+    let newDocPath = href
+    console.log('切换文档:', newDocPath)
+    console.log('历史栈:', docHistory.value)
+    // 通知父组件切换文档
+    emit('doc-change', newDocPath)
+  } else {
+    console.log("进入2")
+    event.preventDefault()
+    // 跳转到外部链接
+    emit('doc-return')
+  }
+}
+
 watch(
   () => props.docPath,
-  () => {
+  (newPath) => {
+    // 如果是从外部切换（非历史栈中的文档），清空历史栈
+    if (newPath && !docHistory.value.includes(newPath)) {
+      docHistory.value = [newPath]
+    }
     loadAndRenderMarkdown()
   },
   { immediate: true }
 )
 
 onMounted(() => {
+  if (props.docPath) {
+    docHistory.value = [props.docPath]
+  }
   loadAndRenderMarkdown()
 })
 </script>
@@ -90,6 +137,7 @@ onMounted(() => {
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #dcdfe6 #f5f7fa;
+  position: relative;
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -127,6 +175,14 @@ onMounted(() => {
 
   .error-container {
     color: #f56c6c;
+  }
+
+  .back-button {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 
   .markdown-body {

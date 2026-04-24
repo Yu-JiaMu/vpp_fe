@@ -6,7 +6,11 @@
       class="right-tabs"
     >
       <el-tab-pane label="文档" name="doc">
-        <ApiDoc :doc-path="apiInfo.docPath" />
+        <ApiDoc
+          :doc-path="apiInfo.docPath"
+          @doc-change="$emit('doc-change', $event)"
+          @doc-return="$emit('doc-return', $event)"
+        />
       </el-tab-pane>
 
       <el-tab-pane label="调用结果" name="result">
@@ -64,7 +68,7 @@ defineProps({
   }
 })
 
-defineEmits(['update:activeTab', 'update:resultTab', 'recall'])
+defineEmits(['update:activeTab', 'update:resultTab', 'recall', 'doc-change', 'doc-return'])
 </script>
 
 <style lang="scss" scoped>

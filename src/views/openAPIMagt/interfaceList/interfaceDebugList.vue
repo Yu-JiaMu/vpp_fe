@@ -21,6 +21,8 @@
       v-model:result-tab="resultTab"
       :call-history="callHistory"
       @recall="reCallApi"
+      @doc-change="handleDocChange"
+      @doc-return="handleDocReturn"
     />
   </div>
 </template>
@@ -47,6 +49,7 @@ const currentApi = ref({
   "docPath": "/../public/openapi/docs/IotDeviceOpenApi_List接口文档.md",
   "hasPage": true
 })
+const oldDocPath = ref('/../public/openapi/docs/IotDeviceOpenApi_List接口文档.md')
 
 const inputParams = reactive(paramsConfigData);
 
@@ -228,6 +231,17 @@ const reCallApi = (row) => {
 
   // 发起调用
   handleCallApi()
+}
+
+const handleDocChange = (newDocPath) => {
+  console.log('切换文档:', newDocPath)
+  oldDocPath.value = currentApi.value.docPath;
+  // 更新当前 API 的文档路径
+  currentApi.value.docPath = newDocPath
+}
+
+const handleDocReturn = () => {
+  currentApi.value.docPath = oldDocPath.value;
 }
 
 

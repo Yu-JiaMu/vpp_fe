@@ -1,5 +1,7 @@
 # IOT设备管理OpenAPI接口文档
 
+[OpenAPI 接入指南](/../public/openapi/docs/OpenAPI接入指南.md)
+
 ## 查询网关设备下的子设备列表接口
 
 ### 基本信息
