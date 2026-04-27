@@ -8,7 +8,7 @@
       <el-icon><WarningFilled /></el-icon>
       <span>{{ error }}</span>
     </div>
-    <div v-else class="markdown-body" v-html="renderedHtml" @click="handleLinkClick"></div>
+    <div v-else class="markdown-body-new" v-html="renderedHtml" @click="handleLinkClick"></div>
   </div>
 </template>
 
@@ -60,7 +60,7 @@ const loadAndRenderMarkdown = async () => {
 
     const markdownText = await response.text()
 
-    if (!markdownText || markdownText.trim().startsWith('<!DOCTYPE') || markdownText.trim().startsWith('<html')) {
+    if (!markdownText || markdownText.trim().startsWith('\x3c!DOCTYPE') || markdownText.trim().startsWith('\x3chtml')) {
       throw new Error('文档内容为空或格式不正确')
     }
 
@@ -185,14 +185,13 @@ onMounted(() => {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
 
-  .markdown-body {
+  .markdown-body-new {
     :deep(h1),
     :deep(h2),
     :deep(h3),
     :deep(h4),
     :deep(h5),
     :deep(h6) {
-      margin-top: 24px;
       margin-bottom: 16px;
       font-weight: 600;
       line-height: 1.25;
@@ -200,23 +199,23 @@ onMounted(() => {
     }
 
     :deep(h1) {
-      font-size: 2em;
+      font-size: 15px;
       padding-bottom: 0.3em;
       border-bottom: 1px solid #eaecef;
     }
 
     :deep(h2) {
-      font-size: 1.5em;
+      font-size: 15px;
       padding-bottom: 0.3em;
       border-bottom: 1px solid #eaecef;
     }
 
     :deep(h3) {
-      font-size: 1.25em;
+      font-size: 15px;
     }
 
     :deep(h4) {
-      font-size: 1em;
+      font-size: 15px;
     }
 
     :deep(p) {
@@ -229,7 +228,7 @@ onMounted(() => {
     :deep(a) {
       color: #409eff;
       text-decoration: none;
-
+      font-size: 15px;
       &:hover {
         text-decoration: underline;
       }
