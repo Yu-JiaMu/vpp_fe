@@ -29,7 +29,7 @@
             <el-switch :model-value="row.appStatus===APP_STATUS.map.ENABLE.value" @change="toggleEnable(row)" />
           </template>
         </el-table-column>
-        <el-table-column prop="lastRequestTime" label="最后调用时间" sortable="custom" width="180" />
+        <el-table-column prop="lastRequestTime" label="最后调用时间" width="180" />
         <el-table-column prop="createTime" label="创建时间" sortable="custom" width="180"/>
         <el-table-column label="操作" fixed="right" width="120">
           <template #default="{ row }">
@@ -58,7 +58,9 @@
 
   const form = reactive({
     appName: '',
-    id: ''
+    id: '',
+    orderByColumn: 'createTime',
+    isAsc: 'descending'
   })
 
   const pagination = reactive({
@@ -147,8 +149,8 @@
   function onReset() {
     pagination.current = 1
     tableRef.value?.clearSort()
-    form.orderByColumn= '';
-    form.isAsc = '';
+    form.orderByColumn= 'createTime';
+    form.isAsc = 'descending';
     getTableData()
   }
 
