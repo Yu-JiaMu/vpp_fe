@@ -3,16 +3,14 @@
     <!-- 顶部按钮切换 -->
     <div class="result-tabs">
       <el-button
-          :type="activeTab === 'response' ? 'primary' : ''"
+          :class="['tab-btn', { 'tab-btn-active': activeTab === 'response' }]"
           @click="activeTab = 'response'"
-          class="tab-btn"
       >
         响应信息
       </el-button>
       <el-button
-          :type="activeTab === 'request' ? 'primary' : ''"
+          :class="['tab-btn', { 'tab-btn-active': activeTab === 'request' }]"
           @click="activeTab = 'request'"
-          class="tab-btn"
       >
         请求信息
       </el-button>
@@ -106,7 +104,7 @@
 </template>
 
 <script setup>
-import { computed, reactive } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Document, CopyDocument } from '@element-plus/icons-vue'
 
@@ -236,9 +234,25 @@ const copyJson = async (jsonStr, label) => {
       background: #f7f7f9;
       border: 1px solid #ced1d9;
       border-radius: 4px;
+      transition: all 0.2s ease;
+      // 移除element默认的hover样式干扰
+      &:not(.tab-btn-active):hover {
+        color: #303537;
+        background: #e7effe;
+        border: 1px solid #1464ee;
+        border-radius: 4px;
+      }
+    }
+    // 选中状态样式
+    .tab-btn-active {
+      color: #303537!important;
+      background: #e7effe !important;
+      border: 1px solid #1464ee;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(64, 158, 255, 0.2);
       &:hover {
-        color: #409eff;
-        border-color: #409eff;
+        background: #e7effe !important;
+        border-color: #1464ee !important;
       }
     }
   }
@@ -334,5 +348,23 @@ const copyJson = async (jsonStr, label) => {
 :deep(.jv-key) {
   color: #c41d7f !important;
   font-weight: 500 !important;
+}
+
+// 覆盖element按钮默认样式，避免冲突
+:deep(.result-tabs .el-button) {
+  --el-button-text-color: #131617;
+  --el-button-bg-color: #f7f7f9;
+  --el-button-border-color: #ced1d9;
+  --el-button-hover-text-color: #409eff;
+  --el-button-hover-bg-color: #f0f7ff;
+  --el-button-hover-border-color: #409eff;
+}
+:deep(.result-tabs .el-button.tab-btn-active) {
+  --el-button-text-color: #fff;
+  --el-button-bg-color: #409eff;
+  --el-button-border-color: #409eff;
+  --el-button-hover-text-color: #fff;
+  --el-button-hover-bg-color: #3399ff;
+  --el-button-hover-border-color: #3399ff;
 }
 </style>

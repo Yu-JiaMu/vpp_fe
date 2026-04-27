@@ -2,26 +2,32 @@
   <div class="sidebar">
     <div class="sidebar-search">
       <el-input
-        v-model="searchKeyword"
-        placeholder="请输入接口名称"
-        clearable
-        prefix-icon="Search"
+          v-model="searchKeyword"
+          placeholder="请输入接口名称"
+          clearable
+          prefix-icon="Search"
       />
     </div>
     <el-tree
-      :data="filteredTreeData"
-      :props="treeProps"
-      default-expand-all
-      @node-click="handleNodeClick"
-      class="sidebar-tree"
+        :data="filteredTreeData"
+        :props="treeProps"
+        default-expand-all
+        @node-click="handleNodeClick"
+        class="sidebar-tree"
+        :current-node-key="currentNodeKey"
+        node-key="id"
     >
       <template #default="{ node, data }">
-        <div class="tree-node-custom">
+        <div
+            class="tree-node-custom"
+            :class="{ 'tree-node-active': currentNodeKey === node.key }"
+        >
           <div
-            class="node-label"
-            :class="{
+              class="node-label"
+              :class="{
               'node-label-level1': node.level === 1,
-              'node-label-level2': node.level === 2
+              'node-label-level2': node.level === 2,
+              'active-label': currentNodeKey === node.key
             }"
           >
             {{ node.label }}
@@ -34,14 +40,16 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import apiListData from '@/../public/openApiData/apiListData.json'
 
 const emit = defineEmits(['node-click'])
 
 const searchKeyword = ref('')
 const originalTreeData = ref(apiListData)
+const currentNodeKey = ref('') // 存储当前选中节点的key
 
+// 过滤树数据
 const filteredTreeData = computed(() => {
   const keyword = searchKeyword.value.trim().toLowerCase()
   if (!keyword) {
@@ -76,6 +84,29 @@ const filteredTreeData = computed(() => {
   return filterNodes(originalTreeData.value)
 })
 
+// 设置默认选中第一个节点
+const setDefaultActiveNode = () => {
+  if (filteredTreeData.value.length > 0) {
+    const firstNode = filteredTreeData.value[0]
+    // 优先选二级节点，没有则选一级节点
+    const targetNode = firstNode.children?.length ? firstNode.children[0] : firstNode
+    if (targetNode?.id) {
+      currentNodeKey.value = targetNode.id
+      // 触发选中事件
+      handleNodeClick(targetNode)
+    }
+  }
+}
+
+// 监听过滤后的数据变化，重新设置默认选中
+watch(filteredTreeData, () => {
+  setDefaultActiveNode()
+}, { immediate: true })
+
+onMounted(() => {
+  setDefaultActiveNode()
+})
+
 const treeProps = {
   children: 'children',
   label: 'label'
@@ -83,6 +114,7 @@ const treeProps = {
 
 const handleNodeClick = (node) => {
   if (node.id) {
+    currentNodeKey.value = node.id // 记录选中的节点key
     emit('node-click', node)
   }
 }
@@ -106,8 +138,6 @@ const handleNodeClick = (node) => {
     }
   }
 
-  // ... existing code ...
-
   .sidebar-tree {
     flex: 1;
     overflow-y: auto;
@@ -115,10 +145,23 @@ const handleNodeClick = (node) => {
     :deep(.tree-node-custom) {
       display: flex;
       flex-direction: column;
-      padding: 4px 0;
       width: 100%;
       word-wrap: break-word;
       word-break: break-all;
+      border-radius: 4px;
+      padding: 6px 8px;
+      transition: background-color 0.2s ease;
+    }
+
+    // 选中节点的背景样式
+    :deep(.tree-node-active) {
+      background: #efeff3;
+    }
+
+    // 选中节点的文字样式
+    :deep(.active-label) {
+      color: #050505 !important;
+      font-weight: 400 !important;
     }
 
     :deep(.node-label-level1) {
@@ -126,7 +169,7 @@ const handleNodeClick = (node) => {
       min-height: 21px;
       font-size: 15px;
       font-family: Source Han Sans SC, Source Han Sans SC-Bold;
-      font-weight: 700;
+      font-weight: 400;
       text-align: left;
       color: #303537;
       white-space: normal;
@@ -165,11 +208,17 @@ const handleNodeClick = (node) => {
 
     :deep(.el-tree-node__content) {
       height: auto !important;
-      padding: 6px 4px;
+      padding: 0 !important;
       line-height: 1.4;
       align-items: flex-start !important;
+    }
+
+    // 去除默认的hover样式干扰
+    :deep(.el-tree-node__content:hover),
+    :deep(.el-tree-node:focus > .el-tree-node__content),
+    :deep(.el-tree-node__content) {
+      background-color: transparent !important;
     }
   }
 }
 </style>
-

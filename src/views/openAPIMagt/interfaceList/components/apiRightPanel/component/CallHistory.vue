@@ -16,17 +16,16 @@
           style="width: 100%"
           class="history-table"
       >
-        <el-table-column label="请求时间" width="180" align="center">
+        <el-table-column label="请求时间" min-width="180" align="center">
           <template #default="{ row }">
             <span class="time-text">{{ row.time }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="调用状态" width="120" align="center">
+        <el-table-column label="调用状态" min-width="170" align="center">
           <template #default="{ row }">
-            <span :class="['status-text', row.success ? 'success' : 'error']">
-              {{ row.success ? '调用成功' : '调用失败' }}
-            </span>
+            <el-tag v-if="row.success" type="success">调用成功</el-tag>
+            <el-tag v-else type="danger">调用失败</el-tag>
           </template>
         </el-table-column>
 

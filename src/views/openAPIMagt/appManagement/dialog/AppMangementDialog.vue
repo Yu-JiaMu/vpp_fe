@@ -77,7 +77,7 @@
             v-model="formData.remark"
             type="textarea"
             :rows="4"
-            placeholder="请输入描述"
+            placeholder="请输入应用描述"
             maxlength="200"
             show-word-limit
           />
