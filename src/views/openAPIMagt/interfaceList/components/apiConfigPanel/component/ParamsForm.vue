@@ -195,7 +195,6 @@ defineProps({
 
       .param-input {
         width: 100%;
-        max-width: 500px;
       }
     }
   }
@@ -204,7 +203,6 @@ defineProps({
 // 穿透 scoped，覆盖日期选择器宽度
 :deep(.date-range-picker) {
   width: 100% !important;  // 和 el-input 保持一致的宽度
-  max-width: 500px !important;  // 和 el-input 保持一致的最大宽度
 }
 
 // 强制覆盖 Element Plus 内置的日期编辑器宽度
@@ -212,6 +210,5 @@ defineProps({
 :deep(.el-date-editor.el-input__wrapper) {
   width: 100% !important;  // 覆盖 var(--el-date-editor-width)
   height: unset !important;  // 继承父元素高度，和 input 对齐
-  max-width: 500px !important; // 匹配 param-input 的最大宽度
 }
 </style>

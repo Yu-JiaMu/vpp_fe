@@ -135,7 +135,6 @@ defineEmits(['update:appKey', 'update:appSecret'])
 
       .param-input {
         width: 100%;
-        max-width: 500px;
       }
     }
   }

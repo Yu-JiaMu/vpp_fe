@@ -284,7 +284,6 @@ const formatDate = (dateStr) => {
   gap: 16px;
   padding: 16px 0;
   box-sizing: border-box;
-  max-width: 1920px;
   margin: 0 auto;
   width: 100%;
 }
