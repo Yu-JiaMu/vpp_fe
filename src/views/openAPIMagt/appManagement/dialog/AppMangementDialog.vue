@@ -23,7 +23,7 @@
         <el-form-item label="应用编号" prop="id" >
           <el-input
               v-model="formData.id"
-              placeholder="请输入应用编号"
+              placeholder="系统自动生成"
               clearable
               :disabled="true"
           />
@@ -77,7 +77,7 @@
             v-model="formData.remark"
             type="textarea"
             :rows="4"
-            placeholder="请输入产品品类说明"
+            placeholder="请输入描述"
             maxlength="200"
             show-word-limit
           />
@@ -135,6 +135,8 @@ const formData = reactive({
   remark: ''
 })
 
+const initialFormData = ref({})
+
 const secretDialogVisible = ref(false)
 const appKey = ref('')
 const appSecret = ref('')
@@ -166,7 +168,7 @@ const handleValidityChange = (val) => {
 
   switch (val) {
     case VALIDITY_PERIOD.map.LONG_TERM.value:
-      formData.endTime = '2029-12-31 00:00:00'
+      formData.endTime = '2099-12-31 00:00:00'
       break
     case VALIDITY_PERIOD.map.THREE_YEARS.value:
       now.setFullYear(now.getFullYear() + 3)
@@ -275,7 +277,17 @@ const handleCloseDialog = () => {
 }
 
 const isFormDirty = () => {
-  return formData.appName || formData.remark || formData.endTime
+  if (!formData.id) {
+    return formData.appName || formData.remark || formData.endTime
+  }
+
+  return (
+      formData.appName !== initialFormData.value.appName ||
+      formData.appStatus !== initialFormData.value.appStatus ||
+      formData.validityPeriod !== initialFormData.value.validityPeriod ||
+      formData.endTime !== initialFormData.value.endTime ||
+      formData.remark !== initialFormData.value.remark
+  )
 }
 
 const showCloseConfirm = (onConfirm) => {
@@ -293,6 +305,7 @@ const resetForm = () => {
   if (formRef.value) formRef.value.resetFields()
   Object.keys(formData).forEach(key => { formData[key] = '' })
   formData.appStatus = 'enable'
+  initialFormData.value = {}
 }
 
 /**
@@ -308,6 +321,14 @@ const initFormData = (data) => {
   formData.endTime = data.endTime || ''
   formData.remark = data.remark || ''
   formData.validityPeriod = data.validityPeriod || VALIDITY_PERIOD.map.LONG_TERM.value
+  initialFormData.value = {
+    id: formData.id,
+    appStatus: formData.appStatus,
+    appName: formData.appName,
+    validityPeriod: formData.validityPeriod,
+    endTime: formData.endTime,
+    remark: formData.remark
+  }
 }
 
 defineExpose({ resetForm, initFormData })

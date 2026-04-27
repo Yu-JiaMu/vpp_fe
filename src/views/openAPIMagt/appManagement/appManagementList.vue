@@ -15,6 +15,7 @@
         border
         show-overflow-tooltip
         style="width: 100%"
+        @sort-change="handleSort"
       >
         <el-table-column prop="appName" label="应用名称" min-width="180"/>
         <el-table-column prop="id" label="应用编号" min-width="180" />
@@ -28,8 +29,8 @@
             <el-switch :model-value="row.appStatus===APP_STATUS.map.ENABLE.value" @change="toggleEnable(row)" />
           </template>
         </el-table-column>
-        <el-table-column prop="lastRequestTime" label="最后调用时间" width="180"/>
-        <el-table-column prop="createTime" label="创建时间" width="180"/>
+        <el-table-column prop="lastRequestTime" label="最后调用时间" sortable="custom" width="180" />
+        <el-table-column prop="createTime" label="创建时间" sortable="custom" width="180"/>
         <el-table-column label="操作" fixed="right" width="120">
           <template #default="{ row }">
             <el-button link type="primary" @click.prevent="viewDetails(row)">详情</el-button>
@@ -146,6 +147,14 @@
   function onReset() {
     pagination.current = 1
     tableRef.value?.clearSort()
+    form.orderByColumn= '';
+    form.isAsc = '';
+    getTableData()
+  }
+
+  function handleSort({ order, prop }) {
+    form.orderByColumn = prop
+    form.isAsc = order
     getTableData()
   }
 
