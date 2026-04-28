@@ -187,11 +187,6 @@ const handleCallApi = async () => {
       requestHeaders: JSON.stringify(result.requestHeaders, null, 2)
     }
     updateCallHistory()
-    if (result.success){
-      ElMessage.success('调用成功')
-    }else{
-      ElMessage.error('调用失败')
-    }
   } catch (e) {
     console.log('接口异常:', e)
     apiResult.value = {
@@ -210,7 +205,6 @@ const handleCallApi = async () => {
     })
     updateCallHistory()
     rightActiveTab.value='result'
-    ElMessage.error('接口调用失败')
   } finally {
     // 关闭 loading
     loading.value = false
@@ -233,13 +227,15 @@ const reCallApi = (row) => {
   })
 
   // 填充分页参数
-  if (row.params.PageSize !== undefined) {
-    const pageSizeParam = pageParams.find(p => p.key === 'PageSize')
-    if (pageSizeParam) pageSizeParam.value = row.params.PageSize
+  if (row.params.pageSize !== undefined) {
+    const pageSizeParam = pageParams.find(p => p.key === 'pageSize')
+    console.log("pageSizeParam", pageSizeParam)
+    if (pageSizeParam) pageSizeParam.value = row.params.pageSize
   }
-  if (row.params.CurrentPage !== undefined) {
-    const currentPageParam = pageParams.find(p => p.key === 'CurrentPage')
-    if (currentPageParam) currentPageParam.value = row.params.CurrentPage
+  if (row.params.pageNum !== undefined) {
+    const currentPageParam = pageParams.find(p => p.key === 'pageNum')
+    console.log("currentPageParam", currentPageParam)
+    if (currentPageParam) currentPageParam.value = row.params.pageNum
   }
 
   // 切换到参数配置 Tab
