@@ -281,19 +281,34 @@ export class OpenApiSignatureClient {
       params.set('accessKey', accessKey)
       params.set('action', action)
 
+      const orgParams = new Map<string, string>();
+      orgParams.set('accessKey', accessKey)
+      orgParams.set('action', action)
+      // 添加原始参数用于加密
+      Object.entries(extraParams).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '') {
+          orgParams.set(key, String(value))
+        }
+      })
       // 添加额外参数
       Object.entries(extraParams).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
-          params.set(key, String(value))
+          params.set(key, encodeURIComponent(String(value)))
         }
       })
 
       // 按字母序排列
+      const orgSortedKeys = [...orgParams.keys()].sort()
+      const orgQueryString = orgSortedKeys.map((k) => `${k}=${orgParams.get(k)}`).join('&')
+      console.log("orgQueryString", orgQueryString);
+
+      // 按字母序排列
       const sortedKeys = [...params.keys()].sort()
       const queryString = sortedKeys.map((k) => `${k}=${params.get(k)}`).join('&')
+      console.log("queryString", queryString);
 
       // 构建待签名字符串
-      const stringToSign = buildStringToSign(httpMethod, path, queryString, timestamp, nonce)
+      const stringToSign = buildStringToSign(httpMethod, path, orgQueryString, timestamp, nonce)
 
       // 计算签名
       let signature: string
