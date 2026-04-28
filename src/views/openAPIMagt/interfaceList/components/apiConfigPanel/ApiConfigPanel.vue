@@ -4,33 +4,35 @@
 
     <div class="api-body">
       <el-tabs
-        :model-value="activeTab"
-        @update:model-value="$emit('update:activeTab', $event)"
-        class="api-tabs"
+          :model-value="activeTab"
+          @update:model-value="$emit('update:activeTab', $event)"
+          class="api-tabs"
       >
         <el-tab-pane label="参数配置" name="params">
           <ParamsForm
-            :input-params="inputParams"
-            :page-params="pageParams"
-            :api-info="apiInfo"
+              ref="paramsFormRef"
+              :input-params="inputParams"
+              :page-params="pageParams"
+              :api-info="apiInfo"
           />
         </el-tab-pane>
 
         <el-tab-pane label="API密钥配置" name="auth">
           <AuthForm
-            :app-key="appKey"
-            :app-secret="appSecret"
-            @update:app-key="$emit('update:appKey', $event)"
-            @update:app-secret="$emit('update:appSecret', $event)"
+              ref="authFormRef"
+              :app-key="appKey"
+              :app-secret="appSecret"
+              @update:app-key="$emit('update:appKey', $event)"
+              @update:app-secret="$emit('update:appSecret', $event)"
           />
         </el-tab-pane>
       </el-tabs>
     </div>
 
     <ApiFooter
-      :button-text="buttonText"
-      @clear="$emit('clear')"
-      @submit="$emit('submit')"
+        :button-text="buttonText"
+        @clear="$emit('clear')"
+        @submit="$emit('submit')"
     />
   </div>
 </template>
@@ -73,7 +75,25 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:activeTab', 'update:appKey', 'update:appSecret', 'clear', 'submit'])
+const paramsFormRef = ref(null)
+const authFormRef = ref(null)
 
+const validateParams = () => {
+  return paramsFormRef.value ? paramsFormRef.value.validate() : Promise.resolve()
+}
+const validateAuth = () => {
+  return authFormRef.value ? authFormRef.value.validate() : Promise.resolve()
+}
+
+const clearValidateAll = () => {
+  paramsFormRef.value?.clearValidate()
+}
+
+defineExpose({
+  validateParams,
+  validateAuth,
+  clearValidateAll  // 新增
+})
 const buttonText = computed(() => {
   return props.activeTab === 'params'
     ? { clear: '清空', submit: '发起调用' }

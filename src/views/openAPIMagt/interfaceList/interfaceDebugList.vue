@@ -3,6 +3,7 @@
     <ApiSidebar @node-click="handleNodeClick" />
 
     <ApiConfigPanel
+      ref="configPanelRef"
       :api-info="currentApi"
       :input-params="inputParams"
       :page-params="pageParams"
@@ -35,9 +36,10 @@ import ApiConfigPanel from "@views/openAPIMagt/interfaceList/components/apiConfi
 import ApiRightPanel from "@views/openAPIMagt/interfaceList/components/apiRightPanel/ApiRightPanel.vue";
 import paramsConfigData from '@/../public/openApiData/paramsConfigData.json'
 import pageParamsConfigData from '@/../public/openApiData/pageParamsConfigData.json'
-import { openApiClient, validateRequiredParams } from '@/views/openAPIMagt/interfaceList/util/openApiSignature'
+import { openApiClient } from '@/views/openAPIMagt/interfaceList/util/openApiSignature'
 const appKey = ref('')
 const appSecret = ref('')
+const configPanelRef = ref(null)
 // const appKey = ref('demo-ak-sm3')
 // const appSecret = ref('b8c5504c3ee43ecfe3207abb5b63692f7759d41de7c628f80a92569c151c149d')
 // c7af96cb29bb0601fa645c61a8806373305f0a11231cb3e724939f5c37d9b6b2
@@ -91,14 +93,16 @@ const handleNodeClick = (node) => {
     updateCallHistory()
     inputParams.forEach(item => item.value = '')
     pageParams.forEach(item => {
-      if (item.type === 'pageSize'){
-        item.value = 10
-      } else {
-        item.value = 1
-      }
+      if (item.type === 'pageSize'){ item.value = 10 } else { item.value = 1 }
     })
     apiResult.value = {}
     rightActiveTab.value = 'doc'
+    activeTab.value= 'params'
+
+    // 清空所有表单验证提示（等新接口参数渲染完毕后再清空）
+    nextTick(() => {
+      configPanelRef.value?.clearValidateAll()
+    })
   }
 }
 
@@ -121,48 +125,57 @@ const handleClearParams = () => {
 }
 
 const handleCallApi = async () => {
-  // 防止重复点击
-  if (loading.value) {
-    return
-  }
+  if (loading.value) return
 
+  // 如果是密钥配置 Tab，先验证密钥表单
   if (activeTab.value === 'auth') {
-    ElMessage.success('保存成功')
-    activeTab.value = 'params'
+    try {
+      await configPanelRef.value.validateAuth()
+      ElMessage.success('保存成功')
+      activeTab.value = 'params'
+    } catch (e) {
+      // 表单验证失败，错误信息已显示在表单上
+      console.log('密钥验证失败', e)
+    }
     return
   }
 
-  // 开启 loading
+  // 参数配置 Tab 下：验证参数表单和密钥表单
   loading.value = true
+  try {
+    // 1) 验证参数表单
+    await configPanelRef.value.validateParams()
+  } catch (e) {
+    // 参数验证失败，停留在当前 tab，表单已有红色提示
+    loading.value = false
+    return
+  }
 
   try {
-    const { valid, missingParams } = validateRequiredParams(inputParams, pageParams, currentApi.value.id)
-    if (!valid) {
-      ElMessage.warning(`请填写必填参数：${missingParams.join('、')}`)
-      return
-    }
-    if (!appKey.value || !appSecret.value) {
-      activeTab.value = 'auth'
-      ElMessage.error('请填写密钥')
-      return
-    }
+    // 2) 验证密钥（必须填写）
+    await configPanelRef.value.validateAuth()
+  } catch (e) {
+    // 密钥未填，切换到 auth Tab 以便用户看到错误
+    activeTab.value = 'auth'
+    loading.value = false
+    return
+  }
+
+  // 所有验证通过，发起请求
+  try {
     const params = {}
     inputParams.forEach(item => {
-      // 如果item为list
-      if (item.value!==null && item.value){
-        console.log("item", item.value)
+      if (item.value !== null && item.value) {
         if (item.type === 'daterange') {
-          params['startTime']= formatDate(item.value[0])
-          params['endTime']= formatDate(item.value[1])
+          params['startTime'] = formatDate(item.value[0])
+          params['endTime'] = formatDate(item.value[1])
         } else {
           params[item.key] = item.value
         }
       }
     })
-    if (currentApi.value.hasPage){
-      pageParams.forEach(item => {
-        params[item.key] = item.value
-      })
+    if (currentApi.value.hasPage) {
+      pageParams.forEach(item => { params[item.key] = item.value })
     }
     // 发起请求
     const result = await openApiClient.request({
@@ -221,30 +234,33 @@ const reCallApi = (row) => {
     return
   }
 
-  // 将历史参数填充到表单
+  // 1. 填充参数到原始数组
   inputParams.forEach(item => {
     if (row.params[item.key] !== undefined) {
       item.value = row.params[item.key]
     }
   })
 
-  // 填充分页参数
-  if (row.params.pageSize !== undefined) {
-    const pageSizeParam = pageParams.find(p => p.key === 'pageSize')
-    console.log("pageSizeParam", pageSizeParam)
-    if (pageSizeParam) pageSizeParam.value = row.params.pageSize
+  // 2. 填充分页参数
+  const pageSizeParam = pageParams.find(p => p.key === 'pageSize')
+  if (pageSizeParam && row.params.pageSize !== undefined) {
+    pageSizeParam.value = row.params.pageSize
   }
-  if (row.params.pageNum !== undefined) {
-    const currentPageParam = pageParams.find(p => p.key === 'pageNum')
-    console.log("currentPageParam", currentPageParam)
-    if (currentPageParam) currentPageParam.value = row.params.pageNum
+  const currentPageParam = pageParams.find(p => p.key === 'pageNum')
+  if (currentPageParam && row.params.pageNum !== undefined) {
+    currentPageParam.value = row.params.pageNum
   }
 
-  // 切换到参数配置 Tab
+  // 3. 切换到参数配置 Tab
   activeTab.value = 'params'
 
-  // 发起调用
-  handleCallApi()
+  // 4. 重置所有表单验证状态（非常重要！）
+  configPanelRef.value?.clearValidateAll()
+
+  // 5. 等待 Vue 完成 DOM 更新和 formModel 同步，再发起调用
+  nextTick(() => {
+    handleCallApi()
+  })
 }
 
 const handleDocChange = (newDocPath) => {
