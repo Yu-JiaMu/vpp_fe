@@ -365,7 +365,7 @@ export class OpenApiSignatureClient {
         data,
         responseText,
         requestUrl: fullUrl,
-        requestParams: Object.fromEntries(params),
+        requestParams: Object.fromEntries(orgParams),
         requestHeaders: headers,
         responseHeaders
       }

@@ -37,11 +37,11 @@ import ApiRightPanel from "@views/openAPIMagt/interfaceList/components/apiRightP
 import paramsConfigData from '@/../public/openApiData/paramsConfigData.json'
 import pageParamsConfigData from '@/../public/openApiData/pageParamsConfigData.json'
 import { openApiClient } from '@/views/openAPIMagt/interfaceList/util/openApiSignature'
-const appKey = ref('')
-const appSecret = ref('')
+// const appKey = ref('')
+// const appSecret = ref('')
 const configPanelRef = ref(null)
-// const appKey = ref('demo-ak-sm3')
-// const appSecret = ref('b8c5504c3ee43ecfe3207abb5b63692f7759d41de7c628f80a92569c151c149d')
+const appKey = ref('demo-ak-sm3')
+const appSecret = ref('b8c5504c3ee43ecfe3207abb5b63692f7759d41de7c628f80a92569c151c149d')
 // c7af96cb29bb0601fa645c61a8806373305f0a11231cb3e724939f5c37d9b6b2
 const currentApi = ref({
   "id": "10001",
@@ -167,8 +167,8 @@ const handleCallApi = async () => {
     inputParams.forEach(item => {
       if (item.value !== null && item.value) {
         if (item.type === 'daterange') {
-          params['startTime'] = formatDate(item.value[0])
-          params['endTime'] = formatDate(item.value[1])
+          params['startTime'] = formatDate(item.value[0], 'start')
+          params['endTime'] = formatDate(item.value[1], 'end')
         } else {
           params[item.key] = item.value
         }
@@ -236,10 +236,17 @@ const reCallApi = (row) => {
 
   // 1. 填充参数到原始数组
   inputParams.forEach(item => {
-    if (row.params[item.key] !== undefined) {
+    if (item.type === 'daterange') {
+      const startTime = row.params?.startTime
+      const endTime = row.params?.endTime
+      if (startTime && endTime) {
+        item.value = [startTime, endTime]
+      }
+    } else if (row.params[item.key] !== undefined) {
       item.value = row.params[item.key]
     }
   })
+
 
   // 2. 填充分页参数
   const pageSizeParam = pageParams.find(p => p.key === 'pageSize')
@@ -280,13 +287,15 @@ const handleDocReturn = () => {
  * @author Huang Jialin
  * @date 2026/4/14 15:09
  */
-const formatDate = (dateStr) => {
+const formatDate = (dateStr, type) => {
   if (!dateStr) return ''
   const date = new Date(dateStr)
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day} 00:00:00`
+  if (type === 'start') return `${year}-${month}-${day} 00:00:00`
+  if (type === 'end') return `${year}-${month}-${day} 23:59:59`
+  return `${year}-${month}-${day}`
 }
 </script>
 
