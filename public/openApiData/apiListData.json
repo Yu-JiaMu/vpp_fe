@@ -20,7 +20,7 @@
         "desc": "调用该接口查询指定网关设备下的子设备列表信息",
         "level": 2,
         "docPath": "/openApiData/docs/IotDeviceOpenApi_SubdeviceList接口文档.md",
-        "hasPage": false
+        "hasPage": true
       },
       {
         "id": "10003",
