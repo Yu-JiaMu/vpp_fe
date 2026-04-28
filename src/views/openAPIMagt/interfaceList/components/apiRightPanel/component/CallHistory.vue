@@ -35,7 +35,7 @@
               <!-- 查看调用参数 -->
               <el-popover
                   placement="right"
-                  :width="320"
+                  :width="360"
                   trigger="hover"
                   popper-class="param-popover"
               >

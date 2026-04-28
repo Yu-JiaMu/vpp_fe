@@ -221,7 +221,7 @@
    */
   async function deleteApp(row) {
     try {
-      await ElMessageBox.confirm('确定删除该应用吗？', '提示', {
+      await ElMessageBox.confirm('删除后数据不可恢复，确认删除该应用吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

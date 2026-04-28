@@ -126,11 +126,6 @@ const handleCallApi = async () => {
     return
   }
 
-  if (!appKey.value || !appSecret.value) {
-    activeTab.value = 'auth'
-    ElMessage.error('请填写密钥')
-    return
-  }
   if (activeTab.value === 'auth') {
     ElMessage.success('保存成功')
     activeTab.value = 'params'
@@ -144,6 +139,11 @@ const handleCallApi = async () => {
     const { valid, missingParams } = validateRequiredParams(inputParams, pageParams, currentApi.value.id)
     if (!valid) {
       ElMessage.warning(`请填写必填参数：${missingParams.join('、')}`)
+      return
+    }
+    if (!appKey.value || !appSecret.value) {
+      activeTab.value = 'auth'
+      ElMessage.error('请填写密钥')
       return
     }
     const params = {}
@@ -176,6 +176,7 @@ const handleCallApi = async () => {
       apiId: currentApi.value.id  // 接口 ID，用于缓存
     })
     rightActiveTab.value='result'
+    resultTab.value='response'
     console.log('接口返回:', result);
     apiResult.value = {
       success: result.success,
@@ -205,6 +206,7 @@ const handleCallApi = async () => {
     })
     updateCallHistory()
     rightActiveTab.value='result'
+    resultTab.value='response'
   } finally {
     // 关闭 loading
     loading.value = false

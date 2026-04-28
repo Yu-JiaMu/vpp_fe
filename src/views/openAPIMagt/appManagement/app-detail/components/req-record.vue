@@ -17,9 +17,9 @@
         @sort-change="handleSort"
     >
       <el-table-column prop="requestTime" label="请求时间" min-width="200" sortable="custom" />
-      <el-table-column prop="requestId" label="请求ID" min-width="200" />
-      <el-table-column prop="apiCode" label="API编号" min-width="180" />
-      <el-table-column prop="apiName" label="API名称" min-width="180" />
+      <el-table-column prop="requestIp" label="请求IP" min-width="200" />
+      <el-table-column prop="apiCode" label="API编号" min-width="200" />
+      <el-table-column prop="apiName" label="API名称" min-width="210" />
       <el-table-column prop="responseTime" label="响应时间" min-width="200" />
       <el-table-column prop="responseStatus" label="调用状态" width="120">
         <template #default="{ row }">
