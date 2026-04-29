@@ -125,7 +125,7 @@ export const energyIot: AppRouteRecord = {
       name: 'OpenAPIMagt',
       component: '',
       meta: {
-        title: 'OpenApi管理',
+        title: 'OpenAPI管理',
         icon: 'ri:earth-line'
       },
       children: [
