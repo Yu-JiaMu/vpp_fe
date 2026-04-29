@@ -1,4 +1,4 @@
-# IOT设备管理OpenAPI接口文档
+# getDeviceSubdeviceList — 查询指定网关设备下的子设备列表信息
 
 [OpenAPI 接入指南](/openApiData/docs/OpenAPI接入指南.md)
 

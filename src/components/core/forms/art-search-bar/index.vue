@@ -225,7 +225,7 @@
     labelWidth: '70px',
     showExpand: false,
     defaultExpanded: true,
-    buttonLeftLimit: 2,
+    buttonLeftLimit: 0,
     showReset: true,
     showSearch: true,
     disabledSearch: false

@@ -1,4 +1,4 @@
-# IOT设备管理OpenAPI接口文档
+# getDeviceExtendInfo — 查询指定设备的拓展字段
 [OpenAPI 接入指南](/openApiData/docs/OpenAPI接入指南.md)
 
 ## 查询设备扩展信息接口
