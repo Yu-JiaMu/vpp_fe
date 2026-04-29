@@ -51,8 +51,8 @@
           />
         </el-form-item>
         <el-form-item label="有效期" prop="endTime">
-          <div class="validity-box">
-            <el-select :disabled="formData.id !== ''" v-model="formData.validityPeriod" placeholder="请选择" clearable @change="handleValidityChange">
+          <div :class="formData.id === '' ? 'validity-box' : 'validity-box-edit'">
+            <el-select v-if="formData.id === ''" v-model="formData.validityPeriod" placeholder="请选择" clearable @change="handleValidityChange">
               <el-option
                   v-for="item in VALIDITY_PERIOD.options"
                   :key="item.value"
@@ -163,12 +163,12 @@ const handleValidityChange = (val) => {
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, '0') // 月份补0
     const day = String(date.getDate()).padStart(2, '0') // 日期补0
-    return `${year}-${month}-${day} 00:00:00`
+    return `${year}-${month}-${day} 23:59:59`
   }
 
   switch (val) {
     case VALIDITY_PERIOD.map.LONG_TERM.value:
-      formData.endTime = '2099-12-31 00:00:00'
+      formData.endTime = '2099-12-31 23:59:59'
       break
     case VALIDITY_PERIOD.map.THREE_YEARS.value:
       now.setFullYear(now.getFullYear() + 3)
@@ -235,7 +235,8 @@ const handleSubmit = async () => {
 
     // 开启 loading
     loading.value = true
-
+    // 将formData.endTime的时间改为23:59:59
+    formData.endTime = formData.endTime.replace(/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/, '$1-$2-$3 23:59:59')
     if (formData.id) {
       // 编辑逻辑
       await api.updateApiApplication({ ...formData })
@@ -320,7 +321,7 @@ const initFormData = (data) => {
   formData.appName = data.appName || ''
   formData.endTime = data.endTime || ''
   formData.remark = data.remark || ''
-  formData.validityPeriod = data.validityPeriod || VALIDITY_PERIOD.map.LONG_TERM.value
+  formData.validityPeriod = data.validityPeriod || VALIDITY_PERIOD.map.CUSTOMIZABLE.value
   initialFormData.value = {
     id: formData.id,
     appStatus: formData.appStatus,
@@ -347,6 +348,13 @@ defineExpose({ resetForm, initFormData })
   :deep(.el-date-picker) {
     flex: 1 !important;
     width: auto !important;
+  }
+}
+.validity-box-edit {
+  width: 100%;
+
+  :deep(.el-date-editor) {
+    width: 100% !important;
   }
 }
 </style>
