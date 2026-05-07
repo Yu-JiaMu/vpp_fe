@@ -146,7 +146,117 @@ function buildStringToSign(method, path, queryString, timestamp, nonce) {
 6. 设置请求头并发送请求
 ```
 
-### 完整示例（Java）
+### Java SDK 接入方式（推荐）
+
+#### 1. 引入 Maven 依赖
+
+```xml
+<dependency>
+    <groupId>com.zwvpp.iot.openapi</groupId>
+    <artifactId>zwvpp-iot-openapi-sdk</artifactId>
+    <version>0.0.1-rc1</version>
+</dependency>
+```
+
+#### 2. 完整示例（Java）
+
+```java
+import com.zwvpp.iot.openapi.sdk.OpenApiClient;
+import com.zwvpp.iot.openapi.sdk.config.OpenApiConfig;
+import com.zwvpp.iot.openapi.sdk.auth.SignatureMethod;
+import com.zwvpp.iot.openapi.sdk.http.HttpMethod;
+import com.zwvpp.iot.openapi.sdk.http.OpenApiRequest;
+import com.zwvpp.iot.openapi.sdk.http.OpenApiResponse;
+import com.zwvpp.iot.openapi.sdk.exception.AuthenticationException;
+import com.zwvpp.iot.openapi.sdk.exception.RequestException;
+import com.zwvpp.iot.openapi.sdk.exception.ServiceException;
+
+import java.util.List;
+import java.util.Map;
+
+public class OpenApiDemo {
+    public static void main(String[] args) {
+        // 1. 构建配置（使用 Builder 模式）
+        OpenApiConfig config = new OpenApiConfig.Builder()
+                .baseUrl("http://gateway-host:9090")   // 网关地址（必填）
+                .accessKey("your-access-key")           // AK（必填）
+                .secretKey("your-secret-key")           // SK（必填）
+                .signatureMethod(SignatureMethod.SM3)   // 签名方式，默认 SM3
+                .connectTimeout(10)                     // 连接超时（秒），默认 10
+                .readTimeout(30)                        // 读取超时（秒），默认 30
+                .build();
+
+        // 2. 创建客户端（实现了 Closeable，推荐 try-with-resources）
+        try (OpenApiClient client = new OpenApiClient(config)) {
+
+            // 3. 构建请求
+            OpenApiRequest request = new OpenApiRequest.Builder()
+                    .action("getDeviceList")            // 接口操作别名（必填）
+                    .method(HttpMethod.GET)              // HTTP 方法，默认 GET
+                    .addParam("page", "1")              // 业务参数
+                    .addParam("size", "10")
+                    .build();
+
+            // 4. 执行请求
+            OpenApiResponse response = client.execute(request);
+
+            // 5. 处理响应
+            if (response.isSuccess()) {
+                // 获取单对象数据
+                Map<String, Object> data = response.getData();
+                System.out.println("data: " + data);
+
+                // 获取列表数据
+                List<Map<String, Object>> rows = response.getRows();
+                System.out.println("rows: " + rows);
+
+                // 获取请求 ID（可用于问题排查）
+                System.out.println("requestId: " + response.getRequestId());
+            }
+
+        } catch (AuthenticationException e) {
+            // 401.x 认证错误（如签名验证失败、AK/SK 无效）
+            System.err.println("认证失败 [" + e.getCode() + "]: " + e.getMessage());
+            System.err.println("RequestId: " + e.getRequestId());
+
+        } catch (RequestException e) {
+            // 400.x 请求错误（如参数校验失败、action 未配置）
+            System.err.println("请求错误 [" + e.getCode() + "]: " + e.getMessage());
+
+        } catch (ServiceException e) {
+            // 500.x 服务端错误（如下游服务异常）
+            System.err.println("服务异常 [" + e.getCode() + "]: " + e.getMessage());
+        }
+    }
+}
+```
+
+
+#### 3. 从配置文件加载
+
+SDK 支持从 `.properties` 文件加载配置：
+
+```properties
+# openapi.properties
+openapi.base-url=http://gateway-host:9090
+openapi.access-key=your-access-key
+openapi.secret-key=your-secret-key
+openapi.signature-method=SM3
+openapi.connect-timeout=10
+openapi.read-timeout=30
+```
+
+```java
+OpenApiConfig config = OpenApiConfig.fromProperties("openapi.properties");
+OpenApiClient client = new OpenApiClient(config);
+```
+
+---
+
+### 手动实现参考（不使用 SDK）
+
+<details>
+<summary>点击展开手动签名实现代码</summary>
 
 ```java
 // 1. 准备参数
@@ -185,6 +295,8 @@ HttpRequest request = HttpRequest.newBuilder()
         .GET()
         .build();
 ```
+
+</details>
 
 ---
 
