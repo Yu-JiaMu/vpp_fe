@@ -159,7 +159,7 @@ export const VALIDITY_PERIOD = createEnum({
   THREE_YEARS: { label: '三年', value: '1' },
   ONE_YEAR: { label: '一年', value: '2' },
   THREE_MONTHS: { label: '三个月', value: '3' },
-  CUSTOMIZABLE: { label: '自定义', value: '4' },
+  CUSTOMIZABLE: { label: '自定义', value: '4' }
 })
 
 // 调用状态

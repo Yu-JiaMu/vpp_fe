@@ -10,19 +10,19 @@
 // ===================== SM3 签名实现 =====================
 
 const SM3_T = new Uint32Array(64)
-for (let i = 0; i < 16; i++) SM3_T[i] = 0x79CC4519
-for (let i = 16; i < 64; i++) SM3_T[i] = 0x7A879D8A
+for (let i = 0; i < 16; i++) SM3_T[i] = 0x79cc4519
+for (let i = 16; i < 64; i++) SM3_T[i] = 0x7a879d8a
 
 function rotl32(x: number, n: number): number {
   return ((x << n) | (x >>> (32 - n))) >>> 0
 }
 
 function ff(x: number, y: number, z: number, j: number): number {
-  return j < 16 ? ((x ^ y ^ z) >>> 0) : (((x & y) | (x & z) | (y & z)) >>> 0)
+  return j < 16 ? (x ^ y ^ z) >>> 0 : ((x & y) | (x & z) | (y & z)) >>> 0
 }
 
 function gg(x: number, y: number, z: number, j: number): number {
-  return j < 16 ? ((x ^ y ^ z) >>> 0) : (((x & y) | (~x & z)) >>> 0)
+  return j < 16 ? (x ^ y ^ z) >>> 0 : ((x & y) | (~x & z)) >>> 0
 }
 
 function p0(x: number): number {
@@ -48,8 +48,7 @@ function sm3Hash(msgBytes: Uint8Array): Uint8Array {
   view.setUint32(padLen + 4, bitLen >>> 0, false)
 
   let V = new Uint32Array([
-    0x7380166F, 0x4914B2B9, 0x172442D7, 0xDA8A0600,
-    0xA96F30BC, 0x163138AA, 0xE38DEE4D, 0xB0FB0E4E
+    0x7380166f, 0x4914b2b9, 0x172442d7, 0xda8a0600, 0xa96f30bc, 0x163138aa, 0xe38dee4d, 0xb0fb0e4e
   ])
 
   const W = new Uint32Array(68)
@@ -59,7 +58,8 @@ function sm3Hash(msgBytes: Uint8Array): Uint8Array {
     const block = new DataView(padded.buffer, offset, 64)
     for (let i = 0; i < 16; i++) W[i] = block.getUint32(i * 4, false)
     for (let i = 16; i < 68; i++) {
-      W[i] = (p1(W[i - 16] ^ W[i - 9] ^ rotl32(W[i - 3], 15)) ^ rotl32(W[i - 13], 7) ^ W[i - 6]) >>> 0
+      W[i] =
+        (p1(W[i - 16] ^ W[i - 9] ^ rotl32(W[i - 3], 15)) ^ rotl32(W[i - 13], 7) ^ W[i - 6]) >>> 0
     }
     for (let i = 0; i < 64; i++) W1[i] = (W[i] ^ W[i + 4]) >>> 0
 
@@ -107,7 +107,7 @@ function hmacSm3(keyBytes: Uint8Array, msgBytes: Uint8Array): Uint8Array {
   const opad = new Uint8Array(blockSize)
   for (let i = 0; i < blockSize; i++) {
     ipad[i] = paddedKey[i] ^ 0x36
-    opad[i] = paddedKey[i] ^ 0x5C
+    opad[i] = paddedKey[i] ^ 0x5c
   }
 
   const inner = new Uint8Array(blockSize + msgBytes.length)
@@ -124,7 +124,11 @@ function hmacSm3(keyBytes: Uint8Array, msgBytes: Uint8Array): Uint8Array {
 async function hmacSha1(keyStr: string, dataStr: string): Promise<string> {
   const enc = new TextEncoder()
   const key = await crypto.subtle.importKey(
-    'raw', enc.encode(keyStr), { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']
+    'raw',
+    enc.encode(keyStr),
+    { name: 'HMAC', hash: 'SHA-1' },
+    false,
+    ['sign']
   )
   const sig = await crypto.subtle.sign('HMAC', key, enc.encode(dataStr))
   return btoa(String.fromCharCode(...new Uint8Array(sig)))
@@ -281,7 +285,7 @@ export class OpenApiSignatureClient {
       params.set('accessKey', accessKey)
       params.set('action', action)
 
-      const orgParams = new Map<string, string>();
+      const orgParams = new Map<string, string>()
       orgParams.set('accessKey', accessKey)
       orgParams.set('action', action)
       // 添加原始参数用于加密
@@ -300,12 +304,12 @@ export class OpenApiSignatureClient {
       // 按字母序排列
       const orgSortedKeys = [...orgParams.keys()].sort()
       const orgQueryString = orgSortedKeys.map((k) => `${k}=${orgParams.get(k)}`).join('&')
-      console.log("orgQueryString", orgQueryString);
+      console.log('orgQueryString', orgQueryString)
 
       // 按字母序排列
       const sortedKeys = [...params.keys()].sort()
       const queryString = sortedKeys.map((k) => `${k}=${params.get(k)}`).join('&')
-      console.log("queryString", queryString);
+      console.log('queryString', queryString)
 
       // 构建待签名字符串
       const stringToSign = buildStringToSign(httpMethod, path, orgQueryString, timestamp, nonce)
@@ -330,7 +334,7 @@ export class OpenApiSignatureClient {
         'X-Nonce': nonce,
         'X-Signature': signature,
         'X-Signature-Method': signMethod,
-        'Accept': 'application/json'
+        Accept: 'application/json'
       }
 
       // 发送请求
@@ -387,7 +391,7 @@ export class OpenApiSignatureClient {
         responseText: '',
         requestUrl: '',
         requestParams: Object.fromEntries(
-            Object.entries(extraParams).map(([k, v]) => [k, String(v)])
+          Object.entries(extraParams).map(([k, v]) => [k, String(v)])
         ),
         requestHeaders: {},
         responseHeaders: {},
@@ -409,17 +413,11 @@ export class OpenApiSignatureClient {
    * @param action API 动作
    * @param response 请求结果
    */
-  private saveCallHistory(
-    apiId: string,
-    action: string,
-    response: OpenApiResponse
-  ): void {
+  private saveCallHistory(apiId: string, action: string, response: OpenApiResponse): void {
     try {
       const historyKey = `${OpenApiSignatureClient.HISTORY_KEY_PREFIX}${apiId}`
       const existingHistory = localStorage.getItem(historyKey)
-      const history: CallHistoryRecord[] = existingHistory
-        ? JSON.parse(existingHistory)
-        : []
+      const history: CallHistoryRecord[] = existingHistory ? JSON.parse(existingHistory) : []
 
       const record: CallHistoryRecord = {
         time: formatDateTime(new Date()),
@@ -490,7 +488,6 @@ export class OpenApiSignatureClient {
   }
 }
 
-
 // ===================== 参数校验 =====================
 
 /**
@@ -536,4 +533,3 @@ export function validateRequiredParams(
   }
 }
 export const openApiClient = new OpenApiSignatureClient()
-

@@ -1,58 +1,61 @@
 <template>
   <ElCard class="art-table-card" shadow="never">
-      <ArtSearchBar
-        ref="searchBarRef"
-        v-model="form"
-        :items="formItems"
-        @search="onSearch"
-        @reset="onReset"
-      >
-      </ArtSearchBar>
-      <ArtAddBtn class="mb-4" @click="openDialog('add')">新增应用</ArtAddBtn>
-      <el-table
-        :data="tableData"
-        ref="tableRef"
-        border
-        show-overflow-tooltip
-        style="width: 100%"
-        @sort-change="handleSort"
-      >
-        <el-table-column prop="appName" label="应用名称" min-width="180"/>
-        <el-table-column prop="id" label="应用编号" min-width="180" />
-        <el-table-column prop="endTime" label="有效期" min-width="200">
-          <template #default="{ row }">
-            {{ formatDate(row.createTime) }} 至 {{ formatDate(row.endTime) }}
-          </template>
-        </el-table-column>
-        <el-table-column label="状态" width="100">
-          <template #default="{ row }">
-            <el-switch :model-value="row.appStatus===APP_STATUS.map.ENABLE.value" @change="toggleEnable(row)" />
-          </template>
-        </el-table-column>
-        <el-table-column prop="lastRequestTime" label="最后调用时间" width="180" />
-        <el-table-column prop="createTime" label="创建时间" sortable="custom" width="180"/>
-        <el-table-column label="操作" fixed="right" width="120">
-          <template #default="{ row }">
-            <el-button link type="primary" @click.prevent="viewDetails(row)">详情</el-button>
-            <el-button link type="danger" @click.prevent="deleteApp(row)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+    <ArtSearchBar
+      ref="searchBarRef"
+      v-model="form"
+      :items="formItems"
+      @search="onSearch"
+      @reset="onReset"
+    >
+    </ArtSearchBar>
+    <ArtAddBtn class="mb-4" @click="openDialog('add')">新增应用</ArtAddBtn>
+    <el-table
+      :data="tableData"
+      ref="tableRef"
+      border
+      show-overflow-tooltip
+      style="width: 100%"
+      @sort-change="handleSort"
+    >
+      <el-table-column prop="appName" label="应用名称" min-width="180" />
+      <el-table-column prop="id" label="应用编号" min-width="180" />
+      <el-table-column prop="endTime" label="有效期" min-width="200">
+        <template #default="{ row }">
+          {{ formatDate(row.createTime) }} 至 {{ formatDate(row.endTime) }}
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" width="100">
+        <template #default="{ row }">
+          <el-switch
+            :model-value="row.appStatus === APP_STATUS.map.ENABLE.value"
+            @change="toggleEnable(row)"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column prop="lastRequestTime" label="最后调用时间" width="180" />
+      <el-table-column prop="createTime" label="创建时间" sortable="custom" width="180" />
+      <el-table-column label="操作" fixed="right" width="120">
+        <template #default="{ row }">
+          <el-button link type="primary" @click.prevent="viewDetails(row)">详情</el-button>
+          <el-button link type="danger" @click.prevent="deleteApp(row)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
 
-      <ArtPagination v-model="pagination" @change="getTableData" />
-      <AppMangementDialog
-        ref="productCategoryDialogRef"
-        v-model="dialogVisible"
-        @add-success="handleSuccess"
-      />
-    </ElCard>
+    <ArtPagination v-model="pagination" @change="getTableData" />
+    <AppMangementDialog
+      ref="productCategoryDialogRef"
+      v-model="dialogVisible"
+      @add-success="handleSuccess"
+    />
+  </ElCard>
 </template>
 
 <script setup>
   import * as api from '@/api/iot'
-  import AppMangementDialog from "@views/openAPIMagt/appManagement/dialog/AppMangementDialog.vue";
-  import {ElMessage} from "element-plus";
-  import {APP_STATUS} from "@/enums/index.js";
+  import AppMangementDialog from '@views/openAPIMagt/appManagement/dialog/AppMangementDialog.vue'
+  import { ElMessage } from 'element-plus'
+  import { APP_STATUS } from '@/enums/index.js'
 
   const router = useRouter()
 
@@ -69,7 +72,7 @@
     total: 0
   })
   const tableData = ref([])
-  const dialogVisible = ref(false); // 记录弹窗是否显示
+  const dialogVisible = ref(false) // 记录弹窗是否显示
 
   /**
    * @Description 时间格式化 YYYY-MM-DD
@@ -149,8 +152,8 @@
   function onReset() {
     pagination.current = 1
     tableRef.value?.clearSort()
-    form.orderByColumn= 'createTime';
-    form.isAsc = 'descending';
+    form.orderByColumn = 'createTime'
+    form.isAsc = 'descending'
     getTableData()
   }
 
@@ -250,39 +253,40 @@
    */
   async function toggleEnable(row) {
     // 先记录当前状态，用于失败回滚
-    const oldStatus = row.appStatus;
+    const oldStatus = row.appStatus
     try {
       // 计算要切换成的新状态
-      const newStatus = row.appStatus === APP_STATUS.map.DISABLED.value
+      const newStatus =
+        row.appStatus === APP_STATUS.map.DISABLED.value
           ? APP_STATUS.map.ENABLE.value
-          : APP_STATUS.map.DISABLED.value;
+          : APP_STATUS.map.DISABLED.value
 
       await ElMessageBox.confirm(
-          `请确认${newStatus === APP_STATUS.map.ENABLE.value ? '启用' : '禁用'}该应用吗？`,
-          '提示',
-          {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }
-      );
+        `请确认${newStatus === APP_STATUS.map.ENABLE.value ? '启用' : '禁用'}该应用吗？`,
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      )
 
       // 调用接口
       await api.updateApiApplication({
         ...row,
         appStatus: newStatus
-      });
+      })
       // 接口成功 → 更新状态
-      row.appStatus = newStatus;
-      ElMessage.success('更新成功');
+      row.appStatus = newStatus
+      ElMessage.success('更新成功')
     } catch (error) {
       // 接口失败 / 取消弹窗 → 都会进这里
-      console.error('更新失败', error);
+      console.error('更新失败', error)
       // 回滚状态
-      row.appStatus = oldStatus;
+      row.appStatus = oldStatus
       // 如果是用户取消弹窗，不提示错误
       if (error !== 'cancel') {
-        ElMessage.error('更新失败');
+        ElMessage.error('更新失败')
       }
     }
   }

@@ -1,15 +1,18 @@
 <template>
   <el-dialog
-      v-model="visible"
-      title="提示"
-      width="700px"
-      :close-on-click-modal="false"
-      :show-close="false"
-      :close-on-press-escape="false"
-      align-center
+    v-model="visible"
+    title="提示"
+    width="700px"
+    :close-on-click-modal="false"
+    :show-close="false"
+    :close-on-press-escape="false"
+    align-center
   >
     <div class="secret-dialog-content">
-      <p class="tip-title">您的应用“<span class="app-name-bold">{{ appName }}</span>”已成功创建，现为您生成应用密钥。</p>
+      <p class="tip-title"
+        >您的应用“<span class="app-name-bold">{{ appName }}</span
+        >”已成功创建，现为您生成应用密钥。</p
+      >
       <p class="tip-warning">注意：此密钥仅展示一次，关闭后将无法再次查看，请妥善保存。</p>
 
       <div class="secret-item">
@@ -34,116 +37,116 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { ElMessage } from 'element-plus'
+  import { ref, computed } from 'vue'
+  import { ElMessage } from 'element-plus'
 
-const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    default: false
-  },
-  appName: {
-    type: String,
-    default: ''
-  },
-  appKey: {
-    type: String,
-    default: ''
-  },
-  appSecret: {
-    type: String,
-    default: ''
-  }
-})
+  const props = defineProps({
+    modelValue: {
+      type: Boolean,
+      default: false
+    },
+    appName: {
+      type: String,
+      default: ''
+    },
+    appKey: {
+      type: String,
+      default: ''
+    },
+    appSecret: {
+      type: String,
+      default: ''
+    }
+  })
 
-const emit = defineEmits(['update:modelValue', 'close-dialog'])
+  const emit = defineEmits(['update:modelValue', 'close-dialog'])
 
-const visible = computed({
-  get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
-})
+  const visible = computed({
+    get: () => props.modelValue,
+    set: (val) => emit('update:modelValue', val)
+  })
 
-// 复制
-const handleCopy = async (type) => {
-  const text = type === 'key' ? props.appKey : props.appSecret
+  // 复制
+  const handleCopy = async (type) => {
+    const text = type === 'key' ? props.appKey : props.appSecret
 
-  try {
-    // 优先使用现代 API
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      await navigator.clipboard.writeText(text)
-      ElMessage.success('复制成功')
-    } else {
-      // 降级方案:使用传统方法
-      const textarea = document.createElement('textarea')
-      textarea.value = text
-      textarea.style.position = 'fixed'
-      textarea.style.opacity = '0'
-      document.body.appendChild(textarea)
-      textarea.select()
-
-      const successful = document.execCommand('copy')
-      document.body.removeChild(textarea)
-
-      if (successful) {
+    try {
+      // 优先使用现代 API
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text)
         ElMessage.success('复制成功')
       } else {
-        ElMessage.error('复制失败，请手动复制')
-      }
-    }
-  } catch (err) {
-    console.error('复制失败:', err)
-    ElMessage.error('复制失败，请手动复制')
-  }
-}
+        // 降级方案:使用传统方法
+        const textarea = document.createElement('textarea')
+        textarea.value = text
+        textarea.style.position = 'fixed'
+        textarea.style.opacity = '0'
+        document.body.appendChild(textarea)
+        textarea.select()
 
-// 关闭
-const handleClose = () => {
-  visible.value = false
-  emit('close-dialog')
-}
+        const successful = document.execCommand('copy')
+        document.body.removeChild(textarea)
+
+        if (successful) {
+          ElMessage.success('复制成功')
+        } else {
+          ElMessage.error('复制失败，请手动复制')
+        }
+      }
+    } catch (err) {
+      console.error('复制失败:', err)
+      ElMessage.error('复制失败，请手动复制')
+    }
+  }
+
+  // 关闭
+  const handleClose = () => {
+    visible.value = false
+    emit('close-dialog')
+  }
 </script>
 
 <style scoped lang="scss">
-.secret-dialog-content {
-  padding: 10px 0;
+  .secret-dialog-content {
+    padding: 10px 0;
 
-  // 应用名称加粗
-  .app-name-bold {
-    font-size: 20px;
-    font-weight: bold;
-  }
+    // 应用名称加粗
+    .app-name-bold {
+      font-size: 20px;
+      font-weight: bold;
+    }
 
-  .tip-title {
-    font-size: 18px;
-    color: #050505;
-    margin: 0 0 10px 0;
-  }
-
-  .tip-warning {
-    font-size: 16px;
-    color: #ef0427;
-    margin: 0 0 30px 0;
-  }
-
-  .secret-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    gap: 10px;
-
-    .secret-label {
+    .tip-title {
       font-size: 18px;
       color: #050505;
-      font-weight: bold;
-      min-width: 60px;
+      margin: 0 0 10px 0;
     }
 
-    .secret-value {
+    .tip-warning {
       font-size: 16px;
-      color: #050505;
-      flex: 1;
-      word-break: break-all;
+      color: #ef0427;
+      margin: 0 0 30px 0;
+    }
+
+    .secret-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 10px;
+
+      .secret-label {
+        font-size: 18px;
+        color: #050505;
+        font-weight: bold;
+        min-width: 60px;
+      }
+
+      .secret-value {
+        font-size: 16px;
+        color: #050505;
+        flex: 1;
+        word-break: break-all;
+      }
     }
   }
-}
 </style>

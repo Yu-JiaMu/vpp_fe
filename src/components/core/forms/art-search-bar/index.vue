@@ -266,15 +266,23 @@
 
       // ===== 新增：自定义日期时间格式 =====
       // 显示格式（format）：优先用 item.format → item.props.format → 默认值
-      baseProps.format = baseProps.format || item.format || (() => {
-        switch (item.type) {
-          case 'date': return 'YYYY-MM-DD'
-          case 'daterange': return 'YYYY-MM-DD'
-          case 'datetime': return 'YYYY-MM-DD HH:mm:ss'
-          case 'datetimerange': return 'YYYY-MM-DD HH:mm:ss' // 默认时间范围格式
-          default: return 'YYYY-MM-DD'
-        }
-      })()
+      baseProps.format =
+        baseProps.format ||
+        item.format ||
+        (() => {
+          switch (item.type) {
+            case 'date':
+              return 'YYYY-MM-DD'
+            case 'daterange':
+              return 'YYYY-MM-DD'
+            case 'datetime':
+              return 'YYYY-MM-DD HH:mm:ss'
+            case 'datetimerange':
+              return 'YYYY-MM-DD HH:mm:ss' // 默认时间范围格式
+            default:
+              return 'YYYY-MM-DD'
+          }
+        })()
 
       // 绑定值格式（valueFormat）：优先用 item.valueFormat → item.props.valueFormat → 默认值
       baseProps['value-format'] = baseProps['value-format'] || item.valueFormat || baseProps.format

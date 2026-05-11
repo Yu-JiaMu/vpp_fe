@@ -5,7 +5,10 @@
         <img src="@/assets/images/icon/icon-info.png" class="w-5 h-5 mr-2.5" alt="" />
         基本信息
       </div>
-      <div class="cursor-pointer text-g-303537 flex-c text-sm btn-link" @click="handleEdit(appInfo)">
+      <div
+        class="cursor-pointer text-g-303537 flex-c text-sm btn-link"
+        @click="handleEdit(appInfo)"
+      >
         <img src="@/assets/images/icon/icon-edit.png" class="w-5 h-5 mr-1" alt="" />
         编辑
       </div>
@@ -15,7 +18,7 @@
     <el-descriptions :column="3" border label-width="133px" class="">
       <el-descriptions-item label="应用编号">
         <el-tooltip :content="appInfo.id" placement="top">
-          <div class="max-w-[220px] truncate">{{appInfo.id }}</div>
+          <div class="max-w-[220px] truncate">{{ appInfo.id }}</div>
         </el-tooltip>
       </el-descriptions-item>
 
@@ -72,7 +75,7 @@
   import { validateNameLength, validateCommon, validateDescLength } from '@/utils'
   import { APP_STATUS } from '@/enums'
   import { nextTick } from 'vue'
-  import AppMangementDialog from "@views/openAPIMagt/appManagement/dialog/AppMangementDialog.vue"; // 记得引入 nextTick
+  import AppMangementDialog from '@views/openAPIMagt/appManagement/dialog/AppMangementDialog.vue' // 记得引入 nextTick
   const props = defineProps({
     appInfo: {
       type: Object,

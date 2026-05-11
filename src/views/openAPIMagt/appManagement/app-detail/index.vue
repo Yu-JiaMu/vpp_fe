@@ -10,19 +10,18 @@
           <span class="text-base text-gray-800 font-scMedium">
             {{ appInfo.appName }}
           </span>
-          <el-switch :model-value="appInfo.appStatus===APP_STATUS.map.ENABLE.value" @change="toggleEnable(appInfo)" />
+          <el-switch
+            :model-value="appInfo.appStatus === APP_STATUS.map.ENABLE.value"
+            @change="toggleEnable(appInfo)"
+          />
         </div>
         <div class="text-sm">
           Key：
           <span class="text-g-505658">
             {{ appInfo.id }}
           </span>
-          <span class="secret-label">
-            Secret：
-          </span>
-          <span class="text-g-505658">
-            *******************
-          </span>
+          <span class="secret-label"> Secret： </span>
+          <span class="text-g-505658"> ******************* </span>
         </div>
       </div>
     </div>
@@ -44,20 +43,17 @@
     <BaseInfo v-if="activeTab === 'info'" :appInfo="appInfo" @refresh="getDetail"></BaseInfo>
 
     <!-- 调用记录 -->
-    <ReqRecord
-        v-if="activeTab === 'reqRecord'"
-        :appInfo="appInfo"
-    ></ReqRecord>
+    <ReqRecord v-if="activeTab === 'reqRecord'" :appInfo="appInfo"></ReqRecord>
   </div>
 </template>
 
 <script setup>
   import * as api from '@/api/iot'
   import BaseInfo from './components/base-info.vue'
-  import {ElMessage, ElMessageBox} from 'element-plus'
+  import { ElMessage, ElMessageBox } from 'element-plus'
   import { onBeforeRouteLeave } from 'vue-router'
-  import ReqRecord from "@views/openAPIMagt/appManagement/app-detail/components/req-record.vue";
-  import {APP_STATUS} from "@/enums/index.js";
+  import ReqRecord from '@views/openAPIMagt/appManagement/app-detail/components/req-record.vue'
+  import { APP_STATUS } from '@/enums/index.js'
 
   const route = useRoute()
   const router = useRouter()
@@ -101,7 +97,7 @@
     {
       label: '调用记录',
       value: 'reqRecord'
-    },
+    }
   ]
 
   const confirmDiscard = async () => {
@@ -122,7 +118,7 @@
     try {
       const id = route.query.id
       if (!id) return
-      const res = await api.detailApiApplication({ id: id})
+      const res = await api.detailApiApplication({ id: id })
       if (res) {
         appInfo.value = res
       }
@@ -138,39 +134,40 @@
    */
   async function toggleEnable(row) {
     // 先记录当前状态，用于失败回滚
-    const oldStatus = row.appStatus;
+    const oldStatus = row.appStatus
     try {
       // 计算要切换成的新状态
-      const newStatus = row.appStatus === APP_STATUS.map.DISABLED.value
+      const newStatus =
+        row.appStatus === APP_STATUS.map.DISABLED.value
           ? APP_STATUS.map.ENABLE.value
-          : APP_STATUS.map.DISABLED.value;
+          : APP_STATUS.map.DISABLED.value
 
       await ElMessageBox.confirm(
-          `请确认${newStatus === APP_STATUS.map.ENABLE.value ? '启用' : '禁用'}该应用吗？`,
-          '提示',
-          {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }
-      );
+        `请确认${newStatus === APP_STATUS.map.ENABLE.value ? '启用' : '禁用'}该应用吗？`,
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      )
 
       // 调用接口
       await api.updateApiApplication({
         ...row,
         appStatus: newStatus
-      });
+      })
       // 接口成功 → 更新状态
-      row.appStatus = newStatus;
-      ElMessage.success('更新成功');
+      row.appStatus = newStatus
+      ElMessage.success('更新成功')
     } catch (error) {
       // 接口失败 / 取消弹窗 → 都会进这里
-      console.error('更新失败', error);
+      console.error('更新失败', error)
       // 回滚状态
-      row.appStatus = oldStatus;
+      row.appStatus = oldStatus
       // 如果是用户取消弹窗，不提示错误
       if (error !== 'cancel') {
-        ElMessage.error('更新失败');
+        ElMessage.error('更新失败')
       }
     }
   }
