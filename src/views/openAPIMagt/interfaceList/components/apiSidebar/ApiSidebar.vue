@@ -46,6 +46,18 @@
   const originalTreeData = ref(apiListData)
   const currentNodeKey = ref('') // 存储当前选中节点的key
 
+  const treeProps = {
+    children: 'children',
+    label: 'label'
+  }
+
+  const handleNodeClick = (node) => {
+    if (node.id) {
+      currentNodeKey.value = node.id // 记录选中的节点key
+      emit('node-click', node)
+    }
+  }
+
   // 过滤树数据
   const filteredTreeData = computed(() => {
     const keyword = searchKeyword.value.trim().toLowerCase()
@@ -109,18 +121,6 @@
   onMounted(() => {
     setDefaultActiveNode()
   })
-
-  const treeProps = {
-    children: 'children',
-    label: 'label'
-  }
-
-  const handleNodeClick = (node) => {
-    if (node.id) {
-      currentNodeKey.value = node.id // 记录选中的节点key
-      emit('node-click', node)
-    }
-  }
 </script>
 
 <style lang="scss" scoped>
