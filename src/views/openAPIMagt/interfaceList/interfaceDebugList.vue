@@ -34,8 +34,8 @@
   import ApiSidebar from '@views/openAPIMagt/interfaceList/components/apiSidebar/ApiSidebar.vue'
   import ApiConfigPanel from '@views/openAPIMagt/interfaceList/components/apiConfigPanel/ApiConfigPanel.vue'
   import ApiRightPanel from '@views/openAPIMagt/interfaceList/components/apiRightPanel/ApiRightPanel.vue'
-  import paramsConfigData from '@/../public/openApiData/paramsConfigData.json'
-  import pageParamsConfigData from '@/../public/openApiData/pageParamsConfigData.json'
+  import paramsConfigData from '@/assets/openApiData/paramsConfigData.json'
+  import pageParamsConfigData from '@/assets/openApiData/pageParamsConfigData.json'
   import { openApiClient } from '@/views/openAPIMagt/interfaceList/util/openApiSignature'
   const appKey = ref('')
   const appSecret = ref('')
