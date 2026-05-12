@@ -74,12 +74,15 @@
   )
 
   const authRules = {
-    appKey: { required: true, message: 'Key 不能为空', trigger: ['blur', 'change'] },
-    appSecret: { required: true, message: 'Secret 不能为空', trigger: ['blur', 'change'] }
+    appKey: [{ required: true, message: 'Key 不能为空', trigger: ['blur', 'change'] }],
+    appSecret: [{ required: true, message: 'Secret 不能为空', trigger: ['blur', 'change'] }]
   }
 
   defineExpose({
-    validate: () => formRef.value?.validate()
+    validate: () => {
+      if (!formRef.value) return Promise.reject(new Error('表单未初始化'))
+      return formRef.value.validate()
+    }
   })
 </script>
 

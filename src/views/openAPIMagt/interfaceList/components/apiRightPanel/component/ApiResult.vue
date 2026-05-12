@@ -48,7 +48,7 @@
             >
               <el-icon><CopyDocument /></el-icon>复制
             </el-button>
-            <json-viewer :value="showData.response" expand-depth="3" class="json-viewer" />
+            <json-viewer :value="showData.response" :expand-depth="3" class="json-viewer" />
           </div>
         </div>
 
@@ -67,7 +67,7 @@
             >
               <el-icon><CopyDocument /></el-icon>复制
             </el-button>
-            <json-viewer :value="showData.responseHeaders" expand-depth="3" class="json-viewer" />
+            <json-viewer :value="showData.responseHeaders" :expand-depth="3" class="json-viewer" />
           </div>
         </div>
       </template>
@@ -97,7 +97,7 @@
             >
               <el-icon><CopyDocument /></el-icon>复制
             </el-button>
-            <json-viewer :value="showData.requestHeaders" expand-depth="3" class="json-viewer" />
+            <json-viewer :value="showData.requestHeaders" :expand-depth="3" class="json-viewer" />
           </div>
         </div>
         <!-- 请求内容 -->
@@ -115,7 +115,7 @@
             >
               <el-icon><CopyDocument /></el-icon>复制
             </el-button>
-            <json-viewer :value="showData.request" expand-depth="3" class="json-viewer" />
+            <json-viewer :value="showData.request" :expand-depth="3" class="json-viewer" />
           </div>
         </div>
       </template>

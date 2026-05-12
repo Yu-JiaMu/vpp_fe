@@ -112,7 +112,11 @@
       formModel[item.key] = item.value
     })
     props.pageParams.forEach((item) => {
-      formModel[item.key] = item.value
+      // el-input-number 需要数字类型，确保转换
+      formModel[item.key] =
+        item.type === 'pageSize' || item.type === 'currentPage'
+          ? Number(item.value) || null
+          : item.value
     })
   }
   syncModel()
@@ -130,7 +134,11 @@
     () => props.pageParams,
     () => {
       props.pageParams.forEach((item) => {
-        formModel[item.key] = item.value
+        // el-input-number 需要数字类型，确保转换
+        formModel[item.key] =
+          item.type === 'pageSize' || item.type === 'currentPage'
+            ? Number(item.value) || null
+            : item.value
       })
     },
     { deep: true }
