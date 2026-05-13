@@ -43,7 +43,7 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="所在地区" prop="region" class="col-span-2">
+      <el-form-item label="所在地区" prop="region">
         <el-cascader
           v-model="form.region"
           :options="regionOptions"
@@ -61,8 +61,16 @@
         </div>
       </el-form-item>
 
-      <el-form-item label="适配政策地区" prop="policyRegions" class="col-span-2">
-        <el-select v-model="form.policyRegions" multiple placeholder="请选择适配政策地区（可多选）" clearable style="width: 100%">
+      <el-form-item label="适配政策地区" prop="policyRegions" class="policy-region-item">
+        <el-select
+          v-model="form.policyRegions"
+          multiple
+          placeholder="请选择适配政策地区（可多选）"
+          clearable
+          style="width: 100%"
+          fit-input-width
+          popper-class="policy-region-popper"
+        >
           <el-option
             v-for="pr in policyRegionOptions"
             :key="pr.value"
@@ -357,5 +365,11 @@ async function submitForm() {
   padding-bottom: 8px;
   border-bottom: 1px solid #ebeef5;
   margin-bottom: 8px;
+}
+</style>
+
+<style>
+.policy-region-popper {
+  min-width: var(--el-select-dropdown-width, 320px) !important;
 }
 </style>

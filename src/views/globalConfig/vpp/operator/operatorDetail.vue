@@ -31,13 +31,36 @@
           <el-input v-model="form.operatorShortName" placeholder="请输入运营商简称" maxlength="50" :disabled="!editing" />
         </el-form-item>
 
+        <el-form-item prop="industryCategory">
+          <template #label>
+            <span>
+              行业分类
+              <el-tooltip content="依据国民经济行业分类（GB/T 4754—2017）" placement="right">
+                <el-icon><InfoFilled /></el-icon>
+              </el-tooltip>
+            </span>
+          </template>
+          <el-select v-model="form.industryCategory" placeholder="请选择行业分类" clearable style="width: 100%" :disabled="!editing">
+            <el-option label="电力生产" value="电力生产" />
+            <el-option label="电力供应" value="电力供应" />
+            <el-option label="热力生产和供应" value="热力生产和供应" />
+            <el-option label="燃气生产和供应" value="燃气生产和供应" />
+            <el-option label="新能源技术推广服务" value="新能源技术推广服务" />
+            <el-option label="节能技术推广服务" value="节能技术推广服务" />
+            <el-option label="其他" value="其他" />
+          </el-select>
+        </el-form-item>
+
         <el-form-item prop="creditCode">
           <template #label>
-            <el-tooltip content="18位统一社会信用代码（数字或大写字母）" placement="top">
-              <span>企业信用代码</span>
-            </el-tooltip>
+            <span>
+              统一社会信用代码
+              <el-tooltip content="18位阿拉伯数字或大写英文字母表示" placement="right">
+                <el-icon><InfoFilled /></el-icon>
+              </el-tooltip>
+            </span>
           </template>
-          <el-input v-model="form.creditCode" placeholder="请输入18位企业信用代码" maxlength="18" :disabled="!editing" />
+          <el-input v-model="form.creditCode" placeholder="请输入18位统一社会信用代码" maxlength="18" :disabled="!editing" />
         </el-form-item>
 
         <el-form-item label="成立日期" prop="establishDate">
@@ -63,8 +86,16 @@
           <el-input v-model="form.legalIdCard" placeholder="请输入法人身份证号" maxlength="18" :disabled="!editing" />
         </el-form-item>
 
-        <el-form-item label="企业地址" prop="enterpriseAddress">
-          <el-input v-model="form.enterpriseAddress" placeholder="请输入企业地址" maxlength="200" :disabled="!editing" />
+        <el-form-item prop="enterpriseAddress">
+          <template #label>
+            <span>
+              详细地址
+              <el-tooltip content="地图上选择位置后将自动生成详细地址，可修改" placement="right">
+                <el-icon><InfoFilled /></el-icon>
+              </el-tooltip>
+            </span>
+          </template>
+          <el-input v-model="form.enterpriseAddress" placeholder="请输入详细地址" maxlength="200" :disabled="!editing" />
         </el-form-item>
 
         <el-form-item prop="regionCode">
@@ -93,7 +124,15 @@
           />
         </el-form-item>
 
-        <el-form-item label="经纬度" prop="longitude" class="col-span-1">
+        <el-form-item prop="longitude" class="col-span-1">
+          <template #label>
+            <span>
+              经纬度
+              <el-tooltip content="需保留小数点后六位数字，可在地图上直接选择位置" placement="right">
+                <el-icon><InfoFilled /></el-icon>
+              </el-tooltip>
+            </span>
+          </template>
           <div class="flex w-full gap-2">
             <el-input v-model="form.longitude" placeholder="经度" disabled />
             <el-input v-model="form.latitude" placeholder="纬度" disabled />
@@ -193,7 +232,7 @@
 <script setup>
 import * as api from '@/api/vpp'
 import { ElMessage } from 'element-plus'
-import { Loading } from '@element-plus/icons-vue'
+import { Loading, InfoFilled } from '@element-plus/icons-vue'
 import UploadImg from '@/components/core/Upload/UploadImg.vue'
 import MapComponent from '@/components/map/index.vue'
 import { generateMockOperatorDetail } from './operatorMockData.js'
@@ -216,6 +255,7 @@ const mapInitCenter = ref([104.065735, 30.659462])
 const form = reactive({
   operatorName: '',
   operatorShortName: '',
+  industryCategory: '',
   expireDate: '',
   logoUrl: '',
   creditCode: '',
@@ -315,6 +355,7 @@ async function fetchDetail() {
     Object.assign(form, {
       operatorName: res.operatorName || '',
       operatorShortName: res.operatorShortName || '',
+      industryCategory: res.industryCategory || '',
       expireDate: res.expireDate || '',
       logoUrl: res.logoUrl || '',
       creditCode: res.creditCode || '',
