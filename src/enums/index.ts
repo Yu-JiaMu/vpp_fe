@@ -16,3 +16,6 @@ export * from './iotEnum'
 
 // 天气图标
 export * from './weatherIconMap'
+
+// VPP 虚拟电厂
+export * from './vppEnum'
