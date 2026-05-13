@@ -17,3 +17,7 @@ export function getOperatorDetail(params) {
 export function addOperator(params) {
   return request.post(BASE_URL + '/add', params)
 }
+
+export function editOperator(params) {
+  return request.put(BASE_URL + '/edit', params)
+}

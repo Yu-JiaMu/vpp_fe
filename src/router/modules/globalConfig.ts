@@ -26,6 +26,37 @@ export const globalConfigRoutes: AppRouteRecord = {
           }
         },
         {
+          path: 'vppSpaceList',
+          name: 'VppSpaceList',
+          component: '/globalConfig/vpp/vppSpace/vppSpaceList',
+          meta: {
+            title: '虚拟电厂空间',
+            keepAlive: true
+          }
+        },
+        {
+          path: 'vpp-space-add',
+          name: 'VppSpaceAdd',
+          component: '/globalConfig/vpp/vppSpace/vppSpaceAdd',
+          meta: {
+            title: '新增虚拟电厂',
+            isHide: true,
+            keepAlive: false,
+            activePath: '/globalConfig/vpp/vppSpaceList'
+          }
+        },
+        {
+          path: 'vpp-space-detail',
+          name: 'VppSpaceDetail',
+          component: '/globalConfig/vpp/vppSpace/vppSpaceDetail',
+          meta: {
+            title: '虚拟电厂详情',
+            isHide: true,
+            keepAlive: false,
+            activePath: '/globalConfig/vpp/vppSpaceList'
+          }
+        },
+        {
           path: 'operator-add',
           name: 'VppOperatorAdd',
           component: '/globalConfig/vpp/operator/operatorAdd',

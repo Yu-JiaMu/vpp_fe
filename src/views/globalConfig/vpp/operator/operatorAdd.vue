@@ -255,13 +255,23 @@ function openMap() {
   showMap.value = true
 }
 
-function confirmMap() {
-  const pos = mapRef.value?.getCurrentPosition()
-  if (pos) {
-    form.longitude = pos[0].toFixed(6)
-    form.latitude = pos[1].toFixed(6)
+const confirmMap = () => {
+  // 先获取位置
+  const position = mapRef.value?.getCurrentPosition()
+  console.log('当前坐标', position) // 调试看一眼
+
+  // 判空
+  if (!position || position.length < 2) {
+    ElMessage.warning('请选择地图位置')
+    return
   }
-  showMap.value = false
+
+  // ✅ 安全赋值（不会再报 undefined 错误）
+  form.value.longitude = position[0]
+  form.value.latitude = position[1]
+
+  visibleMap.value = false
+  ElMessage.success('位置选择成功')
 }
 
 function cancelMap() {
