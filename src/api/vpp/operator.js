@@ -13,3 +13,7 @@ export function changeOperatorStatus(params) {
 export function getOperatorDetail(params) {
   return request.get(BASE_URL + '/detail', params)
 }
+
+export function addOperator(params) {
+  return request.post(BASE_URL + '/add', params)
+}
