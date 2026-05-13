@@ -305,7 +305,7 @@ async function submitForm() {
 .section-title {
   font-size: 18px;
   font-weight: 600;
-  color: #1890ff;
+  color: #050505;
   padding-bottom: 8px;
   border-bottom: 1px solid #ebeef5;
   margin-bottom: 8px;
