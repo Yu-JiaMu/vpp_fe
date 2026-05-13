@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-5 add-vpp-space">
+  <div class="pt-5 pb-8 add-vpp-space">
     <ArtButtonBack class="mb-2.5"> 新增虚拟电厂 </ArtButtonBack>
 
     <el-form

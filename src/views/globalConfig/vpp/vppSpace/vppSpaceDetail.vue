@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-5 vpp-space-detail">
+  <div class="pt-5 pb-8 vpp-space-detail">
     <ArtButtonBack class="mb-2.5"> 虚拟电厂详情 </ArtButtonBack>
 
     <div v-if="loading" class="flex justify-center py-20">
@@ -13,10 +13,6 @@
     </template>
 
     <template v-else>
-      <el-tag v-if="detailData.vppStatusFlag" :type="statusTagType" effect="dark" class="mb-4">
-        {{ statusLabel }}
-      </el-tag>
-
       <el-form
         ref="formRef"
         :model="form"
@@ -140,7 +136,6 @@
 
 <script setup>
 import * as api from '@/api/vpp'
-import { VPP_STATUS } from '@/enums/vppEnum'
 import { ElMessage } from 'element-plus'
 import { Loading } from '@element-plus/icons-vue'
 import MapComponent from '@/components/map/index.vue'
@@ -171,14 +166,6 @@ const form = reactive({
   longitude: '',
   latitude: '',
   description: ''
-})
-
-const statusTagType = computed(() => {
-  return VPP_STATUS.getItem(detailData.value.vppStatusFlag)?.tag || 'info'
-})
-
-const statusLabel = computed(() => {
-  return VPP_STATUS.getLabel(detailData.value.vppStatusFlag) || ''
 })
 
 const operatorOptions = [

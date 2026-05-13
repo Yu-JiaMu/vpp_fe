@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-5 add-operator">
+  <div class="pt-5 pb-8 add-operator">
     <ArtButtonBack class="mb-2.5"> 新增运营商 </ArtButtonBack>
 
     <el-form
@@ -255,23 +255,18 @@ function openMap() {
   showMap.value = true
 }
 
-const confirmMap = () => {
-  // 先获取位置
+function confirmMap() {
   const position = mapRef.value?.getCurrentPosition()
-  console.log('当前坐标', position) // 调试看一眼
-
-  // 判空
   if (!position || position.length < 2) {
     ElMessage.warning('请选择地图位置')
     return
   }
-
-  // ✅ 安全赋值（不会再报 undefined 错误）
-  form.value.longitude = position[0]
-  form.value.latitude = position[1]
-
-  visibleMap.value = false
-  ElMessage.success('位置选择成功')
+  form.longitude = String(position[0])
+  form.latitude = String(position[1])
+  showMap.value = false
+  nextTick(() => {
+    formRef.value?.validateField('longitude')
+  })
 }
 
 function cancelMap() {

@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-5 operator-detail">
+  <div class="pt-5 pb-8 operator-detail">
     <ArtButtonBack class="mb-2.5"> 运营商详情 </ArtButtonBack>
 
     <div v-if="loading" class="flex justify-center py-20">
@@ -13,10 +13,6 @@
     </template>
 
     <template v-else>
-      <el-tag v-if="detailData.operatorStatusFlag" :type="statusTagType" effect="dark" class="mb-4">
-        {{ statusLabel }}
-      </el-tag>
-
       <el-form
         ref="formRef"
         :model="form"
@@ -196,7 +192,6 @@
 
 <script setup>
 import * as api from '@/api/vpp'
-import { OPERATOR_STATUS } from '@/enums/vppEnum'
 import { ElMessage } from 'element-plus'
 import { Loading } from '@element-plus/icons-vue'
 import UploadImg from '@/components/core/Upload/UploadImg.vue'
@@ -235,14 +230,6 @@ const form = reactive({
   contactName: '',
   contactPhone: '',
   contactEmail: ''
-})
-
-const statusTagType = computed(() => {
-  return OPERATOR_STATUS.getItem(detailData.value.operatorStatusFlag)?.tag || 'info'
-})
-
-const statusLabel = computed(() => {
-  return OPERATOR_STATUS.getLabel(detailData.value.operatorStatusFlag) || ''
 })
 
 const validateCreditCode = (_rule, value, callback) => {
