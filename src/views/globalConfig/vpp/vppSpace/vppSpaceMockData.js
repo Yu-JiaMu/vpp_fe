@@ -43,10 +43,29 @@ const regionNames = [
   '广东省广州市', '广东省深圳市', '四川省成都市'
 ]
 
+const vppTypes = [1, 1, 2, 1, 2, 2, 1, 2, 1, 1, 2, 1, 2, 1, 2]
+
+const marketStatuses = [2, 2, 2, 1, 2, 2, 3, 2, 1, 2, 2, 2, 1, 2, 2]
+
+const policyRegionOptions = [
+  ['广东省', '华北电力市场'],
+  ['广东省', '南方电力市场'],
+  ['四川省', '西南电力市场'],
+  ['浙江省', '华东电力市场'],
+  ['江苏省', '华东电力市场'],
+  ['北京市', '华北电力市场']
+]
+
 function randomDate(startDays, endDays) {
   const now = Date.now()
   const offset = (Math.random() * (endDays - startDays) + startDays) * 86400000
   return new Date(now + offset).toISOString()
+}
+
+function pickRandom(arr, min = 1, max = 3) {
+  const count = Math.floor(Math.random() * (max - min + 1)) + min
+  const shuffled = [...arr].sort(() => Math.random() - 0.5)
+  return shuffled.slice(0, count)
 }
 
 /**
@@ -58,13 +77,6 @@ export function generateMockVppSpaceDetail(id) {
   const numId = Number(id)
   const idx = (numId - 200000) % vppNames.length
   const statusIdx = (numId - 200000) % statuses.length
-  const regionNamesList = [
-    '广东省广州市', '广东省深圳市', '四川省成都市',
-    '广东省广州市', '广东省深圳市', '四川省成都市',
-    '广东省广州市', '广东省深圳市', '四川省成都市',
-    '广东省广州市', '广东省深圳市', '四川省成都市',
-    '广东省广州市', '广东省深圳市', '四川省成都市'
-  ]
   const descriptions = [
     '采用先进的AI算法对分布式能源进行智能调度，实现区域能源最优配置。',
     '整合区域内储能资源，提供削峰填谷、需求响应等辅助服务。',
@@ -83,12 +95,14 @@ export function generateMockVppSpaceDetail(id) {
     vppCode: `VPP${String(300000 + (numId - 200000)).slice(-6)}`,
     vppName: vppNames[idx],
     operatorName: operatorNames[idx % operatorNames.length],
+    vppType: vppTypes[idx],
+    marketAccessStatus: marketStatuses[idx],
     vppStatusFlag: statuses[statusIdx],
-    accessCapacity: Number((Math.random() * 500 + 50).toFixed(2)),
-    region: regionNamesList[idx],
+    region: regionNames[idx],
     longitude: (113.2 + (numId % 50) * 0.1).toFixed(6),
     latitude: (23.1 + (numId % 30) * 0.1).toFixed(6),
     description: descriptions[idx % descriptions.length],
+    policyRegions: pickRandom(policyRegionOptions, 1, 2).map(r => r.join(' - ')),
     createdAt: randomDate(-365, -30),
     expireDate: statuses[statusIdx] === 2
       ? randomDate(-60, -1)
@@ -112,8 +126,9 @@ export function generateMockVppSpaces(count = 15) {
       vppCode: `VPP${String(300000 + i).slice(-6)}`,
       vppName: vppNames[idx],
       operatorName: operatorNames[idx % operatorNames.length],
+      vppType: vppTypes[idx],
+      marketAccessStatus: marketStatuses[idx],
       vppStatusFlag: statuses[statusIdx],
-      accessCapacity: Number((Math.random() * 500 + 50).toFixed(2)),
       region: regionNames[i % regionNames.length],
       createdAt: randomDate(-365, -30),
       expireDate: statuses[statusIdx] === 2

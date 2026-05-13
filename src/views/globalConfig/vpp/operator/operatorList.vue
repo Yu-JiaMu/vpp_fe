@@ -33,7 +33,7 @@
           {{ formatDate(row.expireDate) }}
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" width="180">
+      <el-table-column label="操作" fixed="right" width="230">
         <template #default="{ row }">
           <el-button link type="primary" @click.prevent="viewDetail(row)">详情</el-button>
           <el-button
@@ -44,6 +44,7 @@
           >
             {{ row.operatorStatusFlag === OPERATOR_STATUS.values.DISABLED ? '启用' : '禁用' }}
           </el-button>
+          <el-button link type="danger" @click.prevent="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -118,11 +119,13 @@ const formatDate = (dateStr) => {
 
 const useMockData = true // 开发阶段使用 mock 数据，联调时改为 false
 
+const deletedIds = ref(new Set())
+
 const getTableData = async () => {
   try {
     if (useMockData) {
       const allData = generateMockOperators(15)
-      let filtered = allData
+      let filtered = allData.filter(item => !deletedIds.value.has(item.id))
       if (form.operatorName) {
         filtered = filtered.filter(item => item.operatorName.includes(form.operatorName))
       }
@@ -217,6 +220,32 @@ async function toggleStatus(row) {
     if (error !== 'cancel') {
       console.error(`${action}失败:`, error)
       ElMessage.error(`${action}失败`)
+    }
+  }
+}
+
+async function handleDelete(row) {
+  try {
+    await ElMessageBox.confirm(`确认删除运营商「${row.operatorName}」吗？删除后不可恢复。`, '删除确认', {
+      confirmButtonText: '确定删除',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+
+    if (useMockData) {
+      deletedIds.value.add(row.id)
+      ElMessage.success('删除成功')
+      getTableData()
+      return
+    }
+
+    await api.deleteOperator({ id: row.id })
+    ElMessage.success('删除成功')
+    getTableData()
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('删除失败:', error)
+      ElMessage.error('删除失败')
     }
   }
 }

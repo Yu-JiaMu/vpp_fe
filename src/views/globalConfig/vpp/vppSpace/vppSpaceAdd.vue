@@ -27,37 +27,33 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="接入容量(MW)" prop="accessCapacity">
-        <el-input-number
-          v-model="form.accessCapacity"
-          :min="0"
-          :max="99999"
-          :precision="2"
-          style="width: 100%"
-          controls-position="right"
-        />
+      <el-form-item label="虚拟电厂类型" prop="vppType">
+        <el-select v-model="form.vppType" placeholder="请选择虚拟电厂类型" clearable style="width: 100%">
+          <el-option label="发电类虚拟电厂" :value="1" />
+          <el-option label="负荷类虚拟电厂" :value="2" />
+        </el-select>
       </el-form-item>
 
-      <el-form-item label="所在地区" prop="region">
+      <el-form-item label="市场准入状态" prop="marketAccessStatus">
+        <el-select v-model="form.marketAccessStatus" placeholder="请选择市场准入状态" clearable style="width: 100%">
+          <el-option label="未准入" :value="1" />
+          <el-option label="已注册" :value="2" />
+          <el-option label="暂停" :value="3" />
+          <el-option label="注销" :value="4" />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="所在地区" prop="region" class="col-span-2">
         <el-cascader
           v-model="form.region"
           :options="regionOptions"
-          placeholder="请选择省-市"
+          placeholder="请选择省-市-区/县"
           clearable
           style="width: 100%"
         />
       </el-form-item>
 
-      <el-form-item label="到期时间" prop="expireDate">
-        <el-date-picker
-          v-model="form.expireDate"
-          type="datetime"
-          placeholder="选择到期时间"
-          value-format="YYYY-MM-DD HH:mm:ss"
-        />
-      </el-form-item>
-
-      <el-form-item label="经度" prop="longitude" class="col-span-1">
+      <el-form-item label="经纬度" prop="longitude">
         <div class="flex w-full gap-2">
           <el-input v-model="form.longitude" placeholder="经度" disabled />
           <el-input v-model="form.latitude" placeholder="纬度" disabled />
@@ -65,8 +61,15 @@
         </div>
       </el-form-item>
 
-      <el-form-item label="描述" prop="description" class="col-span-2">
-        <el-input v-model="form.description" type="textarea" placeholder="请输入虚拟电厂描述" maxlength="500" :rows="3" show-word-limit />
+      <el-form-item label="适配政策地区" prop="policyRegions" class="col-span-2">
+        <el-select v-model="form.policyRegions" multiple placeholder="请选择适配政策地区（可多选）" clearable style="width: 100%">
+          <el-option
+            v-for="pr in policyRegionOptions"
+            :key="pr.value"
+            :label="pr.label"
+            :value="pr.value"
+          />
+        </el-select>
       </el-form-item>
 
       <!-- 按钮 -->
@@ -114,12 +117,12 @@ const mapInitCenter = ref([104.065735, 30.659462])
 const form = reactive({
   vppName: '',
   operatorName: '',
-  accessCapacity: undefined,
+  vppType: undefined,
+  marketAccessStatus: undefined,
   region: [],
-  expireDate: '',
   longitude: '',
   latitude: '',
-  description: ''
+  policyRegions: []
 })
 
 const operatorOptions = [
@@ -137,42 +140,150 @@ const operatorOptions = [
 
 const regionOptions = [
   {
-    value: '广东省广州市', label: '广东省广州市'
+    value: '广东省', label: '广东省',
+    children: [
+      {
+        value: '广州市', label: '广州市',
+        children: [
+          { value: '荔湾区', label: '荔湾区' }, { value: '越秀区', label: '越秀区' },
+          { value: '海珠区', label: '海珠区' }, { value: '天河区', label: '天河区' },
+          { value: '白云区', label: '白云区' }, { value: '黄埔区', label: '黄埔区' },
+          { value: '番禺区', label: '番禺区' }
+        ]
+      },
+      {
+        value: '深圳市', label: '深圳市',
+        children: [
+          { value: '罗湖区', label: '罗湖区' }, { value: '福田区', label: '福田区' },
+          { value: '南山区', label: '南山区' }, { value: '宝安区', label: '宝安区' },
+          { value: '龙岗区', label: '龙岗区' }, { value: '龙华区', label: '龙华区' },
+          { value: '坪山区', label: '坪山区' }
+        ]
+      }
+    ]
   },
   {
-    value: '广东省深圳市', label: '广东省深圳市'
+    value: '四川省', label: '四川省',
+    children: [
+      {
+        value: '成都市', label: '成都市',
+        children: [
+          { value: '锦江区', label: '锦江区' }, { value: '青羊区', label: '青羊区' },
+          { value: '金牛区', label: '金牛区' }, { value: '武侯区', label: '武侯区' },
+          { value: '成华区', label: '成华区' }, { value: '温江区', label: '温江区' },
+          { value: '高新区', label: '高新区' }
+        ]
+      }
+    ]
   },
   {
-    value: '浙江省杭州市', label: '浙江省杭州市'
+    value: '浙江省', label: '浙江省',
+    children: [
+      {
+        value: '杭州市', label: '杭州市',
+        children: [
+          { value: '上城区', label: '上城区' }, { value: '拱墅区', label: '拱墅区' },
+          { value: '西湖区', label: '西湖区' }, { value: '滨江区', label: '滨江区' },
+          { value: '萧山区', label: '萧山区' }, { value: '余杭区', label: '余杭区' }
+        ]
+      }
+    ]
   },
   {
-    value: '北京市', label: '北京市'
+    value: '北京市', label: '北京市',
+    children: [
+      {
+        value: '北京市', label: '北京市',
+        children: [
+          { value: '东城区', label: '东城区' }, { value: '西城区', label: '西城区' },
+          { value: '朝阳区', label: '朝阳区' }, { value: '海淀区', label: '海淀区' },
+          { value: '丰台区', label: '丰台区' }
+        ]
+      }
+    ]
   },
   {
-    value: '江苏省南京市', label: '江苏省南京市'
+    value: '江苏省', label: '江苏省',
+    children: [
+      {
+        value: '南京市', label: '南京市',
+        children: [
+          { value: '玄武区', label: '玄武区' }, { value: '秦淮区', label: '秦淮区' },
+          { value: '建邺区', label: '建邺区' }, { value: '鼓楼区', label: '鼓楼区' },
+          { value: '浦口区', label: '浦口区' }
+        ]
+      }
+    ]
   },
   {
-    value: '四川省成都市', label: '四川省成都市'
+    value: '山东省', label: '山东省',
+    children: [
+      {
+        value: '济南市', label: '济南市',
+        children: [
+          { value: '历下区', label: '历下区' }, { value: '市中区', label: '市中区' },
+          { value: '槐荫区', label: '槐荫区' }, { value: '天桥区', label: '天桥区' },
+          { value: '历城区', label: '历城区' }
+        ]
+      }
+    ]
   },
   {
-    value: '山东省济南市', label: '山东省济南市'
+    value: '福建省', label: '福建省',
+    children: [
+      {
+        value: '福州市', label: '福州市',
+        children: [
+          { value: '鼓楼区', label: '鼓楼区' }, { value: '台江区', label: '台江区' },
+          { value: '仓山区', label: '仓山区' }, { value: '马尾区', label: '马尾区' },
+          { value: '晋安区', label: '晋安区' }
+        ]
+      }
+    ]
   },
   {
-    value: '福建省福州市', label: '福建省福州市'
+    value: '湖南省', label: '湖南省',
+    children: [
+      {
+        value: '长沙市', label: '长沙市',
+        children: [
+          { value: '芙蓉区', label: '芙蓉区' }, { value: '天心区', label: '天心区' },
+          { value: '岳麓区', label: '岳麓区' }, { value: '开福区', label: '开福区' },
+          { value: '雨花区', label: '雨花区' }
+        ]
+      }
+    ]
   },
   {
-    value: '湖南省长沙市', label: '湖南省长沙市'
-  },
-  {
-    value: '安徽省合肥市', label: '安徽省合肥市'
+    value: '安徽省', label: '安徽省',
+    children: [
+      {
+        value: '合肥市', label: '合肥市',
+        children: [
+          { value: '瑶海区', label: '瑶海区' }, { value: '庐阳区', label: '庐阳区' },
+          { value: '蜀山区', label: '蜀山区' }, { value: '包河区', label: '包河区' }
+        ]
+      }
+    ]
   }
+]
+
+const policyRegionOptions = [
+  { label: '华北电力市场', value: '华北电力市场' },
+  { label: '华东电力市场', value: '华东电力市场' },
+  { label: '南方电力市场', value: '南方电力市场' },
+  { label: '西南电力市场', value: '西南电力市场' },
+  { label: '西北电力市场', value: '西北电力市场' },
+  { label: '华中电力市场', value: '华中电力市场' }
 ]
 
 const rules = {
   vppName: [{ required: true, message: '请输入虚拟电厂名称', trigger: 'blur' }],
   operatorName: [{ required: true, message: '请选择所属运营商', trigger: 'change' }],
-  accessCapacity: [{ required: true, message: '请输入接入容量', trigger: 'blur' }],
-  expireDate: [{ required: true, message: '请选择到期时间', trigger: 'change' }]
+  vppType: [{ required: true, message: '请选择虚拟电厂类型', trigger: 'change' }],
+  marketAccessStatus: [{ required: true, message: '请选择市场准入状态', trigger: 'change' }],
+  region: [{ required: true, message: '请选择所在地区', trigger: 'change' }],
+  longitude: [{ required: true, message: '请在地图上点选经纬度', trigger: 'change' }]
 }
 
 function openMap() {
@@ -214,7 +325,8 @@ async function submitForm() {
   try {
     const params = {
       ...form,
-      region: Array.isArray(form.region) ? form.region.join(',') : form.region
+      region: Array.isArray(form.region) ? form.region.join(',') : form.region,
+      policyRegions: Array.isArray(form.policyRegions) ? form.policyRegions.join(',') : form.policyRegions
     }
     await api.addVppSpace(params)
     ElMessage.success('新增虚拟电厂成功')

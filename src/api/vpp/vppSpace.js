@@ -21,3 +21,7 @@ export function getVppSpaceDetail(params) {
 export function editVppSpace(params) {
   return request.put(BASE_URL + '/edit', params)
 }
+
+export function deleteVppSpace(params) {
+  return request.delete(BASE_URL + '/delete', params)
+}

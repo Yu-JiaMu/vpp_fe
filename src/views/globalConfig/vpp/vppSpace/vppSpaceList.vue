@@ -20,32 +20,26 @@
       <el-table-column prop="vppName" label="虚拟电厂名称" min-width="180" />
       <el-table-column prop="vppCode" label="虚拟电厂编号" min-width="160" />
       <el-table-column prop="operatorName" label="所属运营商" min-width="160" />
-      <el-table-column label="状态" width="100">
+      <el-table-column label="虚拟电厂类型" width="140">
         <template #default="{ row }">
-          <el-tag :type="VPP_STATUS.getItem(row.vppStatusFlag)?.tag">
-            {{ VPP_STATUS.getLabel(row.vppStatusFlag) }}
+          <el-tag :type="VPP_TYPE.getItem(row.vppType)?.tag">
+            {{ VPP_TYPE.getLabel(row.vppType) }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="accessCapacity" label="接入容量(MW)" width="120" align="center" />
-      <el-table-column prop="region" label="所在地区" min-width="120" />
-      <el-table-column prop="createdAt" label="创建时间" sortable="custom" width="180" />
-      <el-table-column prop="expireDate" label="到期时间" width="180">
+      <el-table-column label="市场准入状态" width="120">
         <template #default="{ row }">
-          {{ formatDate(row.expireDate) }}
+          <el-tag :type="MARKET_ACCESS_STATUS.getItem(row.marketAccessStatus)?.tag">
+            {{ MARKET_ACCESS_STATUS.getLabel(row.marketAccessStatus) }}
+          </el-tag>
         </template>
       </el-table-column>
+      <el-table-column prop="region" label="所在地区" min-width="120" />
+      <el-table-column prop="createdAt" label="创建时间" sortable="custom" width="180" />
       <el-table-column label="操作" fixed="right" width="160">
         <template #default="{ row }">
           <el-button link type="primary" @click.prevent="viewDetail(row)">详情</el-button>
-          <el-button
-            link
-            :type="row.vppStatusFlag === VPP_STATUS.values.DISABLED ? 'success' : 'warning'"
-            :disabled="row.vppStatusFlag === VPP_STATUS.values.EXPIRED"
-            @click.prevent="toggleStatus(row)"
-          >
-            {{ row.vppStatusFlag === VPP_STATUS.values.DISABLED ? '启用' : '禁用' }}
-          </el-button>
+          <el-button link type="danger" @click.prevent="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -56,7 +50,7 @@
 
 <script setup>
 import * as api from '@/api/vpp'
-import { VPP_STATUS } from '@/enums/vppEnum'
+import { VPP_TYPE, MARKET_ACCESS_STATUS } from '@/enums/vppEnum'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { generateMockVppSpaces } from './vppSpaceMockData.js'
 
@@ -66,7 +60,9 @@ const form = reactive({
   vppName: '',
   vppCode: '',
   operatorName: '',
-  vppStatusFlag: undefined,
+  vppType: undefined,
+  region: '',
+  marketAccessStatus: undefined,
   orderByColumn: 'createdAt',
   isAsc: 'descending'
 })
@@ -102,37 +98,51 @@ const formItems = computed(() => [
     clearable: true
   },
   {
-    label: '状态',
-    key: 'vppStatusFlag',
+    label: '虚拟电厂类型',
+    key: 'vppType',
     type: 'select',
-    placeholder: '请选择状态',
+    placeholder: '请选择虚拟电厂类型',
     clearable: true,
     props: {
       options: [
-        { label: '正常', value: 1 },
-        { label: '已过期', value: 2 },
-        { label: '已禁用', value: 3 }
+        { label: '发电类虚拟电厂', value: 1 },
+        { label: '负荷类虚拟电厂', value: 2 }
+      ]
+    }
+  },
+  {
+    label: '所在地区',
+    key: 'region',
+    type: 'input',
+    placeholder: '请输入所在地区',
+    clearable: true
+  },
+  {
+    label: '市场准入状态',
+    key: 'marketAccessStatus',
+    type: 'select',
+    placeholder: '请选择市场准入状态',
+    clearable: true,
+    props: {
+      options: [
+        { label: '未准入', value: 1 },
+        { label: '已注册', value: 2 },
+        { label: '暂停', value: 3 },
+        { label: '注销', value: 4 }
       ]
     }
   }
 ])
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
 const useMockData = true // 开发阶段使用 mock 数据，联调时改为 false
+
+const deletedIds = ref(new Set())
 
 const getTableData = async () => {
   try {
     if (useMockData) {
       const allData = generateMockVppSpaces(15)
-      let filtered = allData
+      let filtered = allData.filter(item => !deletedIds.value.has(item.id))
       if (form.vppName) {
         filtered = filtered.filter(item => item.vppName.includes(form.vppName))
       }
@@ -142,8 +152,14 @@ const getTableData = async () => {
       if (form.operatorName) {
         filtered = filtered.filter(item => item.operatorName.includes(form.operatorName))
       }
-      if (form.vppStatusFlag !== undefined && form.vppStatusFlag !== '') {
-        filtered = filtered.filter(item => item.vppStatusFlag === form.vppStatusFlag)
+      if (form.vppType !== undefined && form.vppType !== '') {
+        filtered = filtered.filter(item => item.vppType === form.vppType)
+      }
+      if (form.region) {
+        filtered = filtered.filter(item => item.region.includes(form.region))
+      }
+      if (form.marketAccessStatus !== undefined && form.marketAccessStatus !== '') {
+        filtered = filtered.filter(item => item.marketAccessStatus === form.marketAccessStatus)
       }
       if (form.orderByColumn === 'createdAt') {
         filtered.sort((a, b) => {
@@ -207,29 +223,28 @@ function viewDetail(row) {
   })
 }
 
-async function toggleStatus(row) {
-  const action = row.vppStatusFlag === VPP_STATUS.values.DISABLED ? '启用' : '禁用'
+async function handleDelete(row) {
   try {
-    await ElMessageBox.confirm(`确认${action}该虚拟电厂吗？`, '提示', {
-      confirmButtonText: '确定',
+    await ElMessageBox.confirm(`确认删除虚拟电厂「${row.vppName}」吗？删除后不可恢复。`, '删除确认', {
+      confirmButtonText: '确定删除',
       cancelButtonText: '取消',
       type: 'warning'
     })
-    const newStatus =
-      row.vppStatusFlag === VPP_STATUS.values.DISABLED
-        ? VPP_STATUS.values.NORMAL
-        : VPP_STATUS.values.DISABLED
 
-    await api.changeVppSpaceStatus({
-      id: row.id,
-      vppStatusFlag: newStatus
-    })
-    ElMessage.success(`${action}成功`)
+    if (useMockData) {
+      deletedIds.value.add(row.id)
+      ElMessage.success('删除成功')
+      getTableData()
+      return
+    }
+
+    await api.deleteVppSpace({ id: row.id })
+    ElMessage.success('删除成功')
     getTableData()
   } catch (error) {
     if (error !== 'cancel') {
-      console.error(`${action}失败:`, error)
-      ElMessage.error(`${action}失败`)
+      console.error('删除失败:', error)
+      ElMessage.error('删除失败')
     }
   }
 }

@@ -21,3 +21,7 @@ export function addOperator(params) {
 export function editOperator(params) {
   return request.put(BASE_URL + '/edit', params)
 }
+
+export function deleteOperator(params) {
+  return request.delete(BASE_URL + '/delete', params)
+}
