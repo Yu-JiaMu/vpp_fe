@@ -6,6 +6,7 @@ dist-ssr
 .cursorrules
 dist.zip
 .idea
+.claude
 
 # Auto-generated files
 src/types/import/auto-imports.d.ts
